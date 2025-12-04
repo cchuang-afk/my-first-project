@@ -458,7 +458,7 @@
             '吳淑娟', '陳靜芬', '鍾麗萍', '邱芳玲', '胡廉筠', '黃淑芬', '謝美玲', '葉淑儀', '閉玉珍', '顏文茹', 
             '鄭進興', '王淑滿', '吳珮君', '黃琡晶', '賴玟苑', '王勉惠', '蔡瓊琦', '何美惠', '許秀香', '潘美蘭', 
             '宋秀梅', '葉淑如', '廖金萍', '梁雅菁', '林怡伶', '張鈞貴', '王理玉', '黃巧文', '曹孟蘭', '蔡品貞', 
-            '連麗真', '洪于稀', '胡月偵', '詹珮琳', '李雯雯', '許筑秝', '蕭秋英', '黃智瑋', '顏華瑢', '蕭秀芬', 
+            '連麗真', '洪于稀', '胡月偵', '詹珮琳', '李雯雯', '許筑秝', '蕭秋英', '頻道華瑢', '蕭秀芬', 
             '劉崇珊', '宜美玲', '李維屏', '王潔瑩', '胡佩蘭', '郭詩敏', '劉孟貞', '林秋香', '陳素惠', '黃梅華', 
             '張香蘭', '劉美玲', '陳瑪莉', '陳晴', '魏美珍', '盧素韶', '陳惠玟', '陳依莎', '潘世蓉', '李恬心', 
             '蕭美娣', '彭貴妤', '陳怡婷', '鄭素容', '郭凡爾', '莊敏慧', '洪韻美', '柯春惠', '楊智慧', '謝惠茹', 
@@ -1527,7 +1527,7 @@
                     cleanAndQuote(isMorningCheckedIn),      
                     cleanAndQuote(morningCheckInTimeStr),   
                     
-                    cleanAndAndQuote(isAfternoonCheckedIn),    
+                    cleanAndQuote(isAfternoonCheckedIn),    // 修正了 cleanAndAndQuote 的錯誤
                     cleanAndQuote(afternoonCheckInTimeStr), 
 
                     cleanAndQuote(isAfternoonCheckedOut),   
@@ -1556,6 +1556,7 @@
             link.setAttribute('download', fileName);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
+            link.click();
             document.body.removeChild(link);
             
             displayMessage('報名清單已匯出為 CSV 檔案！', 'success');

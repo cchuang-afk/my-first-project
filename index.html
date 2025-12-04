@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>研習報名系統</title>
+    <title>高雄市學校護理人員繼續教育研習課程報名網</title>
     <!-- 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -12,6 +12,13 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f7f7f7;
+        }
+        /* 主標題樣式 */
+        .main-header {
+            background-color: #0ea5e9; /* Sky 500 */
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
         }
         /* 彈窗背景層的動畫效果 */
         .modal-bg {
@@ -29,262 +36,278 @@
         }
         /* 後台清單表格樣式 */
         .backend-table th, .backend-table td {
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-bottom: 1px solid #e5e7eb;
             white-space: nowrap;
             text-align: left;
         }
         .backend-table th {
-            background-color: #f3f4f6;
+            background-color: #e5e7eb; /* Gray 200 */
             font-weight: 600;
-            color: #4b5563;
-            text-transform: uppercase;
-            font-size: 0.75rem;
+            color: #374151; /* Gray 700 */
+            text-transform: none;
+            font-size: 0.8rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
 
     <!-- 主容器 -->
-    <div class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
+    <div class="min-h-screen flex flex-col items-center">
+        <!-- 固定頂部標題欄 -->
+        <header class="main-header w-full">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市學校護理人員繼續教育研習課程報名網</h1>
+                <p class="text-sky-100 mt-1 text-lg">請填寫您的報名資訊</p>
+            </div>
+        </header>
 
-        <h1 class="text-4xl font-bold text-gray-800 mb-2">研習報名系統</h1>
-        <p class="text-gray-600 mb-8">請填寫您的報名資訊</p>
+        <main class="w-full max-w-4xl p-4 sm:p-8">
+            
+            <!-- Firebase 狀態/錯誤訊息 -->
+            <div id="statusMessage" class="w-full max-w-2xl mx-auto p-3 mb-6 rounded-lg text-center text-sm font-medium transition duration-300 card">
+                正在初始化系統...
+            </div>
 
-        <!-- Firebase 狀態/錯誤訊息 -->
-        <div id="statusMessage" class="w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300">
-            正在初始化系統...
-        </div>
+            <!-- 報名表單區塊 -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">報名表單</h2>
 
-        <!-- 報名表單區塊 -->
-        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-6">報名表單</h2>
+                <form id="registrationForm" class="space-y-4">
+                    
+                    <!-- 學校欄位 -->
+                    <div>
+                        <label for="school" class="block text-sm font-medium text-gray-700 mb-1">學校 (School)</label>
+                        <input type="text" id="school" name="school" placeholder="請輸入學校名稱" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                    </div>
 
-            <form id="registrationForm" class="space-y-4">
+                    <!-- 姓名欄位 -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 (Name)</label>
+                        <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                    </div>
+
+                    <!-- 身份證字號欄位 -->
+                    <div>
+                        <label for="id_number" class="block text-sm font-medium text-gray-700 mb-1">身份證字號 (ID Number)</label>
+                        <input type="text" id="id_number" name="id_number" placeholder="請輸入身份證字號 (例如: A123456789)" required
+                               maxlength="10" 
+                               pattern="[A-Z][0-9]{9}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        <p class="mt-1 text-xs text-gray-500">格式: 1位大寫英文字母 + 9位數字</p>
+                    </div>
+                    
+                    <!-- 提交按鈕 -->
+                    <button type="submit" id="submitButton"
+                            class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-semibold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
+                            disabled>
+                        立即報名
+                    </button>
+                </form>
+            </div>
+
+            <!-- 研習活動簽到區塊 (更新為三階段) -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">研習活動簽到</h2>
+
+                <div class="space-y-4">
+                    <!-- 身份證字號欄位 for Sign-In/Out -->
+                    <div>
+                        <label for="sign_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                            簽到/簽退身份證字號 (ID Number)
+                        </label>
+                        <input type="text" id="sign_id_number" placeholder="請輸入身份證字號進行簽到或簽退" required
+                               maxlength="10" 
+                               pattern="[A-Z][0-9]{9}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                    </div>
+                    
+                    <!-- 簽到/簽退時間設定 (已移除，將使用系統當前時間) -->
+
+                    <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2 pt-2">
+                        <!-- 上午簽到按鈕 -->
+                        <button id="morningCheckInButton" type="button" disabled
+                                class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
+                            上午簽到 (Morning Check In)
+                        </button>
+                        <!-- 下午簽到按鈕 -->
+                        <button id="afternoonCheckInButton" type="button" disabled
+                                class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-xl font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
+                            下午簽到 (Afternoon Check In)
+                        </button>
+                        <!-- 下午簽退按鈕 -->
+                        <button id="afternoonCheckOutButton" type="button" disabled
+                                class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
+                            下午簽退 (Afternoon Check Out)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 系統設定區塊 (更新為密碼控管顯示) -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-700">時間簽到設定</h2>
+
+                    <!-- 1. 顯示/隱藏 按鈕 (樣式已調整為與匯出按鈕相近) -->
+                    <button id="toggleSettingsButton" type="button" disabled
+                            class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                        設定時間
+                    </button>
+                </div>
                 
-                <!-- 學校欄位 -->
-                <div>
-                    <label for="school" class="block text-sm font-medium text-gray-700 mb-1">學校 (School)</label>
-                    <input type="text" id="school" name="school" placeholder="請輸入學校名稱" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
-                </div>
+                <p class="mt-4 text-gray-500 text-sm">
+                    點擊按鈕後輸入密碼，即可設定簽到/簽退的開放時間區間。
+                </p>
 
-                <!-- 姓名欄位 -->
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 (Name)</label>
-                    <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
-                </div>
-
-                <!-- 身份證字號欄位 -->
-                <div>
-                    <label for="id_number" class="block text-sm font-medium text-gray-700 mb-1">身份證字號 (ID Number)</label>
-                    <input type="text" id="id_number" name="id_number" placeholder="請輸入身份證字號 (例如: A123456789)" required
-                           maxlength="10" pattern="[A-Z][0-9]{9}"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
-                    <p class="mt-1 text-xs text-gray-500">格式: 1位英文字母 + 9位數字</p>
-                </div>
-                
-                <!-- 提交按鈕 -->
-                <button type="submit" id="submitButton"
-                        class="w-full bg-sky-600 text-white py-3 mt-6 rounded-lg font-semibold hover:bg-sky-700 transition duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
-                        disabled>
-                    立即報名
-                </button>
-            </form>
-        </div>
-
-        <!-- 研習活動簽到區塊 (更新為三階段) -->
-        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-6">研習活動簽到</h2>
-
-            <div class="space-y-4">
-                <!-- 身份證字號欄位 for Sign-In/Out -->
-                <div>
-                    <label for="sign_id_number" class="block text-sm font-medium text-gray-700 mb-1">
-                        簽到/簽退身份證字號 (ID Number)
+                <!-- 2. 密碼驗證區塊 (預設隱藏) -->
+                <div id="settingsAccessSection" class="hidden p-4 mt-4 bg-yellow-50 border border-yellow-300 rounded-xl shadow-inner">
+                    <label for="settingsAccessPassword" class="block text-sm font-medium text-yellow-700 mb-2">
+                        <span class="font-bold">🔒 密碼驗證：</span> 輸入密碼以存取設定。
                     </label>
-                    <input type="text" id="sign_id_number" placeholder="請輸入身份證字號進行簽到或簽退" required
-                           maxlength="10" pattern="[A-Z][0-9]{9}"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <input type="password" id="settingsAccessPassword" placeholder="輸入密碼..."
+                               class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
+                        <button id="confirmSettingsAccessButton" type="button"
+                                class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
+                            確認存取
+                        </button>
+                    </div>
+                    <p id="accessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
                 </div>
                 
-                <!-- 簽到/簽退時間設定 (已移除，將使用系統當前時間) -->
-
-                <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2 pt-2">
-                    <!-- 上午簽到按鈕 -->
-                    <button id="morningCheckInButton" type="button" disabled
-                            class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
-                        上午簽到 (Morning Check In)
-                    </button>
-                    <!-- 下午簽到按鈕 -->
-                    <button id="afternoonCheckInButton" type="button" disabled
-                            class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
-                        下午簽到 (Afternoon Check In)
-                    </button>
-                    <!-- 下午簽退按鈕 -->
-                    <button id="afternoonCheckOutButton" type="button" disabled
-                            class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
-                        下午簽退 (Afternoon Check Out)
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 系統設定區塊 (更新為密碼控管顯示) -->
-        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl mb-8">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-semibold text-gray-700">系統設定</h2>
-
-                <!-- 1. 顯示/隱藏 按鈕 (樣式已調整為與匯出按鈕相近) -->
-                <button id="toggleSettingsButton" type="button" disabled
-                        class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
-                    設定時間
-                </button>
-            </div>
-            
-            <p class="mt-4 text-gray-500 text-sm">
-                點擊按鈕後輸入密碼，即可設定簽到/簽退的開放時間區間。
-            </p>
-
-            <!-- 2. 密碼驗證區塊 (預設隱藏) -->
-            <div id="settingsAccessSection" class="hidden p-4 mt-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner">
-                <label for="settingsAccessPassword" class="block text-sm font-medium text-yellow-700 mb-2">
-                    <span class="font-bold">🔒 密碼驗證：</span> 輸入密碼以存取設定。
-                </label>
-                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <input type="password" id="settingsAccessPassword" placeholder="輸入密碼..."
-                           class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
-                    <button id="confirmSettingsAccessButton" type="button"
-                            class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
-                        確認存取
-                    </button>
-                </div>
-                <p id="accessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
-            </div>
-            
-            <!-- 3. 時間設定輸入區塊 (預設隱藏，驗證成功後顯示) -->
-            <div class="space-y-4 hidden mt-4" id="settingsInputsContainer">
-                
-                <!-- 上午簽到時間區間設定 -->
-                <div class="space-y-2 border-b pb-4 border-amber-100">
-                    <label class="block text-sm font-bold text-gray-700">上午簽到開放區間 (Morning Check-in Time Range)</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="setting_morning_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
-                            <input type="datetime-local" id="setting_morning_ci_start" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
-                        </div>
-                        <div>
-                            <label for="setting_morning_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
-                            <input type="datetime-local" id="setting_morning_ci_end" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                <!-- 3. 時間設定輸入區塊 (預設隱藏，驗證成功後顯示) -->
+                <div class="space-y-4 hidden mt-4" id="settingsInputsContainer">
+                    
+                    <!-- 上午簽到時間區間設定 -->
+                    <div class="space-y-2 border-b pb-4 border-amber-100">
+                        <label class="block text-sm font-bold text-gray-700">上午簽到開放區間 (Morning Check-in Time Range)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="setting_morning_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                                <input type="datetime-local" id="setting_morning_ci_start" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="setting_morning_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                                <input type="datetime-local" id="setting_morning_ci_end" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 下午簽到時間區間設定 -->
-                <div class="space-y-2 border-b pb-4 border-amber-100">
-                    <label class="block text-sm font-bold text-gray-700">下午簽到開放區間 (Afternoon Check-in Time Range)</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="setting_afternoon_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
-                            <input type="datetime-local" id="setting_afternoon_ci_start" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
-                        </div>
-                        <div>
-                            <label for="setting_afternoon_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
-                            <input type="datetime-local" id="setting_afternoon_ci_end" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                    <!-- 下午簽到時間區間設定 -->
+                    <div class="space-y-2 border-b pb-4 border-amber-100">
+                        <label class="block text-sm font-bold text-gray-700">下午簽到開放區間 (Afternoon Check-in Time Range)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="setting_afternoon_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                                <input type="datetime-local" id="setting_afternoon_ci_start" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="setting_afternoon_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                                <input type="datetime-local" id="setting_afternoon_ci_end" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- 下午簽退時間區間設定 -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-gray-700">下午簽退開放區間 (Afternoon Check-out Time Range)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="setting_afternoon_co_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                                <input type="datetime-local" id="setting_afternoon_co_start" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="setting_afternoon_co_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                                <input type="datetime-local" id="setting_afternoon_co_end" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 儲存按鈕區塊 -->
+                    <div id="settingsSaveSection" class="p-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner">
+                        <label class="block text-sm font-medium text-yellow-700 mb-2">
+                            <span class="font-bold">💾 儲存設定：</span> 請點擊下方按鈕儲存時間區間。
+                        </label>
+                        <button id="saveSettingsButton" type="button" disabled
+                                class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                            儲存設定
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 後台資料操作區塊 -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-700 whitespace-nowrap">後台資料操作</h2>
+                    
+                    <!-- 進入系統按鈕 (預設顯示) -->
+                    <button id="accessBackendButton" type="button" disabled
+                            class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md disabled:opacity-50">
+                        進入系統
+                    </button>
                 </div>
                 
-                <!-- 下午簽退時間區間設定 -->
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">下午簽退開放區間 (Afternoon Check-out Time Range)</label>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="setting_afternoon_co_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
-                            <input type="datetime-local" id="setting_afternoon_co_start" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
-                        </div>
-                        <div>
-                            <label for="setting_afternoon_co_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
-                            <input type="datetime-local" id="setting_afternoon_co_end" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 儲存按鈕區塊 -->
-                <div id="settingsSaveSection" class="p-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner">
-                    <label class="block text-sm font-medium text-yellow-700 mb-2">
-                        <span class="font-bold">💾 儲存設定：</span> 請點擊下方按鈕儲存時間區間。
+                <!-- 密碼輸入區塊 (通用) -->
+                <div id="passwordSection" class="hidden p-4 mt-4 bg-gray-50 border border-red-300 rounded-lg shadow-inner">
+                    <label for="backendPassword" class="block text-sm font-medium text-red-700 mb-2">
+                        <span class="font-bold">🔒 密碼驗證：</span> 請輸入密碼以進入後台。
                     </label>
-                    <button id="saveSettingsButton" type="button" disabled
-                            class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
-                        儲存設定
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 後台資料操作區塊 -->
-        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-semibold text-gray-700 whitespace-nowrap">後台資料操作</h2>
-                
-                <!-- 進入系統按鈕 (預設顯示) -->
-                <button id="accessBackendButton" type="button" disabled
-                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md disabled:opacity-50">
-                    進入系統
-                </button>
-            </div>
-            
-            <!-- 密碼輸入區塊 (通用) -->
-            <div id="passwordSection" class="hidden p-4 mt-4 bg-gray-50 border border-red-300 rounded-lg shadow-inner">
-                <label for="backendPassword" class="block text-sm font-medium text-red-700 mb-2">
-                    <span class="font-bold">🔒 密碼驗證：</span> 請輸入密碼以進入後台。
-                </label>
-                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <input type="password" id="backendPassword" placeholder="輸入密碼 (661113)..."
-                           class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
-                    <button id="confirmBackendAccessButton" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
-                        確認進入
-                    </button>
-                </div>
-                <p id="backendAccessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
-            </div>
-
-            <!-- 後台功能和清單區塊 (預設隱藏) -->
-            <div id="backendContent" class="hidden space-y-6 mt-6 pt-4 border-t border-gray-200">
-                
-                <h3 class="text-xl font-semibold text-gray-700">操作按鈕</h3>
-                <div class="flex space-x-2 w-full justify-start mb-6">
-                    <!-- 匯出 CSV 按鈕 -->
-                    <button id="exportCsvButton" type="button"
-                            class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
-                        匯出 CSV
-                    </button>
-                    <!-- 清空報名資料按鈕 -->
-                    <button id="clearDataButton" type="button"
-                            class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
-                        清空報名資料
-                    </button>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <!-- REMOVED: 密碼提示 (661113) -->
+                        <input type="password" id="backendPassword" placeholder="輸入密碼..."
+                               class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+                        <button id="confirmBackendAccessButton" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                            確認進入
+                        </button>
+                    </div>
+                    <p id="backendAccessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
                 </div>
 
-                <h3 class="text-xl font-semibold text-gray-700 pt-4 border-t border-gray-200">報名者清單 (即時更新)</h3>
-                <!-- 報名清單將渲染到此處 -->
-                <div id="registrationsListContainer" class="overflow-x-auto shadow-inner rounded-lg border">
-                    <p class="p-4 text-sm text-gray-500 font-bold animate-pulse">🔔 正在載入資料...</p>
-                </div>
-            </div>
+                <!-- 後台功能和清單區塊 (預設隱藏) -->
+                <div id="backendContent" class="hidden space-y-6 mt-6 pt-4 border-t border-gray-200">
+                    
+                    <h3 class="text-xl font-semibold text-gray-700">操作按鈕</h3>
+                    <div class="flex space-x-2 w-full justify-start mb-6">
+                        <!-- 匯出 CSV 按鈕 -->
+                        <button id="exportCsvButton" type="button"
+                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                            匯出 CSV
+                        </button>
+                        <!-- 清空報名資料按鈕 -->
+                        <button id="clearDataButton" type="button"
+                                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                            清空報名資料
+                        </button>
+                    </div>
 
-            <p id="backendInfoText" class="mt-4 text-gray-500 text-sm">
-                點擊「進入系統」並輸入密碼以查看報名者清單及管理資料。
-            </p>
-        </div>
+                    <h3 class="text-xl font-semibold text-gray-700 pt-4 border-t border-gray-200">報名者清單 (即時更新)</h3>
+                    <!-- 報名清單將渲染到此處 -->
+                    <div id="registrationsListContainer" class="overflow-x-auto shadow-inner rounded-lg border">
+                        <p class="p-4 text-sm text-gray-500 font-bold animate-pulse">🔔 正在載入資料...</p>
+                    </div>
+                </div>
+
+                <p id="backendInfoText" class="mt-4 text-gray-500 text-sm">
+                    點擊「進入系統」並輸入密碼以查看報名者清單及管理資料。
+                </p>
+            </div>
+        </main>
 
         <!-- 顯示 User ID 供協作用途 -->
         <p class="mt-4 text-xs text-gray-400">
@@ -1244,14 +1267,16 @@
                 }
                 
                 // 檢查開放區間
-                if (startTime && endTime) {
-                    if (signDate.getTime() < startTime.getTime() || signDate.getTime() > endTime.getTime()) {
-                        const rangeStr = `${startTime.toLocaleString('zh-TW')} 到 ${endTime.toLocaleString('zh-TW')}`;
-                        displayMessage(`${actionName}服務未在開放區間！開放時間為 ${rangeStr}。`, 'error');
-                        return;
-                    }
-                } else {
-                    displayMessage(`警告：未設定${actionName}開放區間，將允許操作。`, 'info');
+                if (!startTime || !endTime) {
+                    displayMessage(`錯誤：尚未設定 ${actionName} 的開放時間區間，請洽管理員設定。`, 'error');
+                    return; // 嚴格阻止操作，直到設定完成
+                }
+
+                // 檢查是否在區間內
+                if (signDate.getTime() < startTime.getTime() || signDate.getTime() > endTime.getTime()) {
+                    const rangeStr = `${startTime.toLocaleString('zh-TW')} 到 ${endTime.toLocaleString('zh-TW')}`;
+                    displayMessage(`${actionName}服務未在開放區間！開放時間為 ${rangeStr}。`, 'error');
+                    return; // 阻止操作，因為不在時間範圍內
                 }
 
                 // --- 步驟 2: 查找報名紀錄 (確認此人是否已報名成功) ---
@@ -1502,7 +1527,7 @@
                     cleanAndQuote(isMorningCheckedIn),      
                     cleanAndQuote(morningCheckInTimeStr),   
                     
-                    cleanAndQuote(isAfternoonCheckedIn),    
+                    cleanAndAndQuote(isAfternoonCheckedIn),    
                     cleanAndQuote(afternoonCheckInTimeStr), 
 
                     cleanAndQuote(isAfternoonCheckedOut),   
@@ -1531,7 +1556,6 @@
             link.setAttribute('download', fileName);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
-            link.click();
             document.body.removeChild(link);
             
             displayMessage('報名清單已匯出為 CSV 檔案！', 'success');

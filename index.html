@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>研習報名系統</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 使用 Inter 字體作為主要字體 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        /* 彈窗背景層的動畫效果 */
+        .modal-bg {
+            transition: opacity 0.3s ease-in-out;
+        }
+        /* 彈窗內容的動畫效果 */
+        .modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        .modal-open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        /* 後台清單表格樣式 */
+        .backend-table th, .backend-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+            text-align: left;
+        }
+        .backend-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 主容器 -->
+    <div class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
+
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">研習報名系統</h1>
+        <p class="text-gray-600 mb-8">請填寫您的報名資訊</p>
+
+        <!-- Firebase 狀態/錯誤訊息 -->
+        <div id="statusMessage" class="w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300">
+            正在初始化系統...
+        </div>
+
+        <!-- 報名表單區塊 -->
+        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">報名表單</h2>
+
+            <form id="registrationForm" class="space-y-4">
+                
+                <!-- 學校欄位 -->
+                <div>
+                    <label for="school" class="block text-sm font-medium text-gray-700 mb-1">學校 (School)</label>
+                    <input type="text" id="school" name="school" placeholder="請輸入學校名稱" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                </div>
+
+                <!-- 姓名欄位 -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 (Name)</label>
+                    <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                </div>
+
+                <!-- 身份證字號欄位 -->
+                <div>
+                    <label for="id_number" class="block text-sm font-medium text-gray-700 mb-1">身份證字號 (ID Number)</label>
+                    <input type="text" id="id_number" name="id_number" placeholder="請輸入身份證字號 (例如: A123456789)" required
+                           maxlength="10" pattern="[A-Z][0-9]{9}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                    <p class="mt-1 text-xs text-gray-500">格式: 1位英文字母 + 9位數字</p>
+                </div>
+                
+                <!-- 提交按鈕 -->
+                <button type="submit" id="submitButton"
+                        class="w-full bg-sky-600 text-white py-3 mt-6 rounded-lg font-semibold hover:bg-sky-700 transition duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
+                        disabled>
+                    立即報名
+                </button>
+            </form>
+        </div>
+
+        <!-- 研習活動簽到區塊 (更新為三階段) -->
+        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">研習活動簽到</h2>
+
+            <div class="space-y-4">
+                <!-- 身份證字號欄位 for Sign-In/Out -->
+                <div>
+                    <label for="sign_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                        簽到/簽退身份證字號 (ID Number)
+                    </label>
+                    <input type="text" id="sign_id_number" placeholder="請輸入身份證字號進行簽到或簽退" required
+                           maxlength="10" pattern="[A-Z][0-9]{9}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                </div>
+                
+                <!-- 簽到/簽退時間設定 (已移除，將使用系統當前時間) -->
+
+                <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2 pt-2">
+                    <!-- 上午簽到按鈕 -->
+                    <button id="morningCheckInButton" type="button" disabled
+                            class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
+                        上午簽到 (Morning Check In)
+                    </button>
+                    <!-- 下午簽到按鈕 -->
+                    <button id="afternoonCheckInButton" type="button" disabled
+                            class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
+                        下午簽到 (Afternoon Check In)
+                    </button>
+                    <!-- 下午簽退按鈕 -->
+                    <button id="afternoonCheckOutButton" type="button" disabled
+                            class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
+                        下午簽退 (Afternoon Check Out)
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 系統設定區塊 (更新為密碼控管顯示) -->
+        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl mb-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold text-gray-700">系統設定</h2>
+
+                <!-- 1. 顯示/隱藏 按鈕 (樣式已調整為與匯出按鈕相近) -->
+                <button id="toggleSettingsButton" type="button" disabled
+                        class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                    設定時間
+                </button>
+            </div>
+            
+            <p class="mt-4 text-gray-500 text-sm">
+                點擊按鈕後輸入密碼，即可設定簽到/簽退的開放時間區間。
+            </p>
+
+            <!-- 2. 密碼驗證區塊 (預設隱藏) -->
+            <div id="settingsAccessSection" class="hidden p-4 mt-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner">
+                <label for="settingsAccessPassword" class="block text-sm font-medium text-yellow-700 mb-2">
+                    <span class="font-bold">🔒 密碼驗證：</span> 輸入密碼以存取設定。
+                </label>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <input type="password" id="settingsAccessPassword" placeholder="輸入密碼..."
+                           class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
+                    <button id="confirmSettingsAccessButton" type="button"
+                            class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
+                        確認存取
+                    </button>
+                </div>
+                <p id="accessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
+            </div>
+            
+            <!-- 3. 時間設定輸入區塊 (預設隱藏，驗證成功後顯示) -->
+            <div class="space-y-4 hidden mt-4" id="settingsInputsContainer">
+                
+                <!-- 上午簽到時間區間設定 -->
+                <div class="space-y-2 border-b pb-4 border-amber-100">
+                    <label class="block text-sm font-bold text-gray-700">上午簽到開放區間 (Morning Check-in Time Range)</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="setting_morning_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                            <input type="datetime-local" id="setting_morning_ci_start" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                        </div>
+                        <div>
+                            <label for="setting_morning_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                            <input type="datetime-local" id="setting_morning_ci_end" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 下午簽到時間區間設定 -->
+                <div class="space-y-2 border-b pb-4 border-amber-100">
+                    <label class="block text-sm font-bold text-gray-700">下午簽到開放區間 (Afternoon Check-in Time Range)</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="setting_afternoon_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                            <input type="datetime-local" id="setting_afternoon_ci_start" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                        </div>
+                        <div>
+                            <label for="setting_afternoon_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                            <input type="datetime-local" id="setting_afternoon_ci_end" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 下午簽退時間區間設定 -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-gray-700">下午簽退開放區間 (Afternoon Check-out Time Range)</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="setting_afternoon_co_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                            <input type="datetime-local" id="setting_afternoon_co_start" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                        </div>
+                        <div>
+                            <label for="setting_afternoon_co_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                            <input type="datetime-local" id="setting_afternoon_co_end" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 儲存按鈕區塊 -->
+                <div id="settingsSaveSection" class="p-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner">
+                    <label class="block text-sm font-medium text-yellow-700 mb-2">
+                        <span class="font-bold">💾 儲存設定：</span> 請點擊下方按鈕儲存時間區間。
+                    </label>
+                    <button id="saveSettingsButton" type="button" disabled
+                            class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                        儲存設定
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 後台資料操作區塊 -->
+        <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-700 whitespace-nowrap">後台資料操作</h2>
+                
+                <!-- 進入系統按鈕 (預設顯示) -->
+                <button id="accessBackendButton" type="button" disabled
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md disabled:opacity-50">
+                    進入系統
+                </button>
+            </div>
+            
+            <!-- 密碼輸入區塊 (通用) -->
+            <div id="passwordSection" class="hidden p-4 mt-4 bg-gray-50 border border-red-300 rounded-lg shadow-inner">
+                <label for="backendPassword" class="block text-sm font-medium text-red-700 mb-2">
+                    <span class="font-bold">🔒 密碼驗證：</span> 請輸入密碼以進入後台。
+                </label>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <input type="password" id="backendPassword" placeholder="輸入密碼 (661113)..."
+                           class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+                    <button id="confirmBackendAccessButton" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                        確認進入
+                    </button>
+                </div>
+                <p id="backendAccessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
+            </div>
+
+            <!-- 後台功能和清單區塊 (預設隱藏) -->
+            <div id="backendContent" class="hidden space-y-6 mt-6 pt-4 border-t border-gray-200">
+                
+                <h3 class="text-xl font-semibold text-gray-700">操作按鈕</h3>
+                <div class="flex space-x-2 w-full justify-start mb-6">
+                    <!-- 匯出 CSV 按鈕 -->
+                    <button id="exportCsvButton" type="button"
+                            class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                        匯出 CSV
+                    </button>
+                    <!-- 清空報名資料按鈕 -->
+                    <button id="clearDataButton" type="button"
+                            class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                        清空報名資料
+                    </button>
+                </div>
+
+                <h3 class="text-xl font-semibold text-gray-700 pt-4 border-t border-gray-200">報名者清單 (即時更新)</h3>
+                <!-- 報名清單將渲染到此處 -->
+                <div id="registrationsListContainer" class="overflow-x-auto shadow-inner rounded-lg border">
+                    <p class="p-4 text-sm text-gray-500 font-bold animate-pulse">🔔 正在載入資料...</p>
+                </div>
+            </div>
+
+            <p id="backendInfoText" class="mt-4 text-gray-500 text-sm">
+                點擊「進入系統」並輸入密碼以查看報名者清單及管理資料。
+            </p>
+        </div>
+
+        <!-- 顯示 User ID 供協作用途 -->
+        <p class="mt-4 text-xs text-gray-400">
+            <span class="font-semibold">當前使用者 ID:</span> <span id="currentUserId">N/A</span>
+        </p>
+
+    </div>
+
+    <!-- 非會員報名錯誤彈窗 (Modal) -->
+    <div id="errorModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-red-500">
+            
+            <!-- 錯誤圖標 (使用 SVG) -->
+            <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.302 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+
+            <h3 class="text-3xl font-bold text-gray-800 mb-2" id="errorTitle">報名失敗</h3>
+            <p class="text-gray-600 mb-6" id="errorMessage">您非會員無法報名，請洽會員組</p>
+
+            <!-- 關閉按鈕 -->
+            <button id="closeErrorModalButton" type="button"
+                    class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition duration-200 shadow-md">
+                確定
+            </button>
+        </div>
+    </div>
+
+    <!-- 簽到/簽退成功彈窗 (Modal) -->
+    <div id="signSuccessModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center">
+            
+            <!-- 成功圖標 (使用 SVG) -->
+            <svg class="w-16 h-16 text-sky-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+
+            <h3 class="text-3xl font-bold text-gray-800 mb-2" id="signSuccessTitle">操作成功！</h3>
+            <p class="text-gray-600 mb-6" id="signSuccessMessage">您已成功完成簽到/簽退。</p>
+
+            <!-- 關閉按鈕 -->
+            <button id="closeSignModalButton" type="button"
+                    class="w-full bg-sky-500 text-white py-2 rounded-lg font-semibold hover:bg-sky-600 transition duration-200 shadow-md">
+                確定
+            </button>
+        </div>
+    </div>
+    
+    <!-- 報名成功彈窗 (Modal) -->
+    <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center">
+            
+            <!-- 成功圖標 (使用 SVG) -->
+            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+
+            <h3 class="text-3xl font-bold text-gray-800 mb-2">報名成功！</h3>
+            <p class="text-gray-600 mb-6">您已成功完成研習報名，謝謝您的參與。</p>
+
+            <!-- 關閉按鈕 -->
+            <button id="closeModalButton" type="button"
+                    class="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-200 shadow-md">
+                確定
+            </button>
+        </div>
+    </div>
+    
+    <!-- 確認操作彈窗 (用於清空資料前的二次確認) -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-lg p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-red-600">
+            
+            <svg class="w-16 h-16 text-red-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+
+            <h3 class="text-2xl font-bold text-gray-800 mb-2" id="confirmTitle">確認操作</h3>
+            <p class="text-gray-600 mb-6" id="confirmMessage">您確定要清空所有報名紀錄嗎？此操作無法復原！</p>
+
+            <!-- 按鈕區塊 -->
+            <div class="flex justify-center space-x-4">
+                <button id="cancelConfirmButton" type="button"
+                        class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                    取消
+                </button>
+                <button id="executeConfirmButton" type="button"
+                        class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
+                    確定清空
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, addDoc, query, orderBy, setDoc, getDoc, getDocs, where, updateDoc, doc, deleteDoc, onSnapshot
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 設定 Firebase Log 級別為 Debug
+        setLogLevel('debug');
+
+        // --- 設定密碼與會員名單 ---
+        const EXPORT_PASSWORD = '661113'; // 管理員密碼
+        
+        // ** NEW: 依照您提供的姓名新增的會員白名單 **
+        const MEMBER_NAME_WHITELIST = [
+            '楊雯真', '林依禎', '許多', '邱惠欣', '謝佳容', '羅宛詩', '周佳蕙', '詹珆雯', '藍涔瑜', '黃祥雲', 
+            '鐘巧雯', '吳美嬋', '葉雅惠', '陳依汝', '周娟如', '彭華怡', '鍾宜珍', '陳怡婷', '陳婉青', '楊晶晶', 
+            '李孟潔', '林亞屏', '郭孟柔', '王釋敏', '鄭子威', '陳碧楓', '何麗君', '簡佩琪', '林惠玲', '莊靜華', 
+            '曾韻綺', '鄭衣宸', '嚴敏禎', '翁靜莊', '黃鵬璆', '歐沛蓮', '林志音', '吳哲宇', '林香宜', '黃鳳華', 
+            '林慧娟', '陳秋美', '劉秀鳳', '陳紀勳', '王嘉琪', '倪庭卉', '洪瑋蔆', '游莉娟', '楊舒婷', '羅明珠', 
+            '梁玉梅', '陳苓玉', '黃怡蓉', '侯淑美', '陳適琴', '蕭梅吟', '陳珮玲', '黃雅芳', '謝虹娘', '李佳陵', 
+            '朱員仙', '葉玫江', '林金環', '連敏伶', '陳瓏之', '饒速苓', '林廉珮', '劉瑞蘭', '林依瑩', '黃麗萍', 
+            '吳芝潔', '張鳳纓', '簡毓菁', '郭壁如', '錢欣', '王中慧', '林佩璇', '謝素玉', '楊縈婷', '陳品諠', 
+            '吳淑鈴', '黃子庭', '黃玫瑛', '周怡君', '謝淑菁', '黃若嬋', '湯秀惠', '廖彩鈴', '孫鳳岑', '沈卿雲', 
+            '陳家羚', '宋克珍', '蔡麗月', '許麗惠', '林玉雲', '侯宣羽', '高玉珍', '羅瓊枝', '廖久慧', '阮平英', 
+            '張娟碧', '蔡佩娟', '柯瓊蓮', '李亞芳', '李玲玲', '邱君佩', '林嘉英', '方雅慧', '柯昭吟', '林秀蓉', 
+            '陳怡儒', '陳亭如', '張憶茹', '張惠君', '柯仁鳳', '林鴻燕', '吳柏芝', '曾紫婕', '朱明瑩', '張淑貞', 
+            '鄭雅璿', '洪敻禧', '蕭百利', '陳美靜', '王姿絜', '李佳霖', '盧奕霖', '陸秀茜', '姚潔舲', '高敏芳', 
+            '傅郁萍', '莊麗玉', '顏芳慧', '余雪如', '陳思羽', '高碧弘', '方美善', '孫睿彣', '王沛帆', '廖凱君', 
+            '陳美錦', '郭寶富', '林真瑜', '黃淑娟', '王維儀', '蔡秀玲', '蔡玉蘭', '劉妙芬', '林碧芬', '許向妤', 
+            '陳雅萍', '黃珮綺', '鄭麗雯', '黃秋芬', '許豐順', '簡君玲', '陳佩鈴', '柳嬬婷', '蘇郁婷', '吳蕍亘', 
+            '汪嘉玲', '蔡姍宥', '陳慈惠', '蔡淑萍', '吳昭瑩', '劉桂香', '林侑琦', '王靖惠', '林富琴', '王桂英', 
+            '鄭雅萍', '黃蘭雅', '李惠玲', '蔡子慧', '史潔倫', '黃意淑', '黃雅鈴', '林容吟', '余靜雯', '李惠君', 
+            '吳秀麗', '王鈺錡', '蔡欣潔', '孫于婷', '鄭秀如', '唐英惠', '王秋月', '陳佩君', '廖雪芬', '黃惠蘭', 
+            '吳雪榕', '盧婉婷', '洪榕蓮', '邱于珍', '洪雅芬', '許芷翎', '陳映如', '洪慧娟', '郭美娟', '林偉雅', 
+            '簡珮怡', '宋品筑', '陳柏汝', '陳瓊蓉', '王鳳儀', '歐宛諭', '張桂菊', '戴麗卿', '陳美吟', '林妍雯', 
+            '梁惠芳', '韓璞勤', '傅秋玲', '林金英', '蔡雅莉', '林怡伶', '買慧紋', '陳淑芬', '王千綺', '鄭素卿', 
+            '林瑞華', '魏婉菁', '戴玉雪', '吳佳璃', '林淑蘭', '邱阿分', '陳玉玲', '陳梨玉', '洪菱均', '盧清香', 
+            '黃鳳祝', '鍾璿如', '李毓婷', '陳依萍', '彭惠婷', '黃君萍', '黃麗敏', '黃琳婷', '葉智惠', '鄭婷云', 
+            '黃慧玲', '曾順穗', '林紀瑩', '溫秋麗', '黃婉婷', '鄭怡君', '王渝茜', '鄭佳惠', '蔣孝君', '吳佳償', 
+            '熊秋紅', '薛宇晴', '戴愷琳', '李小萍', '朱貴香', '吳怡婷', '王秋文', '劉怡君', '莊佳頤', '簡菁燕', 
+            '袁緣', '曾薰儀', '吳宛儒', '李美雲', '陳雅菱', '蘇宇稜', '曾婉婷', '李秋滿', '朱嘉惠', '朱斐琦', 
+            '陳怡靜', '林立萍', '薛怡芬', '蔡婉珍', '王素華', '曾秀燕', '羅秀春', '楊寶英', '蘇鑫淑', '李玉琴', 
+            '王琛珊', '張淑雲', '陳品均', '張翠芬', '鄧玉琳', '陳美如', '薩文惠', '戴麗菊', '朱虹玟', '林憶婷', 
+            '何琳憶', '蔡涵妮', '余麗真', '林小萍', '蔡珠名', '沈芳如', '朱秀鳳', '張維貞', '呂慧娟', '陳珮蓉', 
+            '郭美弘', '余秀菊', '孫翊華', '謝曉婷', '黃雅筠', '蘇倖瑾', '陳秋燕', '程麗雪', '王怡靜', '王慧敏', 
+            '曾甜紅', '廖淑佑', '李佩珊', '吳紫瑀', '陳麗蓉', '梁慧蓉', '夏佩杏', '李佳芬', '吳珮嘉', '林秀宸', 
+            '劉惠容', '謝宛諭', '曾桂珠', '涂春祝', '林艷如', '蘇美芳', '陳瑛敏', '梁慧卿', '洪淑芬', '朱秀婷', 
+            '林翠華', '陳育瑄', '劉千綺', '曾婉嫕', '張昭惠', '韓秀敏', '洪嫦妙', '李錦嬌', '陳思欣', '王鈺婷', 
+            '吳淑娟', '陳靜芬', '鍾麗萍', '邱芳玲', '胡廉筠', '黃淑芬', '謝美玲', '葉淑儀', '閉玉珍', '顏文茹', 
+            '鄭進興', '王淑滿', '吳珮君', '黃琡晶', '賴玟苑', '王勉惠', '蔡瓊琦', '何美惠', '許秀香', '潘美蘭', 
+            '宋秀梅', '葉淑如', '廖金萍', '梁雅菁', '林怡伶', '張鈞貴', '王理玉', '黃巧文', '曹孟蘭', '蔡品貞', 
+            '連麗真', '洪于稀', '胡月偵', '詹珮琳', '李雯雯', '許筑秝', '蕭秋英', '黃智瑋', '顏華瑢', '蕭秀芬', 
+            '劉崇珊', '宜美玲', '李維屏', '王潔瑩', '胡佩蘭', '郭詩敏', '劉孟貞', '林秋香', '陳素惠', '黃梅華', 
+            '張香蘭', '劉美玲', '陳瑪莉', '陳晴', '魏美珍', '盧素韶', '陳惠玟', '陳依莎', '潘世蓉', '李恬心', 
+            '蕭美娣', '彭貴妤', '陳怡婷', '鄭素容', '郭凡爾', '莊敏慧', '洪韻美', '柯春惠', '楊智慧', '謝惠茹', 
+            '陳秋花', '林佩儀', '龔芸瑱', '李宜錚', '簡郁芬', '張簡采玲', '劉桂琴', '宋秋枝', '高湘惠', '陳慧雯', 
+            '黃伊汝', '鄭維雅', '林家如', '林珮宇', '鄭育方', '賴佳伶', '蕭玉珍', '劉美玲', '葉冠伶', '黃淑莉', 
+            '利佳玲', '余黃姿菁', '林秀貞', '張宜盈', '劉鈺華', '沈郁珈', '楊婉慈', '余宛庭', '施舒梅', '鍾佩竹', 
+            '周如梅'
+        ];
+        // **********************************
+        
+        // --- 全域變數與初始化 ---
+        let db;
+        let auth;
+        let userId = 'anonymous';
+        let isAuthReady = false;
+        let isBackendAccessed = false; // NEW: 追蹤後台是否已登入
+        
+        // 全域簽到/簽退時間區間設定 (Date Object) - 更新為三個區間
+        let morningCheckInStartTime = null; 
+        let morningCheckInEndTime = null; 
+        let afternoonCheckInStartTime = null; 
+        let afternoonCheckInEndTime = null; 
+        let afternoonCheckOutStartTime = null; 
+        let afternoonCheckOutEndTime = null; 
+        
+        
+        // *******************************************************************
+        // ❗ 針對「Firebase 配置遺失」的錯誤修復與說明 ❗
+        // 
+        // 1. 如果您在 Canvas 環境中運行：請保持以下程式碼不變。
+        // 2. 如果您在本地 HTML 檔案中運行：請務必將您在 Firebase Console 取得的專案配置物件
+        //    填入下方的 `YOUR_LOCAL_FIREBASE_CONFIG` 中。
+        
+        // 如果您在本地執行，請在下方的 { } 內貼上您的 Firebase 配置物件。
+        const YOUR_LOCAL_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBlqR82MrYJB_SCIrlSxdcUdDrW6K96TrE",
+  authDomain: "csvs-8b55d.firebaseapp.com",
+  projectId: "csvs-8b55d",
+  storageBucket: "csvs-8b55d.firebasestorage.app",
+  messagingSenderId: "93064933978",
+  appId: "1:93064933978:web:226fc3a8a271b2a4975e63",
+  measurementId: "G-W2ZJKEMPV4"
+}; 
+        
+        // *******************************************************************
+        
+        // 取得環境變數，這是 Firebase 必要的配置
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // 如果 Canvas 環境變數不存在，則使用 YOUR_LOCAL_FIREBASE_CONFIG
+        const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
+            ? JSON.parse(__firebase_config) 
+            : YOUR_LOCAL_FIREBASE_CONFIG;
+            
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+
+        const form = document.getElementById('registrationForm');
+        const submitButton = document.getElementById('submitButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const currentUserIdDisplay = document.getElementById('currentUserId');
+        
+        // 簽到/簽退相關元素 - 更新為三階段按鈕
+        const signIdNumberInput = document.getElementById('sign_id_number');
+        const morningCheckInButton = document.getElementById('morningCheckInButton');
+        const afternoonCheckInButton = document.getElementById('afternoonCheckInButton');
+        const afternoonCheckOutButton = document.getElementById('afternoonCheckOutButton');
+        
+        // 系統設定相關元素
+        const morningCheckInStartTimeInput = document.getElementById('setting_morning_ci_start');
+        const morningCheckInEndTimeInput = document.getElementById('setting_morning_ci_end');
+        const afternoonCheckInStartTimeInput = document.getElementById('setting_afternoon_ci_start');
+        const afternoonCheckInEndTimeInput = document.getElementById('setting_afternoon_ci_end');
+        const afternoonCheckOutStartTimeInput = document.getElementById('setting_afternoon_co_start');
+        const afternoonCheckOutEndTimeInput = document.getElementById('setting_afternoon_co_end');
+        const saveSettingsButton = document.getElementById('saveSettingsButton');
+
+        // 新增的設定存取元素
+        const toggleSettingsButton = document.getElementById('toggleSettingsButton');
+        const settingsAccessSection = document.getElementById('settingsAccessSection');
+        const settingsAccessPasswordInput = document.getElementById('settingsAccessPassword');
+        const confirmSettingsAccessButton = document.getElementById('confirmSettingsAccessButton');
+        const settingsInputsContainer = document.getElementById('settingsInputsContainer');
+        const accessError = document.getElementById('accessError');
+
+        // 後台操作相關元素 (NEW/REPLACED)
+        const accessBackendButton = document.getElementById('accessBackendButton');
+        const backendContent = document.getElementById('backendContent');
+        const backendPasswordInput = document.getElementById('backendPassword'); // 重新定義 ID
+        const confirmBackendAccessButton = document.getElementById('confirmBackendAccessButton'); // 重新定義 ID
+        const backendAccessError = document.getElementById('backendAccessError'); // 重新定義 ID
+        const registrationsListContainer = document.getElementById('registrationsListContainer');
+        const backendInfoText = document.getElementById('backendInfoText');
+
+        const exportCsvButton = document.getElementById('exportCsvButton');
+        const clearDataButton = document.getElementById('clearDataButton'); 
+
+        // 彈窗
+        const successModal = document.getElementById('successModal'); // 報名成功
+        const closeModalButton = document.getElementById('closeModalButton');
+        const signSuccessModal = document.getElementById('signSuccessModal'); // 簽到/簽退成功
+        const closeSignModalButton = document.getElementById('closeSignModalButton');
+        const signSuccessTitle = document.getElementById('signSuccessTitle');
+        const signSuccessMessage = document.getElementById('signSuccessMessage');
+        const errorModal = document.getElementById('errorModal'); // 報名錯誤
+        const closeErrorModalButton = document.getElementById('closeErrorModalButton');
+        const errorTitle = document.getElementById('errorTitle');
+        const errorMessage = document.getElementById('errorMessage');
+        const confirmModal = document.getElementById('confirmModal'); // 清空資料二次確認
+        const cancelConfirmButton = document.getElementById('cancelConfirmButton');
+        const executeConfirmButton = document.getElementById('executeConfirmButton');
+
+
+        let areSettingsVisible = false; // 追蹤設定區塊是否已成功驗證並顯示
+
+        // --- 彈窗相關函數 ---
+
+        function showSuccessModal() {
+            successModal.classList.remove('hidden');
+            setTimeout(() => { successModal.classList.add('modal-open'); }, 10);
+        }
+
+        function hideSuccessModal() {
+            successModal.classList.remove('modal-open');
+            setTimeout(() => { successModal.classList.add('hidden'); }, 300);
+        }
+        
+        function showSignSuccessModal(title, message) {
+            signSuccessTitle.textContent = title;
+            signSuccessMessage.textContent = message;
+            signSuccessModal.classList.remove('hidden');
+            setTimeout(() => { signSuccessModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideSignSuccessModal() {
+            signSuccessModal.classList.remove('modal-open');
+            setTimeout(() => { signSuccessModal.classList.add('hidden'); }, 300);
+        }
+
+        function showErrorModal(title, message) {
+            errorTitle.textContent = title;
+            errorMessage.textContent = message;
+            errorModal.classList.remove('hidden');
+            setTimeout(() => { errorModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideErrorModal() {
+            errorModal.classList.remove('modal-open');
+            setTimeout(() => { errorModal.classList.add('hidden'); }, 300);
+        }
+        
+        /**
+         * 顯示二次確認彈窗
+         * @param {string} title 標題
+         * @param {string} message 訊息
+         */
+        function showConfirmModal(title, message) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => { confirmModal.classList.add('modal-open'); }, 10);
+        }
+
+        /**
+         * 隱藏二次確認彈窗
+         */
+        function hideConfirmModal() {
+            confirmModal.classList.remove('modal-open');
+            setTimeout(() => { confirmModal.classList.add('hidden'); }, 300);
+        }
+
+        /**
+         * 顯示訊息給使用者，並設定樣式
+         * @param {string} message 訊息內容
+         * @param {string} type 訊息類型: 'info', 'success', 'error'
+         * @param {number} duration 訊息顯示時間 (毫秒), 預設 5000ms
+         */
+        function displayMessage(message, type = 'info', duration = 5000) {
+            let bgColor = '';
+            let textColor = '';
+
+            switch (type) {
+                case 'success':
+                    bgColor = 'bg-green-100';
+                    textColor = 'text-green-800';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-100';
+                    textColor = 'text-red-800';
+                    break;
+                case 'info':
+                default:
+                    bgColor = 'bg-sky-100';
+                    textColor = 'text-sky-800';
+                    break;
+            }
+            
+            // 立即顯示訊息
+            statusMessage.className = `w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300 ${bgColor} ${textColor}`;
+            statusMessage.textContent = message;
+
+            // 設置計時器，在一段時間後清除訊息
+            clearTimeout(window.statusMessageTimeout);
+            if (duration > 0) {
+                window.statusMessageTimeout = setTimeout(() => {
+                    // 清除樣式和內容
+                    statusMessage.className = `w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300`;
+                    statusMessage.textContent = '系統準備就緒。';
+                }, duration);
+            }
+        }
+        
+        /**
+         * 格式化 Date 物件為 datetime-local 輸入格式 (YYYY-MM-DDTHH:MM)
+         * @param {Date} dateObj 
+         */
+        function formatToLocalDatetime(dateObj) {
+            // 確保輸入是 Date 物件
+            if (!(dateObj instanceof Date) || isNaN(dateObj)) return '';
+            
+            // 調整時區偏移，以顯示正確的本地時間在 datetime-local 輸入框
+            const tempDate = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000));
+            return tempDate.toISOString().slice(0, 16);
+        }
+
+        /**
+         * 格式化時間戳 helper
+         */
+        const formatTimestamp = (ts) => {
+            if (ts instanceof Date) {
+                 return ts.toLocaleString('zh-TW', {
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            } else if (ts && ts.toDate) {
+                return ts.toDate().toLocaleString('zh-TW', {
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            }
+            return 'N/A';
+        }
+
+        /**
+         * 獲取公用資料集的 Firestore 集合參考
+         */
+        function getRegistrationsCollectionRef() {
+            // 使用公共路徑: /artifacts/{appId}/public/data/registrations
+            return collection(db, 'artifacts', appId, 'public', 'data', 'registrations');
+        }
+        
+        /**
+         * 獲取系統設定文件的 Firestore 文件參考
+         */
+        function getSettingsDocRef() {
+            // 使用公共路徑: /artifacts/{appId}/public/data/app_settings/config
+            return doc(db, 'artifacts', appId, 'public', 'data', 'app_settings', 'config');
+        }
+
+        /**
+         * 初始化 Firebase 應用程式和身份驗證
+         */
+        async function initializeFirebase() {
+            if (Object.keys(firebaseConfig).length === 0) {
+                // 如果 firebaseConfig 為空物件，表示本地配置遺失
+                displayMessage('錯誤：Firebase 配置遺失。請參考程式碼中的註釋，在 `YOUR_LOCAL_FIREBASE_CONFIG` 處填入您的 Firebase 專案配置。', 'error', 0);
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                displayMessage('正在進行身份驗證...', 'info', 0);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        currentUserIdDisplay.textContent = userId;
+                        displayMessage('系統初始化成功，歡迎使用！', 'success');
+                        submitButton.disabled = false;
+                        morningCheckInButton.disabled = false;
+                        afternoonCheckInButton.disabled = false;
+                        afternoonCheckOutButton.disabled = false;
+                        toggleSettingsButton.disabled = false; // 啟用設定按鈕
+                        accessBackendButton.disabled = false; // 啟用後台進入按鈕 // NEW
+                        isAuthReady = true;
+                        await fetchSettings(); // 載入系統設定
+                    } else {
+                        // 如果沒有用戶，嘗試匿名登入
+                        if (initialAuthToken) {
+                            // 使用提供的客製化 token 登入
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            // 否則使用匿名登入
+                            await signInAnonymously(auth);
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase 初始化失敗:", error);
+                displayMessage(`Firebase 初始化失敗: ${error.message} (請檢查配置)`, 'error', 0);
+            }
+        }
+        
+        // --- 報名清單顯示與更新 (NEW) ---
+
+        /**
+         * 渲染報名者清單到畫面上
+         * @param {Array<Object>} registrations 報名資料陣列
+         */
+        function renderRegistrationsList(registrations) {
+            if (registrations.length === 0) {
+                registrationsListContainer.innerHTML = '<p class="p-4 text-center text-gray-500">目前沒有任何報名紀錄。</p>';
+                return;
+            }
+
+            // **NEW: 客戶端排序，以確保列表是按最新報名時間排序 (降序)**
+            registrations.sort((a, b) => {
+                // 處理 Firestore Timestamp 或 Date 物件
+                const timeA = a.timestamp && (a.timestamp.toDate ? a.timestamp.toDate().getTime() : new Date(a.timestamp).getTime());
+                const timeB = b.timestamp && (b.timestamp.toDate ? b.timestamp.toDate().getTime() : new Date(b.timestamp).getTime());
+                
+                // 處理無效時間，確保穩定排序
+                if (!timeA && !timeB) return 0;
+                if (!timeA) return 1;
+                if (!timeB) return -1;
+                
+                return timeB - timeA; // 降序 (B - A)
+            });
+
+
+            let tableHTML = `
+                <table class="min-w-full divide-y divide-gray-200 backend-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>學校</th>
+                            <th>姓名</th>
+                            <th>身份證字號</th>
+                            <th>報名時間</th>
+                            <th>上午簽到</th>
+                            <th>下午簽到</th>
+                            <th>下午簽退</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            registrations.forEach((reg, index) => {
+                const idMasked = reg.id_number ? reg.id_number.substring(0, 4) + '******' : 'N/A';
+                
+                const getSignStatus = (time) => {
+                    if (time) {
+                        return `<span class="text-green-600 font-medium">✅ ${formatTimestamp(time)}</span>`;
+                    }
+                    return '<span class="text-red-500">❌ 未簽到/退</span>';
+                };
+
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${reg.school}</td>
+                        <td>${reg.name}</td>
+                        <td>${idMasked}</td>
+                        <td>${formatTimestamp(reg.timestamp)}</td>
+                        <td>${getSignStatus(reg.morningCheckInTime)}</td>
+                        <td>${getSignStatus(reg.afternoonCheckInTime)}</td>
+                        <td>${getSignStatus(reg.afternoonCheckOutTime)}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            registrationsListContainer.innerHTML = tableHTML;
+        }
+
+        /**
+         * 從 Firestore 獲取資料並開始即時監聽 (僅在後台進入時調用一次)
+         */
+        function setupBackendListener() {
+            if (!db || isBackendAccessed) return;
+
+            // 設置載入中狀態 (新增動畫和強調)
+            registrationsListContainer.innerHTML = '<p class="p-4 text-center text-sky-500 font-bold animate-pulse">🔔 正在啟動即時監聽並載入資料...</p>';
+
+            // **MODIFIED: 移除 orderBy，改為簡單查詢**
+            const q = query(getRegistrationsCollectionRef()); 
+            
+            console.log("Firestore Listener: Setting up onSnapshot listener for registrations...");
+            
+            // 設置即時監聽器
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                console.log(`Firestore Listener: Snapshot received. Documents found: ${snapshot.size}`);
+                const registrations = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // 獲取所有欄位
+                    registrations.push(data);
+                });
+                renderRegistrationsList(registrations); 
+            }, (error) => {
+                // 捕獲錯誤並顯示 (更明確的錯誤提示)
+                console.error("Firestore Listener Error: 即時監聽報名資料失敗:", error);
+                registrationsListContainer.innerHTML = '<p class="p-4 text-center text-red-600 font-bold">⚠️ 資料載入失敗！請檢查您的網路連線或瀏覽器控制台 (Console) 中的錯誤訊息，特別是 "Permission Denied" 錯誤。</p>';
+            });
+
+            // 標記為已存取，避免重複設置監聽器
+            isBackendAccessed = true;
+            console.log("Firestore Listener: onSnapshot setup complete.");
+        }
+
+
+        // --- 系統設定操作 ---
+
+        /**
+         * 從 Firestore 獲取系統設定
+         */
+        async function fetchSettings() {
+            if (!db) return;
+
+            try {
+                const settingsRef = getSettingsDocRef();
+                const docSnap = await getDoc(settingsRef);
+
+                const nowDatetime = formatToLocalDatetime(new Date());
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // 轉換 Firestore Timestamp/Date 為 JavaScript Date object - 更新為六個時間
+                    morningCheckInStartTime = data.morningCheckInStartTime && data.morningCheckInStartTime.toDate ? data.morningCheckInStartTime.toDate() : null;
+                    morningCheckInEndTime = data.morningCheckInEndTime && data.morningCheckInEndTime.toDate ? data.morningCheckInEndTime.toDate() : null;
+                    afternoonCheckInStartTime = data.afternoonCheckInStartTime && data.afternoonCheckInStartTime.toDate ? data.afternoonCheckInStartTime.toDate() : null;
+                    afternoonCheckInEndTime = data.afternoonCheckInEndTime && data.afternoonCheckInEndTime.toDate ? data.afternoonCheckInEndTime.toDate() : null;
+                    afternoonCheckOutStartTime = data.afternoonCheckOutStartTime && data.afternoonCheckOutStartTime.toDate ? data.afternoonCheckOutStartTime.toDate() : null;
+                    afternoonCheckOutEndTime = data.afternoonCheckOutEndTime && data.afternoonCheckOutEndTime.toDate ? data.afternoonCheckOutEndTime.toDate() : null;
+
+                    // 更新 UI 輸入框的值，如果為 null 則使用當前時間
+                    morningCheckInStartTimeInput.value = morningCheckInStartTime ? formatToLocalDatetime(morningCheckInStartTime) : nowDatetime;
+                    morningCheckInEndTimeInput.value = morningCheckInEndTime ? formatToLocalDatetime(morningCheckInEndTime) : nowDatetime;
+                    afternoonCheckInStartTimeInput.value = afternoonCheckInStartTime ? formatToLocalDatetime(afternoonCheckInStartTime) : nowDatetime;
+                    afternoonCheckInEndTimeInput.value = afternoonCheckInEndTime ? formatToLocalDatetime(afternoonCheckInEndTime) : nowDatetime;
+                    afternoonCheckOutStartTimeInput.value = afternoonCheckOutStartTime ? formatToLocalDatetime(afternoonCheckOutStartTime) : nowDatetime;
+                    afternoonCheckOutEndTimeInput.value = afternoonCheckOutEndTime ? formatToLocalDatetime(afternoonCheckOutEndTime) : nowDatetime;
+
+                    displayMessage('系統設定已載入。', 'info', 3000);
+                } else {
+                    // 如果沒有設定檔，初始化輸入框為當前時間
+                    morningCheckInStartTimeInput.value = nowDatetime;
+                    morningCheckInEndTimeInput.value = nowDatetime;
+                    afternoonCheckInStartTimeInput.value = nowDatetime;
+                    afternoonCheckInEndTimeInput.value = nowDatetime;
+                    afternoonCheckOutStartTimeInput.value = nowDatetime;
+                    afternoonCheckOutEndTimeInput.value = nowDatetime;
+                    displayMessage('系統設定文件不存在，請進行初始化設定。', 'info', 5000);
+                }
+                
+                saveSettingsButton.disabled = false; // 載入完成後啟用儲存按鈕
+
+            } catch (error) {
+                console.error("獲取系統設定失敗:", error);
+                displayMessage('獲取系統設定失敗。', 'error', 5000);
+            }
+        }
+
+        /**
+         * 處理顯示/隱藏設定區塊
+         */
+        function handleToggleSettings() {
+            if (!isAuthReady) return;
+            
+            // 每次點擊都重設密碼驗證狀態
+            settingsAccessSection.classList.add('hidden');
+            settingsInputsContainer.classList.add('hidden');
+            settingsAccessPasswordInput.value = '';
+            accessError.classList.add('hidden');
+
+            if (areSettingsVisible) {
+                // 如果目前是顯示狀態，點擊則隱藏
+                areSettingsVisible = false;
+                displayMessage('系統設定已隱藏。', 'info', 2000);
+            } else {
+                // 如果目前是隱藏狀態，則顯示密碼區塊進行存取驗證
+                settingsAccessSection.classList.remove('hidden');
+                settingsAccessPasswordInput.focus();
+                displayMessage('請輸入密碼以存取設定。', 'info', 5000);
+            }
+        }
+
+        /**
+         * 處理確認存取設定區塊的密碼
+         */
+        function handleConfirmSettingsAccess() {
+            const enteredPassword = settingsAccessPasswordInput.value;
+            
+            if (enteredPassword === EXPORT_PASSWORD) {
+                // 密碼正確: 顯示設定輸入區塊，隱藏驗證區塊
+                settingsAccessSection.classList.add('hidden');
+                settingsInputsContainer.classList.remove('hidden');
+                areSettingsVisible = true;
+                settingsAccessPasswordInput.value = ''; // 清空密碼
+                accessError.classList.add('hidden');
+                displayMessage('密碼正確，設定區塊已開啟。', 'success', 3000);
+
+            } else {
+                // 密碼錯誤: 顯示錯誤，清空輸入框
+                settingsAccessPasswordInput.value = '';
+                accessError.classList.remove('hidden');
+                settingsAccessPasswordInput.focus();
+                displayMessage('密碼錯誤，無法存取設定。', 'error', 5000);
+            }
+        }
+
+        /**
+         * 儲存系統設定 (更新為六個時間區間)
+         */
+        async function handleSaveSettings() {
+            if (!isAuthReady || !areSettingsVisible) {
+                displayMessage('請先存取設定區塊並確保系統已準備好。', 'error');
+                return;
+            }
+
+            saveSettingsButton.disabled = true;
+            saveSettingsButton.textContent = '儲存中...';
+            
+            // 獲取六個時間字串
+            const miStartStr = morningCheckInStartTimeInput.value;
+            const miEndStr = morningCheckInEndTimeInput.value;
+            const aiStartStr = afternoonCheckInStartTimeInput.value;
+            const aiEndStr = afternoonCheckInEndTimeInput.value;
+            const aoStartStr = afternoonCheckOutStartTimeInput.value;
+            const aoEndStr = afternoonCheckOutEndTimeInput.value;
+
+            // 檢查所有欄位是否填寫
+            if (!miStartStr || !miEndStr || !aiStartStr || !aiEndStr || !aoStartStr || !aoEndStr) {
+                displayMessage('所有簽到/簽退時間區間都必須設定。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+
+            // 轉換為 Date 物件
+            const miStartDate = new Date(miStartStr);
+            const miEndDate = new Date(miEndStr);
+            const aiStartDate = new Date(aiStartStr);
+            const aiEndDate = new Date(aiEndStr);
+            const aoStartDate = new Date(aoStartStr);
+            const aoEndDate = new Date(aoEndStr);
+            
+            // 檢查是否為無效日期
+            if (isNaN(miStartDate.getTime()) || isNaN(miEndDate.getTime()) || 
+                isNaN(aiStartDate.getTime()) || isNaN(aiEndDate.getTime()) || 
+                isNaN(aoStartDate.getTime()) || isNaN(aoEndDate.getTime())) {
+                displayMessage('無效的時間格式，請檢查輸入。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+
+            // 驗證區間邏輯
+            if (miStartDate.getTime() >= miEndDate.getTime()) {
+                 displayMessage('上午簽到開始時間必須早於結束時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (aiStartDate.getTime() >= aiEndDate.getTime()) {
+                 displayMessage('下午簽到開始時間必須早於結束時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (aoStartDate.getTime() >= aoEndDate.getTime()) {
+                 displayMessage('下午簽退開始時間必須早於結束時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            // 檢查時間連貫性 (上午結束 < 下午開始, 下午結束 < 簽退開始)
+            if (miEndDate.getTime() >= aiStartDate.getTime()) {
+                displayMessage('上午簽到結束時間必須早於下午簽到開始時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (aiEndDate.getTime() >= aoStartDate.getTime()) {
+                displayMessage('下午簽到結束時間必須早於下午簽退開始時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+
+            const newSettings = {
+                morningCheckInStartTime: miStartDate,
+                morningCheckInEndTime: miEndDate,
+                afternoonCheckInStartTime: aiStartDate,
+                afternoonCheckInEndTime: aiEndDate,
+                afternoonCheckOutStartTime: aoStartDate,
+                afternoonCheckOutEndTime: aoEndDate
+            };
+
+            try {
+                // 使用 setDoc 覆蓋或創建單一設定文件
+                await setDoc(getSettingsDocRef(), newSettings, { merge: true });
+                
+                // 更新本地狀態
+                morningCheckInStartTime = miStartDate;
+                morningCheckInEndTime = miEndDate;
+                afternoonCheckInStartTime = aiStartDate;
+                afternoonCheckInEndTime = aiEndDate;
+                afternoonCheckOutStartTime = aoStartDate;
+                afternoonCheckOutEndTime = aoEndDate;
+                
+                displayMessage('系統設定儲存成功！', 'success');
+
+                // 儲存成功後收起設定視窗
+                settingsInputsContainer.classList.add('hidden');
+                areSettingsVisible = false;
+
+            } catch (error) {
+                console.error("儲存系統設定失敗:", error);
+                displayMessage(`儲存設定失敗: ${error.message}`, 'error');
+            } finally {
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+            }
+        }
+
+
+        /**
+         * 提交報名表單
+         */
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            // 禁用按鈕防止重複提交
+            submitButton.disabled = true;
+            submitButton.textContent = '報名中...';
+
+            const school = document.getElementById('school').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const id_number = document.getElementById('id_number').value.trim().toUpperCase(); // 雖然用不到，但仍需格式化
+
+            // 基本驗證
+            if (!school || !name || !id_number) {
+                displayMessage('所有欄位都必須填寫！', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            
+            // 身份證字號格式驗證 (簡易版: 10碼，首字英文，後9碼數字)
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(id_number)) {
+                displayMessage('報名身份證字號格式不正確，請檢查。', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            
+            // *** NEW: 檢查是否在會員名單內 (以姓名為依據) ***
+            if (!MEMBER_NAME_WHITELIST.includes(name)) {
+                // 使用新增的錯誤彈窗 (NEW)
+                showErrorModal('報名失敗', '您非會員無法報名，請洽會員組');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            // **********************************
+
+            // 檢查是否已報名 (仍以身份證字號為唯一鍵)
+            const qCheck = query(getRegistrationsCollectionRef(), where('id_number', '==', id_number));
+            const existingDocs = await getDocs(qCheck);
+            if (!existingDocs.empty) {
+                displayMessage('您已使用此身份證字號報名過，請勿重複報名。', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+
+
+            const newRegistration = {
+                school,
+                name,
+                id_number,
+                timestamp: new Date(), // 使用當前時間記錄報名
+                registeredBy: userId,
+                morningCheckInTime: null, // 新增欄位
+                afternoonCheckInTime: null, // 新增欄位
+                afternoonCheckOutTime: null // 新增欄位
+            };
+
+            try {
+                await addDoc(getRegistrationsCollectionRef(), newRegistration);
+                
+                // *** 報名成功後顯示彈窗 ***
+                showSuccessModal(); 
+
+                form.reset(); 
+
+            } catch (error) {
+                console.error("新增報名資料失敗:", error);
+                displayMessage(`報名失敗: ${error.message}`, 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+            }
+        }
+
+        /**
+         * 處理上午簽到
+         */
+        async function handleMorningCheckIn() {
+            await processSignAction('morningCheckIn');
+        }
+
+        /**
+         * 處理下午簽到
+         */
+        async function handleAfternoonCheckIn() {
+            await processSignAction('afternoonCheckIn');
+        }
+
+        /**
+         * 處理下午簽退
+         */
+        async function handleAfternoonCheckOut() {
+            await processSignAction('afternoonCheckOut');
+        }
+
+        /**
+         * 處理簽到/簽退的通用邏輯 (更新為三階段)
+         * @param {string} actionType 'morningCheckIn', 'afternoonCheckIn', or 'afternoonCheckOut'
+         */
+        async function processSignAction(actionType) {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            const idNumber = signIdNumberInput.value.trim().toUpperCase();
+            
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以進行操作。', 'error');
+                return;
+            }
+
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(idNumber)) {
+                displayMessage('身份證字號格式不正確，請檢查。', 'error');
+                return;
+            }
+            
+            // *** 使用系統當前時間 ***
+            const signDate = new Date();
+            // ************************
+
+
+            // 動態獲取按鈕
+            const button = document.getElementById(actionType + 'Button'); 
+            const originalText = button.textContent;
+            
+            button.disabled = true;
+            button.textContent = '處理中...';
+            
+            try {
+                // --- 步驟 1: 根據操作類型設定驗證參數 ---
+                let startTime = null;
+                let endTime = null;
+                let actionName = '';
+                let updateField = '';
+
+                switch (actionType) {
+                    case 'morningCheckIn':
+                        startTime = morningCheckInStartTime;
+                        endTime = morningCheckInEndTime;
+                        actionName = '上午簽到';
+                        updateField = 'morningCheckInTime';
+                        break;
+                    case 'afternoonCheckIn':
+                        startTime = afternoonCheckInStartTime;
+                        endTime = afternoonCheckInEndTime;
+                        actionName = '下午簽到';
+                        updateField = 'afternoonCheckInTime';
+                        break;
+                    case 'afternoonCheckOut':
+                        startTime = afternoonCheckOutStartTime;
+                        endTime = afternoonCheckOutEndTime;
+                        actionName = '下午簽退';
+                        updateField = 'afternoonCheckOutTime';
+                        break;
+                    default:
+                        displayMessage('無效的操作類型。', 'error');
+                        return;
+                }
+                
+                // 檢查開放區間
+                if (startTime && endTime) {
+                    if (signDate.getTime() < startTime.getTime() || signDate.getTime() > endTime.getTime()) {
+                        const rangeStr = `${startTime.toLocaleString('zh-TW')} 到 ${endTime.toLocaleString('zh-TW')}`;
+                        displayMessage(`${actionName}服務未在開放區間！開放時間為 ${rangeStr}。`, 'error');
+                        return;
+                    }
+                } else {
+                    displayMessage(`警告：未設定${actionName}開放區間，將允許操作。`, 'info');
+                }
+
+                // --- 步驟 2: 查找報名紀錄 (確認此人是否已報名成功) ---
+                const q = query(getRegistrationsCollectionRef(), where('id_number', '==', idNumber));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    // 只有成功報名的人才能簽到/退
+                    displayMessage('查無此報名紀錄，請確認身份證字號是否正確。', 'error');
+                    return;
+                }
+
+                // 找到文件 (應該只有一個)
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'registrations', snapshot.docs[0].id);
+                const data = snapshot.docs[0].data();
+                const updateData = {};
+                
+                // 檢查是否重複操作
+                if (data[updateField]) {
+                    displayMessage(`您已於 ${formatTimestamp(data[updateField])} 完成${actionName}，請勿重複操作。`, 'info');
+                    return;
+                }
+
+                // --- 步驟 3: 執行簽到/簽退邏輯與交叉驗證 ---
+
+                if (actionType === 'morningCheckIn') {
+                    // 僅檢查重複簽到 (已在上面處理)
+                    updateData[updateField] = signDate; 
+
+                } else if (actionType === 'afternoonCheckIn') {
+                    // 邏輯: 必須先完成上午簽到
+                    if (!data.morningCheckInTime) {
+                        displayMessage('您尚未完成上午簽到，無法進行下午簽到。', 'error');
+                        return;
+                    }
+                    // 邏輯: 下午簽到時間必須晚於上午簽到時間
+                    if (signDate.getTime() < data.morningCheckInTime.toDate().getTime()) {
+                         displayMessage('下午簽到時間不能早於上午簽到時間！', 'error');
+                        return;
+                    }
+
+                    updateData[updateField] = signDate; 
+
+                } else if (actionType === 'afternoonCheckOut') {
+                    // 邏輯: 必須先完成下午簽到
+                    if (!data.afternoonCheckInTime) {
+                        displayMessage('您尚未完成下午簽到，無法進行下午簽退。', 'error');
+                        return;
+                    }
+                    // 邏輯: 下午簽退時間必須晚於下午簽到時間
+                    if (signDate.getTime() < data.afternoonCheckInTime.toDate().getTime()) {
+                         displayMessage('下午簽退時間不能早於下午簽到時間！', 'error');
+                        return;
+                    }
+
+                    updateData[updateField] = signDate;
+                }
+
+                await updateDoc(docRef, updateData);
+                signIdNumberInput.value = ''; // 清空身份證字號輸入框
+                
+                // *** 簽到/簽退成功後顯示彈窗 ***
+                showSignSuccessModal('操作成功', `${actionName}成功！您已完成本次操作。`);
+                
+            } catch (error) {
+                console.error(`處理 ${actionType} 失敗:`, error);
+                displayMessage(`處理失敗: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        // --- 後台管理操作 (NEW) ---
+
+        /**
+         * 處理點擊「進入系統」按鈕
+         */
+        function handleAccessBackend() {
+            if (!isAuthReady) return;
+            
+            // 每次點擊都重設密碼驗證狀態
+            backendContent.classList.add('hidden');
+            backendPasswordInput.value = '';
+            backendAccessError.classList.add('hidden');
+            
+            // 顯示密碼驗證區塊
+            passwordSection.classList.remove('hidden');
+            accessBackendButton.disabled = true;
+            backendInfoText.textContent = '請輸入密碼以進入後台管理介面。';
+            backendPasswordInput.focus();
+        }
+
+        /**
+         * 處理確認後台存取密碼
+         */
+        function handleConfirmBackendAccess() {
+            const enteredPassword = backendPasswordInput.value;
+
+            if (enteredPassword !== EXPORT_PASSWORD) {
+                // 密碼錯誤
+                backendPasswordInput.value = '';
+                backendAccessError.classList.remove('hidden');
+                backendPasswordInput.focus();
+                displayMessage('後台密碼錯誤，請重新輸入。', 'error');
+                return;
+            }
+
+            // 密碼正確
+            passwordSection.classList.add('hidden'); // 隱藏密碼區塊
+            accessBackendButton.classList.add('hidden'); // 隱藏進入系統按鈕
+            backendContent.classList.remove('hidden'); // 顯示後台內容
+            backendInfoText.textContent = '您已進入後台管理模式。';
+            
+            // 由於 onSnapshot 是異步的，這裡先設置載入狀態
+            registrationsListContainer.innerHTML = '<p class="p-4 text-center text-sky-500 font-bold animate-pulse">🔔 正在啟動即時監聽並載入資料...</p>';
+
+            isBackendAccessed = true;
+            setupBackendListener(); // 啟動即時監聽清單
+            
+            displayMessage('後台存取成功！正在載入資料清單。', 'success');
+        }
+
+
+        /**
+         * 處理清空報名資料 (二次確認後執行)
+         */
+        async function deleteAllRegistrations() {
+            if (!isAuthReady || !db) {
+                displayMessage('系統尚未準備好，無法執行清空操作。', 'error');
+                return;
+            }
+            
+            hideConfirmModal(); // 隱藏確認彈窗
+            displayMessage('正在清空所有報名資料... 請勿關閉視窗。', 'error', 0);
+
+            try {
+                const q = query(getRegistrationsCollectionRef());
+                const snapshot = await getDocs(q);
+                let deleteCount = 0;
+                
+                // 逐一刪除文件
+                const deletePromises = [];
+                snapshot.forEach((doc) => {
+                    deletePromises.push(deleteDoc(doc.ref));
+                    deleteCount++;
+                });
+                
+                await Promise.all(deletePromises);
+                
+                displayMessage(`已成功清空 ${deleteCount} 筆報名紀錄！`, 'success');
+
+            } catch (error) {
+                console.error("清空資料失敗:", error);
+                displayMessage(`清空資料失敗: ${error.message}`, 'error');
+            }
+        }
+
+
+        /**
+         * 從 Firestore 抓取所有報名資料並匯出為 CSV。
+         */
+        async function fetchDataAndExportToCsv() {
+            if (!isAuthReady || !db || !isBackendAccessed) {
+                displayMessage('請先進入後台系統。', 'error');
+                return;
+            }
+            
+            exportCsvButton.disabled = true;
+            exportCsvButton.textContent = '獲取資料中...';
+            displayMessage('正在從資料庫獲取資料...', 'info');
+
+            try {
+                // **MODIFIED: 移除 orderBy**
+                const q = query(getRegistrationsCollectionRef()); 
+
+                const snapshot = await getDocs(q);
+                const registrations = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // 獲取原始資料，包含簽到簽退時間
+                    registrations.push({ 
+                        school: data.school,
+                        name: data.name,
+                        id_number: data.id_number, 
+                        timestamp: data.timestamp,
+                        morningCheckInTime: data.morningCheckInTime || null, // NEW
+                        afternoonCheckInTime: data.afternoonCheckInTime || null, // NEW
+                        afternoonCheckOutTime: data.afternoonCheckOutTime || null, // NEW
+                        registeredBy: data.registeredBy
+                    });
+                });
+                
+                // 執行下載
+                performCsvDownload(registrations);
+
+            } catch (error) {
+                console.error("獲取資料失敗:", error);
+                displayMessage(`匯出失敗: ${error.message}`, 'error');
+            } finally {
+                 exportCsvButton.disabled = false;
+                 exportCsvButton.textContent = '匯出 CSV';
+            }
+        }
+        
+        /**
+         * 將資料轉換為 CSV 並觸發下載
+         * @param {Array<object>} registrations 報名資料陣列
+         */
+        function performCsvDownload(registrations) {
+            if (registrations.length === 0) {
+                displayMessage('資料庫中沒有報名紀錄可供匯出。', 'error');
+                return;
+            }
+
+            // 更新 CSV 標頭
+            const headers = [
+                "報名時間", "學校", "姓名", "身份證字號", 
+                "是否上午簽到", "上午簽到時間", 
+                "是否下午簽到", "下午簽到時間", 
+                "是否下午簽退", "下午簽退時間", 
+                "註冊者ID"
+            ];
+            
+            // 獲取並格式化行數據
+            const rows = registrations.map(reg => {
+                const registrationTime = formatTimestamp(reg.timestamp);
+                
+                const morningCheckInTimeStr = formatTimestamp(reg.morningCheckInTime);
+                const afternoonCheckInTimeStr = formatTimestamp(reg.afternoonCheckInTime);
+                const afternoonCheckOutTimeStr = formatTimestamp(reg.afternoonCheckOutTime);
+                
+                // 新增：是否簽到/簽退的註記
+                const isMorningCheckedIn = reg.morningCheckInTime ? '是' : '否';
+                const isAfternoonCheckedIn = reg.afternoonCheckInTime ? '是' : '否';
+                const isAfternoonCheckedOut = reg.afternoonCheckOutTime ? '是' : '否';
+
+
+                // 使用 JSON.stringify 並替換掉引號，以正確處理包含逗號的字串
+                const cleanAndQuote = (str) => `"${String(str).replace(/"/g, '""')}"`;
+                
+                return [
+                    cleanAndQuote(registrationTime),
+                    cleanAndQuote(reg.school || ''),
+                    cleanAndQuote(reg.name || ''),
+                    cleanAndQuote(reg.id_number || ''),
+                    
+                    cleanAndQuote(isMorningCheckedIn),      
+                    cleanAndQuote(morningCheckInTimeStr),   
+                    
+                    cleanAndQuote(isAfternoonCheckedIn),    
+                    cleanAndQuote(afternoonCheckInTimeStr), 
+
+                    cleanAndQuote(isAfternoonCheckedOut),   
+                    cleanAndQuote(afternoonCheckOutTimeStr),
+
+                    cleanAndQuote(reg.registeredBy || '')
+                ];
+            });
+
+            // 結合標頭和行數據
+            const csvContent = [
+                headers.join(','), // 標頭
+                ...rows.map(e => e.join(',')) // 行數據
+            ].join('\n');
+
+            // 觸發下載
+            // "\ufeff" 是 BOM，確保中文在 Excel 中正確顯示
+            const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            
+            const now = new Date();
+            const fileName = `研習報名清單_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}.csv`;
+            
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            displayMessage('報名清單已匯出為 CSV 檔案！', 'success');
+        }
+
+
+        // --- 事件監聽器和啟動 ---
+        
+        form.addEventListener('submit', handleFormSubmit);
+        
+        // 後台進入與操作
+        accessBackendButton.addEventListener('click', handleAccessBackend); // 點擊進入系統
+        confirmBackendAccessButton.addEventListener('click', handleConfirmBackendAccess); // 確認密碼
+        exportCsvButton.addEventListener('click', fetchDataAndExportToCsv); // 匯出 CSV (已進入後台，無需再次密碼)
+        
+        // 清空資料 (需要二次確認，所以只觸發彈窗)
+        clearDataButton.addEventListener('click', () => {
+             showConfirmModal('清空確認', '您確定要清空所有報名紀錄嗎？此操作無法復原！');
+        }); 
+        
+        // 二次確認彈窗按鈕
+        cancelConfirmButton.addEventListener('click', hideConfirmModal); // 取消清空
+        executeConfirmButton.addEventListener('click', deleteAllRegistrations); // 確定清空 
+
+        // 簽到/簽退功能
+        morningCheckInButton.addEventListener('click', handleMorningCheckIn);
+        afternoonCheckInButton.addEventListener('click', handleAfternoonCheckIn);
+        afternoonCheckOutButton.addEventListener('click', handleAfternoonCheckOut);
+        
+        // 系統設定功能
+        toggleSettingsButton.addEventListener('click', handleToggleSettings); // 點擊顯示/隱藏設定區塊
+        confirmSettingsAccessButton.addEventListener('click', handleConfirmSettingsAccess); // 密碼驗證存取
+        saveSettingsButton.addEventListener('click', handleSaveSettings); // 儲存設定事件
+
+        // 彈窗關閉
+        closeModalButton.addEventListener('click', hideSuccessModal);
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                hideSuccessModal(); // 點擊背景區域也關閉
+            }
+        });
+        
+        // 簽到/簽退彈窗關閉
+        closeSignModalButton.addEventListener('click', hideSignSuccessModal);
+        signSuccessModal.addEventListener('click', (e) => {
+            if (e.target === signSuccessModal) {
+                hideSignSuccessModal();
+            }
+        });
+
+        // 報名錯誤彈窗關閉
+        closeErrorModalButton.addEventListener('click', hideErrorModal);
+        errorModal.addEventListener('click', (e) => {
+            if (e.target === errorModal) {
+                hideErrorModal();
+            }
+        });
+        
+        // 清空確認彈窗關閉
+        confirmModal.addEventListener('click', (e) => {
+            if (e.target === confirmModal) {
+                hideConfirmModal();
+            }
+        });
+
+
+        // 啟動應用程式
+        initializeFirebase();
+
+    </script>
+</body>
+</html>

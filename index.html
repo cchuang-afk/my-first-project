@@ -136,19 +136,67 @@
                         <!-- 上午簽到按鈕 -->
                         <button id="morningCheckInButton" type="button" disabled
                                 class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
-                            上午簽到 (Morning Check In)
+                            上午簽到 (研習兩天)
                         </button>
                         <!-- 下午簽到按鈕 -->
                         <button id="afternoonCheckInButton" type="button" disabled
                                 class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-xl font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
-                            下午簽到 (Afternoon Check In)
+                            下午簽到 (研習兩天)
                         </button>
                         <!-- 下午簽退按鈕 -->
                         <button id="afternoonCheckOutButton" type="button" disabled
                                 class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
-                            下午簽退 (Afternoon Check Out)
+                            下午簽退 (研習兩天)
                         </button>
                     </div>
+                </div>
+            </div>
+            
+            <!-- 取消報名區塊 -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">取消報名</h2>
+
+                <div class="space-y-4">
+                    <!-- 身份證字號欄位 for 取消 -->
+                    <div>
+                        <label for="cancel_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                            欲取消報名者的身份證字號 (ID Number)
+                        </label>
+                        <input type="text" id="cancel_id_number" placeholder="請輸入身份證字號以取消報名" required
+                               maxlength="10" 
+                               pattern="[A-Z][0-9]{9}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+                    </div>
+
+                    <!-- 取消按鈕 -->
+                    <button id="cancelRegistrationButton" type="button" disabled
+                            class="w-full bg-red-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-red-600 transition duration-200 shadow-lg disabled:opacity-50">
+                        確定取消報名
+                    </button>
+                </div>
+            </div>
+
+            <!-- 學分查詢區塊 (NEW) -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">學分查詢 <span class="text-sm font-normal text-gray-500">(查詢開放時間將另行公布)</span></h2>
+
+                <div class="space-y-4">
+                    <!-- 身份證字號欄位 for 查詢 -->
+                    <div>
+                        <label for="query_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                            身份證字號 (ID Number)
+                        </label>
+                        <input type="text" id="query_id_number" placeholder="請輸入身份證字號以查詢學分狀態" required
+                               maxlength="10" 
+                               pattern="[A-Z][0-9]{9}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                    </div>
+
+                    <!-- 查詢按鈕 -->
+                    <button id="creditQueryButton" type="button" disabled
+                            class="w-full bg-purple-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-purple-600 transition duration-200 shadow-lg disabled:opacity-50">
+                        查詢學分申請狀態
+                    </button>
                 </div>
             </div>
             
@@ -238,14 +286,18 @@
                         </div>
                     </div>
 
-                    <!-- 儲存按鈕區塊 -->
-                    <div id="settingsSaveSection" class="p-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner">
+                    <!-- 儲存/還原按鈕區塊 -->
+                    <div id="settingsSaveSection" class="p-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner space-y-2">
                         <label class="block text-sm font-medium text-yellow-700 mb-2">
-                            <span class="font-bold">💾 儲存設定：</span> 請點擊下方按鈕儲存時間區間。
+                            <span class="font-bold">💾 設定操作：</span> 儲存或還原時間區間。
                         </label>
                         <button id="saveSettingsButton" type="button" disabled
                                 class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
                             儲存設定
+                        </button>
+                        <button id="resetTimeSettingsButton" type="button" disabled
+                                class="w-full px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition duration-150 shadow-md disabled:opacity-50">
+                            還原時間設定 (至預設值)
                         </button>
                     </div>
                 </div>
@@ -294,12 +346,17 @@
                                 class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
                             清空報名資料
                         </button>
+                         <!-- 清除簽到/簽退按鈕 (NEW) -->
+                        <button id="clearSignaturesButton" type="button"
+                                class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
+                            清除簽到/簽退
+                        </button>
                     </div>
 
-                    <h3 class="text-xl font-semibold text-gray-700 pt-4 border-t border-gray-200">報名者清單 (即時更新)</h3>
-                    <!-- 報名清單將渲染到此處 -->
+                    
+                    <!-- 報名清單區塊 (已移除) -->
                     <div id="registrationsListContainer" class="overflow-x-auto shadow-inner rounded-lg border">
-                        <p class="p-4 text-sm text-gray-500 font-bold animate-pulse">🔔 正在載入資料...</p>
+                        <p class="p-4 text-center text-gray-500">清單功能已移除。請使用上方按鈕匯出資料。</p>
                     </div>
                 </div>
 
@@ -409,7 +466,7 @@
             getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
-            getFirestore, collection, addDoc, query, orderBy, setDoc, getDoc, getDocs, where, updateDoc, doc, deleteDoc, onSnapshot
+            getFirestore, collection, addDoc, query, orderBy, setDoc, getDoc, getDocs, where, updateDoc, doc, deleteDoc, onSnapshot, FieldValue
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -419,55 +476,84 @@
         // --- 設定密碼與會員名單 ---
         const EXPORT_PASSWORD = '661113'; // 管理員密碼
         
-        // ** NEW: 依照您提供的姓名新增的會員白名單 **
-        const MEMBER_NAME_WHITELIST = [
-            '楊雯真', '林依禎', '許多', '邱惠欣', '謝佳容', '羅宛詩', '周佳蕙', '詹珆雯', '藍涔瑜', '黃祥雲', 
-            '鐘巧雯', '吳美嬋', '葉雅惠', '陳依汝', '周娟如', '彭華怡', '鍾宜珍', '陳怡婷', '陳婉青', '楊晶晶', 
-            '李孟潔', '林亞屏', '郭孟柔', '王釋敏', '鄭子威', '陳碧楓', '何麗君', '簡佩琪', '林惠玲', '莊靜華', 
-            '曾韻綺', '鄭衣宸', '嚴敏禎', '翁靜莊', '黃鵬璆', '歐沛蓮', '林志音', '吳哲宇', '林香宜', '黃鳳華', 
-            '林慧娟', '陳秋美', '劉秀鳳', '陳紀勳', '王嘉琪', '倪庭卉', '洪瑋蔆', '游莉娟', '楊舒婷', '羅明珠', 
-            '梁玉梅', '陳苓玉', '黃怡蓉', '侯淑美', '陳適琴', '蕭梅吟', '陳珮玲', '黃雅芳', '謝虹娘', '李佳陵', 
-            '朱員仙', '葉玫江', '林金環', '連敏伶', '陳瓏之', '饒速苓', '林廉珮', '劉瑞蘭', '林依瑩', '黃麗萍', 
-            '吳芝潔', '張鳳纓', '簡毓菁', '郭壁如', '錢欣', '王中慧', '林佩璇', '謝素玉', '楊縈婷', '陳品諠', 
-            '吳淑鈴', '黃子庭', '黃玫瑛', '周怡君', '謝淑菁', '黃若嬋', '湯秀惠', '廖彩鈴', '孫鳳岑', '沈卿雲', 
-            '陳家羚', '宋克珍', '蔡麗月', '許麗惠', '林玉雲', '侯宣羽', '高玉珍', '羅瓊枝', '廖久慧', '阮平英', 
-            '張娟碧', '蔡佩娟', '柯瓊蓮', '李亞芳', '李玲玲', '邱君佩', '林嘉英', '方雅慧', '柯昭吟', '林秀蓉', 
-            '陳怡儒', '陳亭如', '張憶茹', '張惠君', '柯仁鳳', '林鴻燕', '吳柏芝', '曾紫婕', '朱明瑩', '張淑貞', 
-            '鄭雅璿', '洪敻禧', '蕭百利', '陳美靜', '王姿絜', '李佳霖', '盧奕霖', '陸秀茜', '姚潔舲', '高敏芳', 
-            '傅郁萍', '莊麗玉', '顏芳慧', '余雪如', '陳思羽', '高碧弘', '方美善', '孫睿彣', '王沛帆', '廖凱君', 
-            '陳美錦', '郭寶富', '林真瑜', '黃淑娟', '王維儀', '蔡秀玲', '蔡玉蘭', '劉妙芬', '林碧芬', '許向妤', 
-            '陳雅萍', '黃珮綺', '鄭麗雯', '黃秋芬', '許豐順', '簡君玲', '陳佩鈴', '柳嬬婷', '蘇郁婷', '吳蕍亘', 
-            '汪嘉玲', '蔡姍宥', '陳慈惠', '蔡淑萍', '吳昭瑩', '劉桂香', '林侑琦', '王靖惠', '林富琴', '王桂英', 
-            '鄭雅萍', '黃蘭雅', '李惠玲', '蔡子慧', '史潔倫', '黃意淑', '黃雅鈴', '林容吟', '余靜雯', '李惠君', 
-            '吳秀麗', '王鈺錡', '蔡欣潔', '孫于婷', '鄭秀如', '唐英惠', '王秋月', '陳佩君', '廖雪芬', '黃惠蘭', 
-            '吳雪榕', '盧婉婷', '洪榕蓮', '邱于珍', '洪雅芬', '許芷翎', '陳映如', '洪慧娟', '郭美娟', '林偉雅', 
-            '簡珮怡', '宋品筑', '陳柏汝', '陳瓊蓉', '王鳳儀', '歐宛諭', '張桂菊', '戴麗卿', '陳美吟', '林妍雯', 
-            '梁惠芳', '韓璞勤', '傅秋玲', '林金英', '蔡雅莉', '林怡伶', '買慧紋', '陳淑芬', '王千綺', '鄭素卿', 
-            '林瑞華', '魏婉菁', '戴玉雪', '吳佳璃', '林淑蘭', '邱阿分', '陳玉玲', '陳梨玉', '洪菱均', '盧清香', 
-            '黃鳳祝', '鍾璿如', '李毓婷', '陳依萍', '彭惠婷', '黃君萍', '黃麗敏', '黃琳婷', '葉智惠', '鄭婷云', 
-            '黃慧玲', '曾順穗', '林紀瑩', '溫秋麗', '黃婉婷', '鄭怡君', '王渝茜', '鄭佳惠', '蔣孝君', '吳佳償', 
-            '熊秋紅', '薛宇晴', '戴愷琳', '李小萍', '朱貴香', '吳怡婷', '王秋文', '劉怡君', '莊佳頤', '簡菁燕', 
-            '袁緣', '曾薰儀', '吳宛儒', '李美雲', '陳雅菱', '蘇宇稜', '曾婉婷', '李秋滿', '朱嘉惠', '朱斐琦', 
-            '陳怡靜', '林立萍', '薛怡芬', '蔡婉珍', '王素華', '曾秀燕', '羅秀春', '楊寶英', '蘇鑫淑', '李玉琴', 
-            '王琛珊', '張淑雲', '陳品均', '張翠芬', '鄧玉琳', '陳美如', '薩文惠', '戴麗菊', '朱虹玟', '林憶婷', 
-            '何琳憶', '蔡涵妮', '余麗真', '林小萍', '蔡珠名', '沈芳如', '朱秀鳳', '張維貞', '呂慧娟', '陳珮蓉', 
-            '郭美弘', '余秀菊', '孫翊華', '謝曉婷', '黃雅筠', '蘇倖瑾', '陳秋燕', '程麗雪', '王怡靜', '王慧敏', 
-            '曾甜紅', '廖淑佑', '李佩珊', '吳紫瑀', '陳麗蓉', '梁慧蓉', '夏佩杏', '李佳芬', '吳珮嘉', '林秀宸', 
-            '劉惠容', '謝宛諭', '曾桂珠', '涂春祝', '林艷如', '蘇美芳', '陳瑛敏', '梁慧卿', '洪淑芬', '朱秀婷', 
-            '林翠華', '陳育瑄', '劉千綺', '曾婉嫕', '張昭惠', '韓秀敏', '洪嫦妙', '李錦嬌', '陳思欣', '王鈺婷', 
-            '吳淑娟', '陳靜芬', '鍾麗萍', '邱芳玲', '胡廉筠', '黃淑芬', '謝美玲', '葉淑儀', '閉玉珍', '顏文茹', 
-            '鄭進興', '王淑滿', '吳珮君', '黃琡晶', '賴玟苑', '王勉惠', '蔡瓊琦', '何美惠', '許秀香', '潘美蘭', 
-            '宋秀梅', '葉淑如', '廖金萍', '梁雅菁', '林怡伶', '張鈞貴', '王理玉', '黃巧文', '曹孟蘭', '蔡品貞', 
-            '連麗真', '洪于稀', '胡月偵', '詹珮琳', '李雯雯', '許筑秝', '蕭秋英', '頻道華瑢', '蕭秀芬', 
-            '劉崇珊', '宜美玲', '李維屏', '王潔瑩', '胡佩蘭', '郭詩敏', '劉孟貞', '林秋香', '陳素惠', '黃梅華', 
-            '張香蘭', '劉美玲', '陳瑪莉', '陳晴', '魏美珍', '盧素韶', '陳惠玟', '陳依莎', '潘世蓉', '李恬心', 
-            '蕭美娣', '彭貴妤', '陳怡婷', '鄭素容', '郭凡爾', '莊敏慧', '洪韻美', '柯春惠', '楊智慧', '謝惠茹', 
-            '陳秋花', '林佩儀', '龔芸瑱', '李宜錚', '簡郁芬', '張簡采玲', '劉桂琴', '宋秋枝', '高湘惠', '陳慧雯', 
-            '黃伊汝', '鄭維雅', '林家如', '林珮宇', '鄭育方', '賴佳伶', '蕭玉珍', '劉美玲', '葉冠伶', '黃淑莉', 
-            '利佳玲', '余黃姿菁', '林秀貞', '張宜盈', '劉鈺華', '沈郁珈', '楊婉慈', '余宛庭', '施舒梅', '鍾佩竹', 
-            '周如梅'
+        // ** 報名會員白名單 (基於身份證字號) **
+        const REGISTRATION_ID_WHITELIST = [
+            'A220444341', 'A220710340', 'A221690507', 'A223395916', 'A223752966', 'A224117621',
+            'B220564616', 'B220716558', 'B221770734', 'B221875305', 'B222409118', 'C220033144',
+            'C220273728', 'C221179925', 'D221280353', 'D221353191', 'D221368665', 'D221792812',
+            'D221823723', 'D221848444', 'D222011281', 'D222243694', 'D222371031', 'D222987959',
+            'E122740419', 'E124843842', 'E220079704', 'E220195418', 'E220210483', 'E220297962',
+            'E220308460', 'E220341689', 'E220342293', 'E220388084', 'E220393996', 'E220524099',
+            'E220616789', 'E220666234', 'E220689602', 'E220741983', 'E220779674', 'E220843580',
+            'E220877353', 'E220913836', 'E220961056', 'E221050972', 'E221059948', 'E221070992',
+            'E221136539', 'E221163769', 'E221221784', 'E221263095', 'E221304644', 'E221355543',
+            'E221368586', 'E221385792', 'E221408398', 'E221577969', 'E221613399', 'E221672861',
+            'E221680327', 'E221778500', 'E221803053', 'E221836052', 'E222059559', 'E222066303',
+            'E222072534', 'E222084463', 'E222104791', 'E222112015', 'E222139623', 'E222150962',
+            'E222155949', 'E222177025', 'E222177570', 'E222232843', 'E222235022', 'E222258963',
+            'E222277342', 'E222327570', 'E222407411', 'E222435237', 'E222448681', 'E222452434',
+            'E222536677', 'E222566675', 'E222566782', 'E222570295', 'E222635102', 'E222670432',
+            'E222704219', 'E222796093', 'E222805917', 'E222841084', 'E222873899', 'E222884525',
+            'E222891164', 'E222959581', 'E222988108', 'E223009017', 'E223016254', 'E223091024',
+            'E223130393', 'E223175409', 'E223198671', 'E223236452', 'E223272403', 'E223277588',
+            'E223326871', 'E223327092', 'E223335889', 'E223477300', 'E223478450', 'E223526791',
+            'E223669737', 'E223691435', 'E223830058', 'E223882347', 'E224015135', 'E224300540',
+            'E224422630', 'E224518604', 'E224586111', 'E224700960', 'E224800616', 'E226866087',
+            'F223485974', 'F224168089', 'F224229658', 'F224623012', 'F224680982', 'F225807610',
+            'F226263872', 'F227465496', 'G220794119', 'G221261379', 'G221383236', 'H221334878',
+            'H221939300', 'H222198063', 'I200051735', 'J220066489', 'K220138632', 'L220395735',
+            'L221013063', 'L221450039', 'L222150396', 'L222419863', 'L222905382', 'L223725235',
+            'L225440226', 'M221390351', 'M221598437', 'M221599596', 'M221636843', 'M221660465',
+            'M221800852', 'M222018107', 'M222116706', 'N220244548', 'N222547846', 'N222642051',
+            'N222752856', 'N222923122', 'N222975591', 'N224125759', 'N224134623', 'N224781506',
+            'N225495223', 'P220185590', 'P220716675', 'P220795603', 'P220940304', 'P221674032',
+            'P221697848', 'P222200385', 'P222391103', 'P222924200', 'P223101916', 'Q220793280',
+            'Q221048248', 'Q221349795', 'Q221352970', 'Q221421854', 'Q222027841', 'Q222573080',
+            'Q222623389', 'Q222649374', 'Q222681998', 'Q222955911', 'Q222965355', 'Q223147922',
+            'R220035435', 'R220067231', 'R220277835', 'R220443428', 'R220503858', 'R220841362',
+            'R220924893', 'R221035386', 'R221313581', 'R221516895', 'R221566288', 'R221644143',
+            'R221804907', 'R221887022', 'R222149183', 'R222279828', 'R222456914', 'R222526617',
+            'R222599727', 'R222639495', 'R222723812', 'R222945578', 'R223039382', 'R223244730',
+            'R223366428', 'R223489784', 'R224258676', 'R224394971', 'S120099116', 'S220147726',
+            'S220171722', 'S220186590', 'S220200577', 'S220200817', 'S220209632', 'S220218588',
+            'S220224808', 'S220227238', 'S220228422', 'S220228520', 'S220235285', 'S220247589',
+            'S220261632', 'S220303920', 'S220323075', 'S220375444', 'S220408288', 'S220424808',
+            'S220456542', 'S220489514', 'S220501588', 'S220508452', 'S220516981', 'S220573404',
+            'S220692753', 'S220694766', 'S220773502', 'S220796023', 'S220797502', 'S220901177',
+            'S220940085', 'S220951668', 'S220951677', 'S220983179', 'S221023798', 'S221069098',
+            'S221088137', 'S221134796', 'S221195262', 'S221222424', 'S221279432', 'S221280328',
+            'S221283356', 'S221334429', 'S221337626', 'S221363260', 'S221396929', 'S221428560',
+            'S221436419', 'S221493816', 'S221512389', 'S221528510', 'S221553853', 'S221578485',
+            'S221584812', 'S221613023', 'S221614879', 'S221625514', 'S221676093', 'S221687612',
+            'S221691625', 'S221715988', 'S221794032', 'S221809270', 'S221829334', 'S221847903',
+            'S221914909', 'S221920452', 'S221958296', 'S221981777', 'S221989719', 'S222007770',
+            'S222069850', 'S222097158', 'S222097783', 'S222108325', 'S222132616', 'S222140172',
+            'S222140350', 'S222142498', 'S222167753', 'S222171239', 'S222213312', 'S222222820',
+            'S222248164', 'S222255927', 'S222256291', 'S222285309', 'S222285907', 'S222292206',
+            'S222294139', 'S222300598', 'S222305119', 'S222313773', 'S222324918', 'S222327188',
+            'S222376396', 'S222380407', 'S222380425', 'S222385279', 'S222386221', 'S222389053',
+            'S222426006', 'S222428662', 'S222451509', 'S222451803', 'S222530756', 'S222547457',
+            'S222557873', 'S222561091', 'S222571471', 'S222658357', 'S222670317', 'S222701282',
+            'S222712641', 'S222724016', 'S222760754', 'S222765679', 'S222798776', 'S222830448',
+            'S222841718', 'S222894791', 'S222894933', 'S222899492', 'S222899652', 'S223031047',
+            'S223039927', 'S223044455', 'S223124912', 'S223173004', 'S223313188', 'S223345484',
+            'S223356147', 'S223392581', 'S223404095', 'S223445943', 'S223458262', 'S223472897',
+            'S223473661', 'S223498373', 'S223503039', 'S223513517', 'S223517337', 'S223577664',
+            'S223647661', 'S223738952', 'S223811885', 'S223823876', 'S223904287', 'S223918905',
+            'S223940425', 'S224055096', 'S224081149', 'S224279407', 'S224339355', 'S224644459',
+            'S224714625', 'S224725842', 'S225056088', 'T220124877', 'T220149623', 'T220184079',
+            'T220257424', 'T220577949', 'T220606785', 'T220619308', 'T220643493', 'T220742151',
+            'T220754633', 'T220910579', 'T221102213', 'T221185696', 'T221459708', 'T221520775',
+            'T221718426', 'T221733889', 'T221761365', 'T222175998', 'T222230449', 'T222280912',
+            'T222322853', 'T222325229', 'T222334335', 'T222334415', 'T222347538', 'T222350946',
+            'T222361010', 'T222542444', 'T222592042', 'T222634198', 'T222641371', 'T222661006',
+            'T222833100', 'T222835364', 'T223014636', 'T223121994', 'T223143874', 'T223208227',
+            'T223230489', 'T223268741', 'T223321789', 'T223340113', 'T223363456', 'T223435028',
+            'T223450329', 'T223476403', 'T223501349', 'T223506960', 'T223562619', 'T223601746',
+            'T223686445', 'T223819748', 'U220722810', 'U220728536', 'U220822253', 'V220445720',
+            'V220877482', 'W200265559', 'X220049013', 'X220083908', 'S225795339', 'S225615872',
+            'S225901935', 'T221761365', 'S225642066', 'S225641989', 'S225568878' // 從圖像中補充的身份證字號
         ];
-        // **********************************
         
         // --- 全域變數與初始化 ---
         let db;
@@ -535,7 +621,14 @@
         const afternoonCheckOutStartTimeInput = document.getElementById('setting_afternoon_co_start');
         const afternoonCheckOutEndTimeInput = document.getElementById('setting_afternoon_co_end');
         const saveSettingsButton = document.getElementById('saveSettingsButton');
+        const resetTimeSettingsButton = document.getElementById('resetTimeSettingsButton'); // NEW
 
+        // 取消報名元素
+        const cancelRegistrationButton = document.getElementById('cancelRegistrationButton'); // NEW
+
+        // 學分查詢元素
+        const creditQueryButton = document.getElementById('creditQueryButton'); // NEW
+        
         // 新增的設定存取元素
         const toggleSettingsButton = document.getElementById('toggleSettingsButton');
         const settingsAccessSection = document.getElementById('settingsAccessSection');
@@ -555,15 +648,16 @@
 
         const exportCsvButton = document.getElementById('exportCsvButton');
         const clearDataButton = document.getElementById('clearDataButton'); 
+        const clearSignaturesButton = document.getElementById('clearSignaturesButton'); // NEW
 
         // 彈窗
         const successModal = document.getElementById('successModal'); // 報名成功
         const closeModalButton = document.getElementById('closeModalButton');
-        const signSuccessModal = document.getElementById('signSuccessModal'); // 簽到/簽退成功
+        const signSuccessModal = document.getElementById('signSuccessModal'); // 簽到/簽退成功 & 取消報名成功
         const closeSignModalButton = document.getElementById('closeSignModalButton');
         const signSuccessTitle = document.getElementById('signSuccessTitle');
         const signSuccessMessage = document.getElementById('signSuccessMessage');
-        const errorModal = document.getElementById('errorModal'); // 報名錯誤
+        const errorModal = document.getElementById('errorModal'); // 報名錯誤 & 查詢失敗
         const closeErrorModalButton = document.getElementById('closeErrorModalButton');
         const errorTitle = document.getElementById('errorTitle');
         const errorMessage = document.getElementById('errorMessage');
@@ -586,6 +680,11 @@
             setTimeout(() => { successModal.classList.add('hidden'); }, 300);
         }
         
+        /**
+         * 顯示簽到/簽退/取消報名/學分查詢成功彈窗。
+         * @param {string} title 標題
+         * @param {string} message 訊息內容
+         */
         function showSignSuccessModal(title, message) {
             signSuccessTitle.textContent = title;
             signSuccessMessage.textContent = message;
@@ -598,6 +697,11 @@
             setTimeout(() => { signSuccessModal.classList.add('hidden'); }, 300);
         }
 
+        /**
+         * 顯示報名/查詢錯誤彈窗。
+         * @param {string} title 標題
+         * @param {string} message 訊息內容
+         */
         function showErrorModal(title, message) {
             errorTitle.textContent = title;
             errorMessage.textContent = message;
@@ -614,10 +718,22 @@
          * 顯示二次確認彈窗
          * @param {string} title 標題
          * @param {string} message 訊息
+         * @param {string} actionType 'clearData' or 'clearSignatures' or 'resetTime'
          */
-        function showConfirmModal(title, message) {
+        function showConfirmModal(title, message, actionType) {
             document.getElementById('confirmTitle').textContent = title;
             document.getElementById('confirmMessage').textContent = message;
+            
+            // 設置按鈕的執行操作
+            executeConfirmButton.setAttribute('data-action', actionType);
+            if (actionType === 'clearData') {
+                executeConfirmButton.textContent = '確定清空';
+            } else if (actionType === 'clearSignatures') {
+                executeConfirmButton.textContent = '確定還原';
+            } else if (actionType === 'resetTime') {
+                 executeConfirmButton.textContent = '確定重設';
+            }
+
             confirmModal.classList.remove('hidden');
             setTimeout(() => { confirmModal.classList.add('modal-open'); }, 10);
         }
@@ -627,13 +743,14 @@
          */
         function hideConfirmModal() {
             confirmModal.classList.remove('modal-open');
+            executeConfirmButton.removeAttribute('data-action');
             setTimeout(() => { confirmModal.classList.add('hidden'); }, 300);
         }
 
         /**
          * 顯示訊息給使用者，並設定樣式
          * @param {string} message 訊息內容
-         * @param {string} type 訊息類型: 'info', 'success', 'error'
+         * @param {string} type 液類型: 'info', 'success', 'error'
          * @param {number} duration 訊息顯示時間 (毫秒), 預設 5000ms
          */
         function displayMessage(message, type = 'info', duration = 5000) {
@@ -746,13 +863,15 @@
                         afternoonCheckOutButton.disabled = false;
                         toggleSettingsButton.disabled = false; // 啟用設定按鈕
                         accessBackendButton.disabled = false; // 啟用後台進入按鈕 // NEW
+                        cancelRegistrationButton.disabled = false; // 啟用取消報名按鈕
+                        creditQueryButton.disabled = false; // 啟用學分查詢按鈕
                         isAuthReady = true;
                         await fetchSettings(); // 載入系統設定
                     } else {
                         // 如果沒有用戶，嘗試匿名登入
                         if (initialAuthToken) {
                             // 使用提供的客製化 token 登入
-                            await signInWithCustomToken(auth, initialAuthToken);
+                            await signInWithCustomToken(auth, initialAuthToken); 
                         } else {
                             // 否則使用匿名登入
                             await signInAnonymously(auth);
@@ -766,115 +885,25 @@
             }
         }
         
-        // --- 報名清單顯示與更新 (NEW) ---
+        // --- 報名清單顯示與更新 (已移除即時監聽) ---
 
         /**
-         * 渲染報名者清單到畫面上
+         * 渲染報名者清單到畫面上 (僅在後台登入時使用一次)
          * @param {Array<Object>} registrations 報名資料陣列
          */
         function renderRegistrationsList(registrations) {
-            if (registrations.length === 0) {
-                registrationsListContainer.innerHTML = '<p class="p-4 text-center text-gray-500">目前沒有任何報名紀錄。</p>';
-                return;
-            }
-
-            // **NEW: 客戶端排序，以確保列表是按最新報名時間排序 (降序)**
-            registrations.sort((a, b) => {
-                // 處理 Firestore Timestamp 或 Date 物件
-                const timeA = a.timestamp && (a.timestamp.toDate ? a.timestamp.toDate().getTime() : new Date(a.timestamp).getTime());
-                const timeB = b.timestamp && (b.timestamp.toDate ? b.timestamp.toDate().getTime() : new Date(b.timestamp).getTime());
-                
-                // 處理無效時間，確保穩定排序
-                if (!timeA && !timeB) return 0;
-                if (!timeA) return 1;
-                if (!timeB) return -1;
-                
-                return timeB - timeA; // 降序 (B - A)
-            });
-
-
-            let tableHTML = `
-                <table class="min-w-full divide-y divide-gray-200 backend-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>學校</th>
-                            <th>姓名</th>
-                            <th>身份證字號</th>
-                            <th>報名時間</th>
-                            <th>上午簽到</th>
-                            <th>下午簽到</th>
-                            <th>下午簽退</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-            `;
-
-            registrations.forEach((reg, index) => {
-                const idMasked = reg.id_number ? reg.id_number.substring(0, 4) + '******' : 'N/A';
-                
-                const getSignStatus = (time) => {
-                    if (time) {
-                        return `<span class="text-green-600 font-medium">✅ ${formatTimestamp(time)}</span>`;
-                    }
-                    return '<span class="text-red-500">❌ 未簽到/退</span>';
-                };
-
-                tableHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${reg.school}</td>
-                        <td>${reg.name}</td>
-                        <td>${idMasked}</td>
-                        <td>${formatTimestamp(reg.timestamp)}</td>
-                        <td>${getSignStatus(reg.morningCheckInTime)}</td>
-                        <td>${getSignStatus(reg.afternoonCheckInTime)}</td>
-                        <td>${getSignStatus(reg.afternoonCheckOutTime)}</td>
-                    </tr>
-                `;
-            });
-
-            tableHTML += `
-                    </tbody>
-                </table>
-            `;
-
-            registrationsListContainer.innerHTML = tableHTML;
+            // 由於清單功能已移除，此函數現在只用於 CSV 匯出前的資料處理，但為了兼容性保留結構。
+            // 這裡不再進行前端渲染。
+            return; 
         }
 
         /**
-         * 從 Firestore 獲取資料並開始即時監聽 (僅在後台進入時調用一次)
+         * 從 Firestore 獲取資料並開始即時監聽 (此處改為僅獲取資料，不進行監聽)
          */
         function setupBackendListener() {
-            if (!db || isBackendAccessed) return;
-
-            // 設置載入中狀態 (新增動畫和強調)
-            registrationsListContainer.innerHTML = '<p class="p-4 text-center text-sky-500 font-bold animate-pulse">🔔 正在啟動即時監聽並載入資料...</p>';
-
-            // **MODIFIED: 移除 orderBy，改為簡單查詢**
-            const q = query(getRegistrationsCollectionRef()); 
-            
-            console.log("Firestore Listener: Setting up onSnapshot listener for registrations...");
-            
-            // 設置即時監聽器
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                console.log(`Firestore Listener: Snapshot received. Documents found: ${snapshot.size}`);
-                const registrations = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    // 獲取所有欄位
-                    registrations.push(data);
-                });
-                renderRegistrationsList(registrations); 
-            }, (error) => {
-                // 捕獲錯誤並顯示 (更明確的錯誤提示)
-                console.error("Firestore Listener Error: 即時監聽報名資料失敗:", error);
-                registrationsListContainer.innerHTML = '<p class="p-4 text-center text-red-600 font-bold">⚠️ 資料載入失敗！請檢查您的網路連線或瀏覽器控制台 (Console) 中的錯誤訊息，特別是 "Permission Denied" 錯誤。</p>';
-            });
-
-            // 標記為已存取，避免重複設置監聽器
-            isBackendAccessed = true;
-            console.log("Firestore Listener: onSnapshot setup complete.");
+            // 由於清單已移除，此處不再需要設置 onSnapshot。
+            // 程式碼已精簡，以符合移除清單功能的需求。
+            console.log("Backend: Listing feature removed. Ready for export/clear operations.");
         }
 
 
@@ -1094,6 +1123,48 @@
             }
         }
 
+        /**
+         * 處理還原時間設定至預設值 (NEW)
+         */
+        async function handleResetTimeSettings() {
+             if (!isAuthReady || !areSettingsVisible) {
+                displayMessage('請先存取設定區塊。', 'error');
+                return;
+            }
+            
+            hideConfirmModal(); // 隱藏確認彈窗
+            displayMessage('正在還原時間設定...', 'info', 0);
+            
+            try {
+                const settingsRef = getSettingsDocRef();
+                
+                // 將所有時間欄位設置為 null，這將在 fetchSettings 中觸發 UI 顯示當前時間
+                const resetData = {
+                    morningCheckInStartTime: null,
+                    morningCheckInEndTime: null,
+                    afternoonCheckInStartTime: null,
+                    afternoonCheckInEndTime: null,
+                    afternoonCheckOutStartTime: null,
+                    afternoonCheckOutEndTime: null,
+                };
+                
+                await updateDoc(settingsRef, resetData);
+                
+                // 重新載入設定以更新本地狀態和 UI
+                await fetchSettings();
+                
+                // 儲存成功後收起設定視窗
+                settingsInputsContainer.classList.add('hidden');
+                areSettingsVisible = false;
+
+                displayMessage('時間設定已還原為預設值，請重新設定。', 'success');
+                
+            } catch (error) {
+                console.error("還原時間設定失敗:", error);
+                displayMessage(`還原設定失敗: ${error.message}`, 'error');
+            }
+        }
+
 
         /**
          * 提交報名表單
@@ -1130,8 +1201,8 @@
                 return;
             }
             
-            // *** NEW: 檢查是否在會員名單內 (以姓名為依據) ***
-            if (!MEMBER_NAME_WHITELIST.includes(name)) {
+            // *** 報名檢查: 檢查是否在會員名單內 (以身份證字號為依據) ***
+            if (!REGISTRATION_ID_WHITELIST.includes(id_number)) {
                 // 使用新增的錯誤彈窗 (NEW)
                 showErrorModal('報名失敗', '您非會員無法報名，請洽會員組');
                 submitButton.disabled = false;
@@ -1180,6 +1251,53 @@
         }
 
         /**
+         * 處理取消報名 (NEW)
+         */
+        async function handleCancelRegistration() {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            const idNumber = document.getElementById('cancel_id_number').value.trim().toUpperCase();
+
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以取消報名。', 'error');
+                return;
+            }
+            
+            const button = document.getElementById('cancelRegistrationButton');
+            button.disabled = true;
+            button.textContent = '處理取消中...';
+
+            try {
+                const q = query(getRegistrationsCollectionRef(), where('id_number', '==', idNumber));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    showErrorModal('取消失敗', '查無此身份證字號的報名紀錄，請確認輸入是否正確。');
+                    return;
+                }
+
+                // 找到文件 (應該只有一個)
+                const docId = snapshot.docs[0].id;
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'registrations', docId));
+
+                // 顯示成功彈窗
+                showSignSuccessModal('取消成功', '您已取消研習報名成功。');
+                document.getElementById('cancel_id_number').value = '';
+
+            } catch (error) {
+                console.error("取消報名失敗:", error);
+                displayMessage(`取消報名失敗: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = '確定取消報名';
+            }
+        }
+
+
+        /**
          * 處理上午簽到
          */
         async function handleMorningCheckIn() {
@@ -1199,6 +1317,55 @@
         async function handleAfternoonCheckOut() {
             await processSignAction('afternoonCheckOut');
         }
+
+        /**
+         * 處理學分查詢 (NEW) - **使用身份證字號白名單進行核對**
+         */
+        async function handleCreditQuery() {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            const idNumber = document.getElementById('query_id_number').value.trim().toUpperCase();
+
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以進行查詢。', 'error');
+                return;
+            }
+            
+            const button = document.getElementById('creditQueryButton');
+            button.disabled = true;
+            button.textContent = '查詢中...';
+
+            try {
+                // 1. 驗證身份證字號格式
+                const idRegex = /^[A-Z][0-9]{9}$/;
+                if (!idRegex.test(idNumber)) {
+                    showErrorModal('查詢失敗', '身份證字號格式不正確，請檢查。');
+                    return;
+                }
+
+                // 2. **NEW: 查詢身份證字號是否在學分白名單中**
+                if (CREDIT_ID_WHITELIST.includes(idNumber)) {
+                    // 找到了，顯示成功訊息
+                    showSignSuccessModal('學分查詢結果', '學會已為您申請學分');
+                    
+                } else {
+                    // 未找到，顯示失敗訊息
+                    showErrorModal('學分查詢結果', '尚未申請，請洽會員組');
+                }
+
+            } catch (error) {
+                console.error("學分查詢失敗:", error);
+                showErrorModal('查詢失敗', `發生錯誤，請稍後再試：${error.message}`);
+            } finally {
+                document.getElementById('query_id_number').value = '';
+                button.disabled = false;
+                button.textContent = '查詢學分申請狀態';
+            }
+        }
+
 
         /**
          * 處理簽到/簽退的通用邏輯 (更新為三階段)
@@ -1268,14 +1435,14 @@
                 
                 // 檢查開放區間
                 if (!startTime || !endTime) {
-                    displayMessage(`錯誤：尚未設定 ${actionName} 的開放時間區間，請洽管理員設定。`, 'error');
+                    showErrorModal('操作失敗', `錯誤：尚未設定 ${actionName} 的開放時間區間，請洽管理員設定。`);
                     return; // 嚴格阻止操作，直到設定完成
                 }
 
                 // 檢查是否在區間內
                 if (signDate.getTime() < startTime.getTime() || signDate.getTime() > endTime.getTime()) {
                     const rangeStr = `${startTime.toLocaleString('zh-TW')} 到 ${endTime.toLocaleString('zh-TW')}`;
-                    displayMessage(`${actionName}服務未在開放區間！開放時間為 ${rangeStr}。`, 'error');
+                    showErrorModal('操作失敗', `${actionName}服務未在開放區間！開放時間為 ${rangeStr}。`);
                     return; // 阻止操作，因為不在時間範圍內
                 }
 
@@ -1285,7 +1452,7 @@
 
                 if (snapshot.empty) {
                     // 只有成功報名的人才能簽到/退
-                    displayMessage('查無此報名紀錄，請確認身份證字號是否正確。', 'error');
+                    showErrorModal('簽到失敗', '查無此報名紀錄，請確認身份證字號是否正確。');
                     return;
                 }
 
@@ -1296,7 +1463,7 @@
                 
                 // 檢查是否重複操作
                 if (data[updateField]) {
-                    displayMessage(`您已於 ${formatTimestamp(data[updateField])} 完成${actionName}，請勿重複操作。`, 'info');
+                    showErrorModal('重複操作', `您已於 ${formatTimestamp(data[updateField])} 完成${actionName}，請勿重複操作。`);
                     return;
                 }
 
@@ -1309,12 +1476,12 @@
                 } else if (actionType === 'afternoonCheckIn') {
                     // 邏輯: 必須先完成上午簽到
                     if (!data.morningCheckInTime) {
-                        displayMessage('您尚未完成上午簽到，無法進行下午簽到。', 'error');
+                        showErrorModal('簽到失敗', '您尚未完成上午簽到，無法進行下午簽到。');
                         return;
                     }
                     // 邏輯: 下午簽到時間必須晚於上午簽到時間
                     if (signDate.getTime() < data.morningCheckInTime.toDate().getTime()) {
-                         displayMessage('下午簽到時間不能早於上午簽到時間！', 'error');
+                         showErrorModal('簽到失敗', '下午簽到時間不能早於上午簽到時間！');
                         return;
                     }
 
@@ -1323,12 +1490,12 @@
                 } else if (actionType === 'afternoonCheckOut') {
                     // 邏輯: 必須先完成下午簽到
                     if (!data.afternoonCheckInTime) {
-                        displayMessage('您尚未完成下午簽到，無法進行下午簽退。', 'error');
+                        showErrorModal('簽退失敗', '您尚未完成下午簽到，無法進行下午簽退。');
                         return;
                     }
                     // 邏輯: 下午簽退時間必須晚於下午簽到時間
                     if (signDate.getTime() < data.afternoonCheckInTime.toDate().getTime()) {
-                         displayMessage('下午簽退時間不能早於下午簽到時間！', 'error');
+                         showErrorModal('簽退失敗', '下午簽退時間不能早於下午簽到時間！');
                         return;
                     }
 
@@ -1391,13 +1558,50 @@
             backendContent.classList.remove('hidden'); // 顯示後台內容
             backendInfoText.textContent = '您已進入後台管理模式。';
             
-            // 由於 onSnapshot 是異步的，這裡先設置載入狀態
-            registrationsListContainer.innerHTML = '<p class="p-4 text-center text-sky-500 font-bold animate-pulse">🔔 正在啟動即時監聽並載入資料...</p>';
+            // 由於清單功能已移除，我們不再需要啟動監聽器或設置 loading 狀態
 
             isBackendAccessed = true;
-            setupBackendListener(); // 啟動即時監聽清單
+            setupBackendListener(); // 移除即時監聽清單啟動
             
-            displayMessage('後台存取成功！正在載入資料清單。', 'success');
+            displayMessage('後台存取成功！', 'success');
+        }
+
+        /**
+         * 處理清空所有簽到/簽退紀錄 (NEW)
+         */
+        async function clearAllSignatures() {
+            if (!isAuthReady || !db || !isBackendAccessed) {
+                displayMessage('請先進入後台系統。', 'error');
+                return;
+            }
+            
+            hideConfirmModal(); // 隱藏確認彈窗
+            displayMessage('正在清空簽到/簽退紀錄...', 'info', 0);
+            
+            try {
+                const q = query(getRegistrationsCollectionRef());
+                const snapshot = await getDocs(q);
+                let updateCount = 0;
+                
+                const updatePromises = [];
+                snapshot.forEach((docSnap) => {
+                    // 批量更新，將所有簽到/簽退時間設為 null
+                    updatePromises.push(updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'registrations', docSnap.id), {
+                        morningCheckInTime: null,
+                        afternoonCheckInTime: null,
+                        afternoonCheckOutTime: null
+                    }));
+                    updateCount++;
+                });
+                
+                await Promise.all(updatePromises);
+                
+                displayMessage(`已成功清除 ${updateCount} 筆報名資料的簽到/簽退紀錄！`, 'success');
+
+            } catch (error) {
+                console.error("清空簽到紀錄失敗:", error);
+                displayMessage(`清除簽到/簽退失敗: ${error.message}`, 'error');
+            }
         }
 
 
@@ -1527,7 +1731,7 @@
                     cleanAndQuote(isMorningCheckedIn),      
                     cleanAndQuote(morningCheckInTimeStr),   
                     
-                    cleanAndQuote(isAfternoonCheckedIn),    // 修正了 cleanAndAndQuote 的錯誤
+                    cleanAndQuote(isAfternoonCheckedIn),    
                     cleanAndQuote(afternoonCheckInTimeStr), 
 
                     cleanAndQuote(isAfternoonCheckedOut),   
@@ -1574,12 +1778,42 @@
         
         // 清空資料 (需要二次確認，所以只觸發彈窗)
         clearDataButton.addEventListener('click', () => {
-             showConfirmModal('清空確認', '您確定要清空所有報名紀錄嗎？此操作無法復原！');
+             showConfirmModal('清空確認', '您確定要清空所有報名紀錄嗎？此操作無法復原！', 'clearData');
         }); 
         
+        // 清空簽到/簽退 (需要二次確認)
+        clearSignaturesButton.addEventListener('click', () => {
+             showConfirmModal('清空簽到/簽退確認', '您確定要清除所有報名紀錄中的簽到和簽退時間嗎？此操作會將所有簽到狀態還原為「未簽到」。', 'clearSignatures');
+        }); 
+        
+        // **NEW: 還原時間設定按鈕**
+        resetTimeSettingsButton.addEventListener('click', () => {
+            if (!areSettingsVisible) {
+                displayMessage('請先透過密碼存取設定區塊。', 'error');
+                return;
+            }
+            showConfirmModal('重設時間確認', '您確定要清除所有簽到/簽退的開放時間設定嗎？清除後，請重新設定時間區間。', 'resetTime');
+        });
+
+        // 取消報名按鈕
+        document.getElementById('cancelRegistrationButton').addEventListener('click', handleCancelRegistration);
+        
+        // 學分查詢按鈕 (NEW)
+        document.getElementById('creditQueryButton').addEventListener('click', handleCreditQuery);
+
+
         // 二次確認彈窗按鈕
         cancelConfirmButton.addEventListener('click', hideConfirmModal); // 取消清空
-        executeConfirmButton.addEventListener('click', deleteAllRegistrations); // 確定清空 
+        executeConfirmButton.addEventListener('click', () => {
+            const action = executeConfirmButton.getAttribute('data-action');
+            if (action === 'clearData') {
+                deleteAllRegistrations();
+            } else if (action === 'clearSignatures') {
+                clearAllSignatures();
+            } else if (action === 'resetTime') {
+                handleResetTimeSettings();
+            }
+        }); // 確定執行操作
 
         // 簽到/簽退功能
         morningCheckInButton.addEventListener('click', handleMorningCheckIn);

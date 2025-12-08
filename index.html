@@ -105,6 +105,23 @@
                         <p class="mt-1 text-xs text-gray-500">格式: 1位大寫英文字母 + 9位數字</p>
                     </div>
                     
+                    <!-- 中午餐點 (NEW) -->
+                    <div>
+                        <label for="meal" class="block text-sm font-medium text-gray-700 mb-1">中午餐點 (Meal)</label>
+                        <select id="meal" name="meal" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                            <option value="葷食">葷食</option>
+                            <option value="素食">素食</option>
+                        </select>
+                    </div>
+
+                    <!-- 想請教講師問題 (NEW - 非必要填寫) -->
+                    <div>
+                        <label for="question" class="block text-sm font-medium text-gray-700 mb-1">想請教講師問題 (Question) (選填)</label>
+                        <textarea id="question" name="question" placeholder="請詳細具體說明您想請教講師的問題"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150 h-24"></textarea>
+                    </div>
+                    
                     <!-- 提交按鈕 -->
                     <button type="submit" id="submitButton"
                             class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-semibold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
@@ -321,7 +338,6 @@
                         <span class="font-bold">🔒 密碼驗證：</span> 請輸入密碼以進入後台。
                     </label>
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                        <!-- REMOVED: 密碼提示 (661113) -->
                         <input type="password" id="backendPassword" placeholder="輸入密碼..."
                                class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
                         <button id="confirmBackendAccessButton" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
@@ -335,21 +351,26 @@
                 <div id="backendContent" class="hidden space-y-6 mt-6 pt-4 border-t border-gray-200">
                     
                     <h3 class="text-xl font-semibold text-gray-700">操作按鈕</h3>
-                    <div class="flex space-x-2 w-full justify-start mb-6">
+                    <div class="flex flex-wrap space-x-2 w-full justify-start mb-6">
                         <!-- 匯出 CSV 按鈕 -->
                         <button id="exportCsvButton" type="button"
-                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             匯出 CSV
                         </button>
                         <!-- 清空報名資料按鈕 -->
                         <button id="clearDataButton" type="button"
-                                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             清空報名資料
                         </button>
                          <!-- 清除簽到/簽退按鈕 (NEW) -->
                         <button id="clearSignaturesButton" type="button"
-                                class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
+                                class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             清除簽到/簽退
+                        </button>
+                        <!-- 新增會員按鈕 (NEW) -->
+                        <button id="addMemberButton" type="button"
+                                class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                            新增會員
                         </button>
                     </div>
 
@@ -458,6 +479,36 @@
         </div>
     </div>
 
+    <!-- 新增會員彈窗 (NEW) -->
+    <div id="addMemberModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500">
+            
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">新增報名會員</h3>
+            <p class="text-gray-600 mb-4">請輸入新的會員身份證字號，將其加入報名白名單。</p>
+
+            <div class="space-y-3 text-left">
+                <label for="newMemberIdInput" class="block text-sm font-medium text-gray-700">身份證字號 (ID Number)</label>
+                <input type="text" id="newMemberIdInput" placeholder="例如: A123456789" required
+                       maxlength="10" 
+                       pattern="[A-Z][0-9]{9}"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 uppercase">
+                <p id="memberAddMessage" class="text-xs text-red-500 hidden mt-1"></p>
+            </div>
+
+            <!-- 按鈕區塊 -->
+            <div class="flex justify-center space-x-4 mt-6">
+                <button id="cancelAddMemberButton" type="button"
+                        class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                    取消
+                </button>
+                <button id="confirmAddMemberButton" type="button"
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-200 shadow-md">
+                    確認新增
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -466,7 +517,7 @@
             getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
-            getFirestore, collection, addDoc, query, orderBy, setDoc, getDoc, getDocs, where, updateDoc, doc, deleteDoc, onSnapshot, FieldValue
+            getFirestore, collection, addDoc, query, orderBy, setDoc, getDoc, getDocs, where, updateDoc, doc, deleteDoc, onSnapshot, FieldValue, deleteField
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -477,6 +528,7 @@
         const EXPORT_PASSWORD = '661113'; // 管理員密碼
         
         // ** 報名會員白名單 (基於身份證字號) **
+        // 這是最新的身份證字號白名單，用於報名驗證
         const REGISTRATION_ID_WHITELIST = [
             'A220444341', 'A220710340', 'A221690507', 'A223395916', 'A223752966', 'A224117621',
             'B220564616', 'B220716558', 'B221770734', 'B221875305', 'B222409118', 'C220033144',
@@ -553,6 +605,18 @@
             'T223686445', 'T223819748', 'U220722810', 'U220728536', 'U220822253', 'V220445720',
             'V220877482', 'W200265559', 'X220049013', 'X220083908', 'S225795339', 'S225615872',
             'S225901935', 'T221761365', 'S225642066', 'S225641989', 'S225568878' // 從圖像中補充的身份證字號
+        ];
+        
+        // ** 學分查詢身份證字號白名單 (使用您提供的圖檔資訊) **
+        const CREDIT_ID_WHITELIST = [
+            'S222327188',
+            'S225795339',
+            'S225615872',
+            'S225901935',
+            'T221761365',
+            'S225642066',
+            'S225641989',
+            'S225568878'
         ];
         
         // --- 全域變數與初始化 ---
@@ -650,6 +714,14 @@
         const clearDataButton = document.getElementById('clearDataButton'); 
         const clearSignaturesButton = document.getElementById('clearSignaturesButton'); // NEW
 
+        // 新增會員相關元素
+        const addMemberButton = document.getElementById('addMemberButton');
+        const addMemberModal = document.getElementById('addMemberModal');
+        const cancelAddMemberButton = document.getElementById('cancelAddMemberButton');
+        const confirmAddMemberButton = document.getElementById('confirmAddMemberButton');
+        const newMemberIdInput = document.getElementById('newMemberIdInput');
+        const memberAddMessage = document.getElementById('memberAddMessage');
+
         // 彈窗
         const successModal = document.getElementById('successModal'); // 報名成功
         const closeModalButton = document.getElementById('closeModalButton');
@@ -746,6 +818,25 @@
             executeConfirmButton.removeAttribute('data-action');
             setTimeout(() => { confirmModal.classList.add('hidden'); }, 300);
         }
+        
+        /**
+         * 顯示新增會員彈窗
+         */
+        function showAddMemberModal() {
+            addMemberModal.classList.remove('hidden');
+            memberAddMessage.classList.add('hidden');
+            newMemberIdInput.value = '';
+            setTimeout(() => { addMemberModal.classList.add('modal-open'); }, 10);
+        }
+        
+        /**
+         * 隱藏新增會員彈窗
+         */
+        function hideAddMemberModal() {
+            addMemberModal.classList.remove('modal-open');
+            setTimeout(() => { addMemberModal.classList.add('hidden'); }, 300);
+        }
+
 
         /**
          * 顯示訊息給使用者，並設定樣式
@@ -953,6 +1044,7 @@
                 }
                 
                 saveSettingsButton.disabled = false; // 載入完成後啟用儲存按鈕
+                resetTimeSettingsButton.disabled = false; // 載入完成後啟用還原按鈕
 
             } catch (error) {
                 console.error("獲取系統設定失敗:", error);
@@ -1138,14 +1230,14 @@
             try {
                 const settingsRef = getSettingsDocRef();
                 
-                // 將所有時間欄位設置為 null，這將在 fetchSettings 中觸發 UI 顯示當前時間
+                // 將所有時間欄位設置為 deleteField() 來清除
                 const resetData = {
-                    morningCheckInStartTime: null,
-                    morningCheckInEndTime: null,
-                    afternoonCheckInStartTime: null,
-                    afternoonCheckInEndTime: null,
-                    afternoonCheckOutStartTime: null,
-                    afternoonCheckOutEndTime: null,
+                    morningCheckInStartTime: deleteField(),
+                    morningCheckInEndTime: deleteField(),
+                    afternoonCheckInStartTime: deleteField(),
+                    afternoonCheckInEndTime: deleteField(),
+                    afternoonCheckOutStartTime: deleteField(),
+                    afternoonCheckOutEndTime: deleteField(),
                 };
                 
                 await updateDoc(settingsRef, resetData);
@@ -1182,11 +1274,13 @@
 
             const school = document.getElementById('school').value.trim();
             const name = document.getElementById('name').value.trim();
-            const id_number = document.getElementById('id_number').value.trim().toUpperCase(); // 雖然用不到，但仍需格式化
+            const id_number = document.getElementById('id_number').value.trim().toUpperCase(); 
+            const meal = document.getElementById('meal').value; // NEW
+            const question = document.getElementById('question').value.trim(); // NEW
 
             // 基本驗證
-            if (!school || !name || !id_number) {
-                displayMessage('所有欄位都必須填寫！', 'error');
+            if (!school || !name || !id_number || !meal) {
+                displayMessage('學校、姓名、身份證字號及餐點欄位都必須填寫！', 'error');
                 submitButton.disabled = false;
                 submitButton.textContent = '立即報名';
                 return;
@@ -1226,6 +1320,8 @@
                 school,
                 name,
                 id_number,
+                meal,       // NEW
+                question,   // NEW
                 timestamp: new Date(), // 使用當前時間記錄報名
                 registeredBy: userId,
                 morningCheckInTime: null, // 新增欄位
@@ -1467,40 +1563,11 @@
                     return;
                 }
 
-                // --- 步驟 3: 執行簽到/簽退邏輯與交叉驗證 ---
+                // --- 步驟 3: 執行簽到/簽退邏輯與交叉驗證 (已移除關聯性檢查) ---
+                
+                // 注意：這裡移除了所有上午/下午的順序檢查，現在只需檢查是否重複即可。
 
-                if (actionType === 'morningCheckIn') {
-                    // 僅檢查重複簽到 (已在上面處理)
-                    updateData[updateField] = signDate; 
-
-                } else if (actionType === 'afternoonCheckIn') {
-                    // 邏輯: 必須先完成上午簽到
-                    if (!data.morningCheckInTime) {
-                        showErrorModal('簽到失敗', '您尚未完成上午簽到，無法進行下午簽到。');
-                        return;
-                    }
-                    // 邏輯: 下午簽到時間必須晚於上午簽到時間
-                    if (signDate.getTime() < data.morningCheckInTime.toDate().getTime()) {
-                         showErrorModal('簽到失敗', '下午簽到時間不能早於上午簽到時間！');
-                        return;
-                    }
-
-                    updateData[updateField] = signDate; 
-
-                } else if (actionType === 'afternoonCheckOut') {
-                    // 邏輯: 必須先完成下午簽到
-                    if (!data.afternoonCheckInTime) {
-                        showErrorModal('簽退失敗', '您尚未完成下午簽到，無法進行下午簽退。');
-                        return;
-                    }
-                    // 邏輯: 下午簽退時間必須晚於下午簽到時間
-                    if (signDate.getTime() < data.afternoonCheckInTime.toDate().getTime()) {
-                         showErrorModal('簽退失敗', '下午簽退時間不能早於下午簽到時間！');
-                        return;
-                    }
-
-                    updateData[updateField] = signDate;
-                }
+                updateData[updateField] = signDate;
 
                 await updateDoc(docRef, updateData);
                 signIdNumberInput.value = ''; // 清空身份證字號輸入框
@@ -1564,6 +1631,54 @@
             setupBackendListener(); // 移除即時監聽清單啟動
             
             displayMessage('後台存取成功！', 'success');
+        }
+        
+        /**
+         * 處理新增會員 (NEW)
+         */
+        function handleAddMember() {
+            if (!isBackendAccessed) {
+                displayMessage('請先進入後台系統。', 'error');
+                return;
+            }
+            showAddMemberModal();
+        }
+
+        /**
+         * 處理確認新增會員身份證字號 (NEW)
+         */
+        function handleConfirmAddMember() {
+            const idNumber = newMemberIdInput.value.trim().toUpperCase();
+
+            // 1. 驗證格式
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(idNumber)) {
+                memberAddMessage.classList.remove('text-green-500');
+                memberAddMessage.classList.add('text-red-500');
+                memberAddMessage.textContent = '身份證字號格式不正確 (A123456789)。';
+                memberAddMessage.classList.remove('hidden');
+                return;
+            }
+
+            // 2. 檢查是否重複
+            if (REGISTRATION_ID_WHITELIST.includes(idNumber)) {
+                memberAddMessage.classList.remove('text-green-500');
+                memberAddMessage.classList.add('text-red-500');
+                memberAddMessage.textContent = '該身份證字號已存在於報名白名單中。';
+                memberAddMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // 3. 新增至白名單
+            REGISTRATION_ID_WHITELIST.push(idNumber);
+            memberAddMessage.classList.remove('text-red-500');
+            memberAddMessage.classList.add('text-green-500');
+            memberAddMessage.textContent = `成功新增 ${idNumber} 至報名白名單！`;
+            memberAddMessage.classList.remove('hidden');
+            console.log("Updated REGISTRATION_ID_WHITELIST:", REGISTRATION_ID_WHITELIST); // Console log for verification
+            
+            // 延遲關閉視窗
+            setTimeout(hideAddMemberModal, 1500);
         }
 
         /**
@@ -1800,6 +1915,11 @@
         
         // 學分查詢按鈕 (NEW)
         document.getElementById('creditQueryButton').addEventListener('click', handleCreditQuery);
+        
+        // 新增會員按鈕 (NEW)
+        addMemberButton.addEventListener('click', handleAddMember);
+        cancelAddMemberButton.addEventListener('click', hideAddMemberModal);
+        confirmAddMemberButton.addEventListener('click', handleConfirmAddMember);
 
 
         // 二次確認彈窗按鈕

@@ -1782,6 +1782,8 @@
                         name: data.name,
                         id_number: data.id_number, 
                         timestamp: data.timestamp,
+                        meal: data.meal || '', // NEW
+                        question: data.question || '', // NEW
                         morningCheckInTime: data.morningCheckInTime || null, // NEW
                         afternoonCheckInTime: data.afternoonCheckInTime || null, // NEW
                         afternoonCheckOutTime: data.afternoonCheckOutTime || null, // NEW
@@ -1813,7 +1815,7 @@
 
             // 更新 CSV 標頭
             const headers = [
-                "報名時間", "學校", "姓名", "身份證字號", 
+                "報名時間", "學校", "姓名", "身份證字號", "餐點", "講師問題", // ADDED NEW FIELDS
                 "是否上午簽到", "上午簽到時間", 
                 "是否下午簽到", "下午簽到時間", 
                 "是否下午簽退", "下午簽退時間", 
@@ -1842,6 +1844,8 @@
                     cleanAndQuote(reg.school || ''),
                     cleanAndQuote(reg.name || ''),
                     cleanAndQuote(reg.id_number || ''),
+                    cleanAndQuote(reg.meal || ''), // NEW
+                    cleanAndQuote(reg.question || ''), // NEW
                     
                     cleanAndQuote(isMorningCheckedIn),      
                     cleanAndQuote(morningCheckInTimeStr),   

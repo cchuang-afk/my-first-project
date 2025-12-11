@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0047)https://cchuang-afk.github.io/my-first-project/ -->
+<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>高雄市學校護理人員繼續教育研習課程報名網</title>
     <!-- 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* 使用 Inter 字體作為主要字體 */
         body {
@@ -34,7 +34,7 @@
             transform: translateY(0);
             opacity: 1;
         }
-        /* 後台清單表格樣式 */
+        /* 後台清單表格樣式 (雖然已移除清單功能，但保留樣式定義) */
         .backend-table th, .backend-table td {
             padding: 10px 14px;
             border-bottom: 1px solid #e5e7eb;
@@ -71,9 +71,7 @@
         <main class="w-full max-w-4xl p-4 sm:p-8">
             
             <!-- Firebase 狀態/錯誤訊息 -->
-            <div id="statusMessage" class="w-full max-w-2xl mx-auto p-3 mb-6 rounded-lg text-center text-sm font-medium transition duration-300 card">
-                正在初始化系統...
-            </div>
+            <div id="statusMessage" class="w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300">系統準備就緒。</div>
 
             <!-- 報名表單區塊 -->
             <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
@@ -84,54 +82,52 @@
                     <!-- 學校欄位 -->
                     <div>
                         <label for="school" class="block text-sm font-medium text-gray-700 mb-1">學校 (School)</label>
-                        <input type="text" id="school" name="school" placeholder="請輸入學校名稱" required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        <input type="text" id="school" name="school" placeholder="請輸入學校名稱" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
                     </div>
 
                     <!-- 姓名欄位 -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 (Name)</label>
-                        <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
                     </div>
 
                     <!-- 身份證字號欄位 -->
                     <div>
                         <label for="id_number" class="block text-sm font-medium text-gray-700 mb-1">身份證字號 (ID Number)</label>
-                        <input type="text" id="id_number" name="id_number" placeholder="請輸入身份證字號 (例如: A123456789)" required
-                               maxlength="10" 
-                               pattern="[A-Z][0-9]{9}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        <input type="text" id="id_number" name="id_number" placeholder="請輸入身份證字號 (例如: A123456789)" required="" maxlength="10" pattern="[A-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150 uppercase">
                         <p class="mt-1 text-xs text-gray-500">格式: 1位大寫英文字母 + 9位數字</p>
                     </div>
+
+                    <!-- 手機號碼欄位 -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">手機 (Phone Number)</label>
+                        <input type="tel" id="phone" name="phone" placeholder="請輸入手機號碼 (例如: 0912345678)" required="" maxlength="10" pattern="[0-9]{10}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        <p class="mt-1 text-xs text-gray-500">格式: 10位數字 (例如 09xxxxxxxx)</p>
+                    </div>
                     
-                    <!-- 中午餐點 (NEW) -->
+                    <!-- 中午餐點 -->
                     <div>
                         <label for="meal" class="block text-sm font-medium text-gray-700 mb-1">中午餐點 (Meal)</label>
-                        <select id="meal" name="meal" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        <select id="meal" name="meal" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
                             <option value="葷食">葷食</option>
                             <option value="素食">素食</option>
                         </select>
                     </div>
 
-                    <!-- 想請教講師問題 (NEW - 非必要填寫) -->
+                    <!-- 想請教講師問題 (選填) -->
                     <div>
                         <label for="question" class="block text-sm font-medium text-gray-700 mb-1">想請教講師問題 (Question) (選填)</label>
-                        <textarea id="question" name="question" placeholder="請詳細具體說明您想請教講師的問題"
-                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150 h-24"></textarea>
+                        <textarea id="question" name="question" placeholder="請詳細具體說明您想請教講師的問題" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150 h-24"></textarea>
                     </div>
                     
                     <!-- 提交按鈕 -->
-                    <button type="submit" id="submitButton"
-                            class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-semibold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
-                            disabled>
+                    <button type="submit" id="submitButton" class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-semibold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50">
                         立即報名
                     </button>
                 </form>
             </div>
 
-            <!-- 研習活動簽到區塊 (更新為三階段) -->
+            <!-- 研習活動簽到區塊 -->
             <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
                 <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">研習活動簽到</h2>
 
@@ -141,31 +137,43 @@
                         <label for="sign_id_number" class="block text-sm font-medium text-gray-700 mb-1">
                             簽到/簽退身份證字號 (ID Number)
                         </label>
-                        <input type="text" id="sign_id_number" placeholder="請輸入身份證字號進行簽到或簽退" required
-                               maxlength="10" 
-                               pattern="[A-Z][0-9]{9}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                        <input type="text" id="sign_id_number" placeholder="請輸入身份證字號進行簽到或簽退" required="" maxlength="10" pattern="[A-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 uppercase">
                     </div>
                     
-                    <!-- 簽到/簽退時間設定 (已移除，將使用系統當前時間) -->
-
                     <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2 pt-2">
-                        <!-- 上午簽到按鈕 -->
-                        <button id="morningCheckInButton" type="button" disabled
-                                class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
-                            上午簽到 (研習兩天)
+                        <!-- 上午簽到按鈕 (已移除: (研習兩天)) -->
+                        <button id="morningCheckInButton" type="button" class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
+                            上午簽到
                         </button>
-                        <!-- 下午簽到按鈕 -->
-                        <button id="afternoonCheckInButton" type="button" disabled
-                                class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-xl font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
-                            下午簽到 (研習兩天)
+                        <!-- 下午簽到按鈕 (已移除: (研習兩天)) -->
+                        <button id="afternoonCheckInButton" type="button" class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-xl font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
+                            下午簽到
                         </button>
-                        <!-- 下午簽退按鈕 -->
-                        <button id="afternoonCheckOutButton" type="button" disabled
-                                class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
-                            下午簽退 (研習兩天)
+                        <!-- 下午簽退按鈕 (已移除: (研習兩天)) -->
+                        <button id="afternoonCheckOutButton" type="button" class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
+                            下午簽退
                         </button>
                     </div>
+                </div>
+            </div>
+            
+            <!-- 滿意度調查程式區塊 (NEW) -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">滿意度調查程式區塊</h2>
+
+                <div class="space-y-4">
+                    <!-- 身份證字號欄位 for Survey Access -->
+                    <div>
+                        <label for="survey_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                            身份證字號 (ID Number)
+                        </label>
+                        <input type="text" id="survey_id_number" placeholder="請輸入身份證字號以填寫問卷" required="" maxlength="10" pattern="[A-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 uppercase">
+                    </div>
+
+                    <!-- 進入填寫按鈕 -->
+                    <button id="enterSurveyButton" type="button" class="w-full bg-green-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-green-600 transition duration-200 shadow-lg disabled:opacity-50">
+                        進入填寫滿意度調查表
+                    </button>
                 </div>
             </div>
             
@@ -179,15 +187,11 @@
                         <label for="cancel_id_number" class="block text-sm font-medium text-gray-700 mb-1">
                             欲取消報名者的身份證字號 (ID Number)
                         </label>
-                        <input type="text" id="cancel_id_number" placeholder="請輸入身份證字號以取消報名" required
-                               maxlength="10" 
-                               pattern="[A-Z][0-9]{9}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+                        <input type="text" id="cancel_id_number" placeholder="請輸入身份證字號以取消報名" required="" maxlength="10" pattern="[A-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150 uppercase">
                     </div>
 
                     <!-- 取消按鈕 -->
-                    <button id="cancelRegistrationButton" type="button" disabled
-                            class="w-full bg-red-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-red-600 transition duration-200 shadow-lg disabled:opacity-50">
+                    <button id="cancelRegistrationButton" type="button" class="w-full bg-red-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-red-600 transition duration-200 shadow-lg disabled:opacity-50">
                         確定取消報名
                     </button>
                 </div>
@@ -203,15 +207,11 @@
                         <label for="query_id_number" class="block text-sm font-medium text-gray-700 mb-1">
                             身份證字號 (ID Number)
                         </label>
-                        <input type="text" id="query_id_number" placeholder="請輸入身份證字號以查詢學分狀態" required
-                               maxlength="10" 
-                               pattern="[A-Z][0-9]{9}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                        <input type="text" id="query_id_number" placeholder="請輸入身份證字號以查詢學分狀態" required="" maxlength="10" pattern="[A-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150 uppercase">
                     </div>
 
                     <!-- 查詢按鈕 -->
-                    <button id="creditQueryButton" type="button" disabled
-                            class="w-full bg-purple-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-purple-600 transition duration-200 shadow-lg disabled:opacity-50">
+                    <button id="creditQueryButton" type="button" class="w-full bg-purple-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-purple-600 transition duration-200 shadow-lg disabled:opacity-50">
                         查詢學分申請狀態
                     </button>
                 </div>
@@ -223,8 +223,7 @@
                     <h2 class="text-2xl font-semibold text-gray-700">時間簽到設定</h2>
 
                     <!-- 1. 顯示/隱藏 按鈕 (樣式已調整為與匯出按鈕相近) -->
-                    <button id="toggleSettingsButton" type="button" disabled
-                            class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                    <button id="toggleSettingsButton" type="button" class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
                         設定時間
                     </button>
                 </div>
@@ -239,10 +238,8 @@
                         <span class="font-bold">🔒 密碼驗證：</span> 輸入密碼以存取設定。
                     </label>
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                        <input type="password" id="settingsAccessPassword" placeholder="輸入密碼..."
-                               class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
-                        <button id="confirmSettingsAccessButton" type="button"
-                                class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
+                        <input type="password" id="settingsAccessPassword" placeholder="輸入密碼..." class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
+                        <button id="confirmSettingsAccessButton" type="button" class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
                             確認存取
                         </button>
                     </div>
@@ -258,13 +255,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="setting_morning_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
-                                <input type="datetime-local" id="setting_morning_ci_start" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                                <input type="datetime-local" id="setting_morning_ci_start" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
                             </div>
                             <div>
                                 <label for="setting_morning_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
-                                <input type="datetime-local" id="setting_morning_ci_end" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                                <input type="datetime-local" id="setting_morning_ci_end" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
                             </div>
                         </div>
                     </div>
@@ -275,13 +270,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="setting_afternoon_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
-                                <input type="datetime-local" id="setting_afternoon_ci_start" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                                <input type="datetime-local" id="setting_afternoon_ci_start" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
                             </div>
                             <div>
                                 <label for="setting_afternoon_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
-                                <input type="datetime-local" id="setting_afternoon_ci_end" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                                <input type="datetime-local" id="setting_afternoon_ci_end" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
                             </div>
                         </div>
                     </div>
@@ -292,13 +285,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="setting_afternoon_co_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
-                                <input type="datetime-local" id="setting_afternoon_co_start" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                                <input type="datetime-local" id="setting_afternoon_co_start" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
                             </div>
                             <div>
                                 <label for="setting_afternoon_co_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
-                                <input type="datetime-local" id="setting_afternoon_co_end" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                                <input type="datetime-local" id="setting_afternoon_co_end" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
                             </div>
                         </div>
                     </div>
@@ -308,12 +299,10 @@
                         <label class="block text-sm font-medium text-yellow-700 mb-2">
                             <span class="font-bold">💾 設定操作：</span> 儲存或還原時間區間。
                         </label>
-                        <button id="saveSettingsButton" type="button" disabled
-                                class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                        <button id="saveSettingsButton" type="button" class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
                             儲存設定
                         </button>
-                        <button id="resetTimeSettingsButton" type="button" disabled
-                                class="w-full px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition duration-150 shadow-md disabled:opacity-50">
+                        <button id="resetTimeSettingsButton" type="button" class="w-full px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition duration-150 shadow-md disabled:opacity-50">
                             還原時間設定 (至預設值)
                         </button>
                     </div>
@@ -326,8 +315,7 @@
                     <h2 class="text-2xl font-semibold text-gray-700 whitespace-nowrap">後台資料操作</h2>
                     
                     <!-- 進入系統按鈕 (預設顯示) -->
-                    <button id="accessBackendButton" type="button" disabled
-                            class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md disabled:opacity-50">
+                    <button id="accessBackendButton" type="button" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md disabled:opacity-50">
                         進入系統
                     </button>
                 </div>
@@ -338,8 +326,7 @@
                         <span class="font-bold">🔒 密碼驗證：</span> 請輸入密碼以進入後台。
                     </label>
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                        <input type="password" id="backendPassword" placeholder="輸入密碼..."
-                               class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+                        <input type="password" id="backendPassword" placeholder="輸入密碼..." class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
                         <button id="confirmBackendAccessButton" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
                             確認進入
                         </button>
@@ -353,23 +340,19 @@
                     <h3 class="text-xl font-semibold text-gray-700">操作按鈕</h3>
                     <div class="flex flex-wrap space-x-2 w-full justify-start mb-6">
                         <!-- 匯出 CSV 按鈕 -->
-                        <button id="exportCsvButton" type="button"
-                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                        <button id="exportCsvButton" type="button" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             匯出 CSV
                         </button>
                         <!-- 清空報名資料按鈕 -->
-                        <button id="clearDataButton" type="button"
-                                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                        <button id="clearDataButton" type="button" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             清空報名資料
                         </button>
                          <!-- 清除簽到/簽退按鈕 (NEW) -->
-                        <button id="clearSignaturesButton" type="button"
-                                class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                        <button id="clearSignaturesButton" type="button" class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             清除簽到/簽退
                         </button>
                         <!-- 新增會員按鈕 (NEW) -->
-                        <button id="addMemberButton" type="button"
-                                class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                        <button id="addMemberButton" type="button" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md mb-2 sm:mb-0">
                             新增會員
                         </button>
                     </div>
@@ -389,9 +372,94 @@
 
         <!-- 顯示 User ID 供協作用途 -->
         <p class="mt-4 text-xs text-gray-400">
-            <span class="font-semibold">當前使用者 ID:</span> <span id="currentUserId">N/A</span>
+            <span class="font-semibold">當前使用者 ID:</span> <span id="currentUserId">xBTc5FIiWfWsbpCRNKEe0cphQbS2</span>
         </p>
 
+    </div>
+
+    <!-- 滿意度調查彈窗 (Modal) -->
+    <div id="surveyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">研習滿意度調查表</h3>
+            <p id="surveyUserDisplay" class="text-lg font-semibold text-green-700 mb-6">填寫人: N/A</p>
+
+            <form id="surveyForm" class="space-y-6 text-left">
+                <input type="hidden" id="surveyHiddenIdNumber" name="surveyHiddenIdNumber">
+                
+                <!-- 題目 1-5 (Radio Buttons) -->
+                <div id="surveyQuestionsContainer" class="space-y-4">
+                    <!-- Q1 -->
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">1. 對於本課程內容應用於實際工作感到滿意度</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q1">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="不滿意" class="text-green-600"><span>不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                        </div>
+                    </div>
+                    <!-- Q2 -->
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">2. 本次課程講師對課程主題之專業能力</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q2">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="不滿意" class="text-green-600"><span>不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                        </div>
+                    </div>
+                    <!-- Q3 -->
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">3. 本次課程能提供適當範例與實務說明</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q3">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="不滿意" class="text-green-600"><span>不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                        </div>
+                    </div>
+                    <!-- Q4 -->
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">4. 本次課程完整且容易吸收</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q4">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="不滿意" class="text-green-600"><span>不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                        </div>
+                    </div>
+                    <!-- Q5 -->
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">5. 本次課程總評價</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q5">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="不滿意" class="text-green-600"><span>不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 題目 6 (Textarea) -->
+                <div>
+                    <label for="q6" class="block text-sm font-medium text-gray-700 mb-1">6. 其他建議事項 (選填)</label>
+                    <textarea id="q6" name="q6" placeholder="請輸入任何建議或意見" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 h-28"></textarea>
+                </div>
+                
+                <!-- 提交按鈕 -->
+                <button type="submit" id="submitSurveyButton" class="w-full bg-green-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-green-600 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
+                    送出問卷
+                </button>
+                <button type="button" id="closeSurveyFormButton" class="w-full bg-gray-300 text-gray-700 py-3 mt-2 rounded-xl font-semibold hover:bg-gray-400 transition duration-200">
+                    取消填寫
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- 非會員報名錯誤彈窗 (Modal) -->
@@ -407,8 +475,7 @@
             <p class="text-gray-600 mb-6" id="errorMessage">您非會員無法報名，請洽會員組</p>
 
             <!-- 關閉按鈕 -->
-            <button id="closeErrorModalButton" type="button"
-                    class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition duration-200 shadow-md">
+            <button id="closeErrorModalButton" type="button" class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition duration-200 shadow-md">
                 確定
             </button>
         </div>
@@ -427,8 +494,7 @@
             <p class="text-gray-600 mb-6" id="signSuccessMessage">您已成功完成簽到/簽退。</p>
 
             <!-- 關閉按鈕 -->
-            <button id="closeSignModalButton" type="button"
-                    class="w-full bg-sky-500 text-white py-2 rounded-lg font-semibold hover:bg-sky-600 transition duration-200 shadow-md">
+            <button id="closeSignModalButton" type="button" class="w-full bg-sky-500 text-white py-2 rounded-lg font-semibold hover:bg-sky-600 transition duration-200 shadow-md">
                 確定
             </button>
         </div>
@@ -447,8 +513,7 @@
             <p class="text-gray-600 mb-6">您已成功完成研習報名，謝謝您的參與。</p>
 
             <!-- 關閉按鈕 -->
-            <button id="closeModalButton" type="button"
-                    class="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-200 shadow-md">
+            <button id="closeModalButton" type="button" class="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-200 shadow-md">
                 確定
             </button>
         </div>
@@ -467,12 +532,10 @@
 
             <!-- 按鈕區塊 -->
             <div class="flex justify-center space-x-4">
-                <button id="cancelConfirmButton" type="button"
-                        class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                <button id="cancelConfirmButton" type="button" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
                     取消
                 </button>
-                <button id="executeConfirmButton" type="button"
-                        class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
+                <button id="executeConfirmButton" type="button" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
                     確定清空
                 </button>
             </div>
@@ -488,21 +551,16 @@
 
             <div class="space-y-3 text-left">
                 <label for="newMemberIdInput" class="block text-sm font-medium text-gray-700">身份證字號 (ID Number)</label>
-                <input type="text" id="newMemberIdInput" placeholder="例如: A123456789" required
-                       maxlength="10" 
-                       pattern="[A-Z][0-9]{9}"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 uppercase">
+                <input type="text" id="newMemberIdInput" placeholder="例如: A123456789" required="" maxlength="10" pattern="[A-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 uppercase">
                 <p id="memberAddMessage" class="text-xs text-red-500 hidden mt-1"></p>
             </div>
 
             <!-- 按鈕區塊 -->
             <div class="flex justify-center space-x-4 mt-6">
-                <button id="cancelAddMemberButton" type="button"
-                        class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                <button id="cancelAddMemberButton" type="button" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
                     取消
                 </button>
-                <button id="confirmAddMemberButton" type="button"
-                        class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-200 shadow-md">
+                <button id="confirmAddMemberButton" type="button" class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-200 shadow-md">
                     確認新增
                 </button>
             </div>
@@ -532,7 +590,7 @@
         const REGISTRATION_ID_WHITELIST = [
             'A220444341', 'A220710340', 'A221690507', 'A223395916', 'A223752966', 'A224117621',
             'B220564616', 'B220716558', 'B221770734', 'B221875305', 'B222409118', 'C220033144',
-            'C220273728', 'C221179925', 'D221280353', 'D221353191', 'D221368665', 'D221792812',
+            'C220273728', 'C221177925', 'D221280353', 'D221353191', 'D221368665', 'D221792812',
             'D221823723', 'D221848444', 'D222011281', 'D222243694', 'D222371031', 'D222987959',
             'E122740419', 'E124843842', 'E220079704', 'E220195418', 'E220210483', 'E220297962',
             'E220308460', 'E220341689', 'E220342293', 'E220388084', 'E220393996', 'E220524099',
@@ -625,6 +683,7 @@
         let userId = 'anonymous';
         let isAuthReady = false;
         let isBackendAccessed = false; // NEW: 追蹤後台是否已登入
+        let currentSurveyName = ''; // 用於滿意度調查彈窗顯示填寫人
         
         // 全域簽到/簽退時間區間設定 (Date Object) - 更新為三個區間
         let morningCheckInStartTime = null; 
@@ -671,11 +730,25 @@
         const statusMessage = document.getElementById('statusMessage');
         const currentUserIdDisplay = document.getElementById('currentUserId');
         
+        // NEW: 手機欄位
+        const phoneInput = document.getElementById('phone'); 
+        
         // 簽到/簽退相關元素 - 更新為三階段按鈕
         const signIdNumberInput = document.getElementById('sign_id_number');
         const morningCheckInButton = document.getElementById('morningCheckInButton');
         const afternoonCheckInButton = document.getElementById('afternoonCheckInButton');
         const afternoonCheckOutButton = document.getElementById('afternoonCheckOutButton');
+        
+        // 滿意度調查相關元素 (NEW)
+        const enterSurveyButton = document.getElementById('enterSurveyButton');
+        const surveyIdNumberInput = document.getElementById('survey_id_number');
+        const surveyModal = document.getElementById('surveyModal');
+        const closeSurveyFormButton = document.getElementById('closeSurveyFormButton');
+        const surveyForm = document.getElementById('surveyForm');
+        const surveyUserDisplay = document.getElementById('surveyUserDisplay');
+        const surveyHiddenIdNumber = document.getElementById('surveyHiddenIdNumber');
+        const submitSurveyButton = document.getElementById('submitSurveyButton');
+
         
         // 系統設定相關元素
         const morningCheckInStartTimeInput = document.getElementById('setting_morning_ci_start');
@@ -725,11 +798,11 @@
         // 彈窗
         const successModal = document.getElementById('successModal'); // 報名成功
         const closeModalButton = document.getElementById('closeModalButton');
-        const signSuccessModal = document.getElementById('signSuccessModal'); // 簽到/簽退成功 & 取消報名成功
+        const signSuccessModal = document.getElementById('signSuccessModal'); // 簽到/簽退成功 & 取消報名成功 & 問卷填寫成功
         const closeSignModalButton = document.getElementById('closeSignModalButton');
         const signSuccessTitle = document.getElementById('signSuccessTitle');
         const signSuccessMessage = document.getElementById('signSuccessMessage');
-        const errorModal = document.getElementById('errorModal'); // 報名錯誤 & 查詢失敗
+        const errorModal = document.getElementById('errorModal'); // 報名錯誤 & 查詢失敗 & 問卷錯誤
         const closeErrorModalButton = document.getElementById('closeErrorModalButton');
         const errorTitle = document.getElementById('errorTitle');
         const errorMessage = document.getElementById('errorMessage');
@@ -784,6 +857,25 @@
         function hideErrorModal() {
             errorModal.classList.remove('modal-open');
             setTimeout(() => { errorModal.classList.add('hidden'); }, 300);
+        }
+
+        /**
+         * 顯示問卷彈窗
+         * @param {string} name 填寫者姓名
+         */
+        function showSurveyModal(name) {
+            surveyUserDisplay.textContent = `填寫人: ${name}`;
+            surveyModal.classList.remove('hidden');
+            setTimeout(() => { surveyModal.classList.add('modal-open'); }, 10);
+        }
+        
+        /**
+         * 隱藏問卷彈窗
+         */
+        function hideSurveyModal() {
+            surveyModal.classList.remove('modal-open');
+            surveyForm.reset(); // 清空表單
+            setTimeout(() => { surveyModal.classList.add('hidden'); }, 300);
         }
         
         /**
@@ -917,6 +1009,14 @@
             // 使用公共路徑: /artifacts/{appId}/public/data/registrations
             return collection(db, 'artifacts', appId, 'public', 'data', 'registrations');
         }
+
+        /**
+         * 獲取問卷資料集的 Firestore 集合參考 (NEW)
+         */
+        function getSurveysCollectionRef() {
+            // 使用公共路徑: /artifacts/{appId}/public/data/surveys
+            return collection(db, 'artifacts', appId, 'public', 'data', 'surveys');
+        }
         
         /**
          * 獲取系統設定文件的 Firestore 文件參考
@@ -953,9 +1053,10 @@
                         afternoonCheckInButton.disabled = false;
                         afternoonCheckOutButton.disabled = false;
                         toggleSettingsButton.disabled = false; // 啟用設定按鈕
-                        accessBackendButton.disabled = false; // 啟用後台進入按鈕 // NEW
+                        accessBackendButton.disabled = false; // 啟用後台進入按鈕
                         cancelRegistrationButton.disabled = false; // 啟用取消報名按鈕
                         creditQueryButton.disabled = false; // 啟用學分查詢按鈕
+                        enterSurveyButton.disabled = false; // 啟用問卷按鈕 (NEW)
                         isAuthReady = true;
                         await fetchSettings(); // 載入系統設定
                     } else {
@@ -976,24 +1077,10 @@
             }
         }
         
-        // --- 報名清單顯示與更新 (已移除即時監聽) ---
-
-        /**
-         * 渲染報名者清單到畫面上 (僅在後台登入時使用一次)
-         * @param {Array<Object>} registrations 報名資料陣列
-         */
-        function renderRegistrationsList(registrations) {
-            // 由於清單功能已移除，此函數現在只用於 CSV 匯出前的資料處理，但為了兼容性保留結構。
-            // 這裡不再進行前端渲染。
-            return; 
-        }
-
         /**
          * 從 Firestore 獲取資料並開始即時監聽 (此處改為僅獲取資料，不進行監聽)
          */
         function setupBackendListener() {
-            // 由於清單已移除，此處不再需要設置 onSnapshot。
-            // 程式碼已精簡，以符合移除清單功能的需求。
             console.log("Backend: Listing feature removed. Ready for export/clear operations.");
         }
 
@@ -1275,12 +1362,13 @@
             const school = document.getElementById('school').value.trim();
             const name = document.getElementById('name').value.trim();
             const id_number = document.getElementById('id_number').value.trim().toUpperCase(); 
+            const phone = document.getElementById('phone').value.trim(); // NEW: 手機號碼
             const meal = document.getElementById('meal').value; // NEW
             const question = document.getElementById('question').value.trim(); // NEW
 
             // 基本驗證
-            if (!school || !name || !id_number || !meal) {
-                displayMessage('學校、姓名、身份證字號及餐點欄位都必須填寫！', 'error');
+            if (!school || !name || !id_number || !meal || !phone) { // ADDED phone
+                displayMessage('學校、姓名、身份證字號、手機號碼及餐點欄位都必須填寫！', 'error');
                 submitButton.disabled = false;
                 submitButton.textContent = '立即報名';
                 return;
@@ -1290,6 +1378,15 @@
             const idRegex = /^[A-Z][0-9]{9}$/;
             if (!idRegex.test(id_number)) {
                 displayMessage('報名身份證字號格式不正確，請檢查。', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            
+            // NEW: 手機號碼格式驗證 (10位數字)
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phone)) {
+                displayMessage('手機號碼格式不正確，請輸入10位數字。', 'error');
                 submitButton.disabled = false;
                 submitButton.textContent = '立即報名';
                 return;
@@ -1320,6 +1417,7 @@
                 school,
                 name,
                 id_number,
+                phone,      // NEW: 加入手機號碼
                 meal,       // NEW
                 question,   // NEW
                 timestamp: new Date(), // 使用當前時間記錄報名
@@ -1462,6 +1560,125 @@
             }
         }
 
+        /**
+         * 處理進入填寫滿意度調查表 (NEW)
+         */
+        async function handleEnterSurvey() {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            const idNumber = surveyIdNumberInput.value.trim().toUpperCase();
+            
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以進入問卷。', 'error');
+                return;
+            }
+
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(idNumber)) {
+                showErrorModal('問卷錯誤', '身份證字號格式不正確，請檢查。');
+                return;
+            }
+            
+            enterSurveyButton.disabled = true;
+            enterSurveyButton.textContent = '驗證中...';
+
+            try {
+                // 1. 檢查是否已報名
+                const qReg = query(getRegistrationsCollectionRef(), where('id_number', '==', idNumber));
+                const regSnap = await getDocs(qReg);
+
+                if (regSnap.empty) {
+                    showErrorModal('問卷錯誤', '查無此報名紀錄，無法填寫問卷。');
+                    return;
+                }
+                
+                const userData = regSnap.docs[0].data();
+                currentSurveyName = userData.name; // 儲存姓名供彈窗顯示
+
+                // 2. 檢查是否已填寫過問卷
+                const qSurvey = query(getSurveysCollectionRef(), where('id_number', '==', idNumber));
+                const surveySnap = await getDocs(qSurvey);
+
+                if (!surveySnap.empty) {
+                    showErrorModal('問卷錯誤', `您已於 ${formatTimestamp(surveySnap.docs[0].data().timestamp)} 填寫過此問卷，請勿重複填寫。`);
+                    return;
+                }
+                
+                // 3. 驗證成功，開啟問卷彈窗
+                surveyHiddenIdNumber.value = idNumber;
+                showSurveyModal(userData.name);
+                surveyIdNumberInput.value = ''; // 清空輸入框
+
+            } catch (error) {
+                console.error("進入問卷失敗:", error);
+                showErrorModal('系統錯誤', `進入問卷失敗: ${error.message}`);
+            } finally {
+                enterSurveyButton.disabled = false;
+                enterSurveyButton.textContent = '進入填寫滿意度調查表';
+            }
+        }
+        
+        /**
+         * 處理提交滿意度調查表 (NEW)
+         */
+        async function handleSurveySubmit(e) {
+            e.preventDefault();
+            
+            submitSurveyButton.disabled = true;
+            submitSurveyButton.textContent = '送出中...';
+            
+            const idNumber = surveyHiddenIdNumber.value;
+            
+            // 由於 HTML 表單使用 required，只需檢查隱藏欄位是否存在即可
+            if (!idNumber) {
+                showErrorModal('系統錯誤', '問卷資料遺失，請重新進入問卷。');
+                submitSurveyButton.disabled = false;
+                submitSurveyButton.textContent = '送出問卷';
+                return;
+            }
+            
+            const formData = new FormData(surveyForm);
+            const surveyData = {
+                id_number: idNumber,
+                q1: formData.get('q1'),
+                q2: formData.get('q2'),
+                q3: formData.get('q3'),
+                q4: formData.get('q4'),
+                q5: formData.get('q5'),
+                q6: formData.get('q6') || '無建議事項', // 建議事項為選填
+                timestamp: new Date(),
+                filledBy: currentSurveyName || 'N/A' // 使用之前獲取到的姓名
+            };
+
+            // 再次檢查 Q1-Q5 是否都已選擇 (雖然 HTML required 應已處理)
+            for (let i = 1; i <= 5; i++) {
+                if (!surveyData[`q${i}`]) {
+                    showErrorModal('問卷錯誤', `第 ${i} 題為必填題，請選擇評分。`);
+                    submitSurveyButton.disabled = false;
+                    submitSurveyButton.textContent = '送出問卷';
+                    return;
+                }
+            }
+
+            try {
+                // 將問卷結果儲存到 surveys 集合
+                await addDoc(getSurveysCollectionRef(), surveyData);
+                
+                hideSurveyModal();
+                showSignSuccessModal('問卷送出成功', `感謝 ${currentSurveyName}！您的滿意度調查表已成功送出。`);
+
+            } catch (error) {
+                console.error("提交問卷失敗:", error);
+                showErrorModal('系統錯誤', `提交問卷失敗: ${error.message}`);
+            } finally {
+                submitSurveyButton.disabled = false;
+                submitSurveyButton.textContent = '送出問卷';
+            }
+        }
+
 
         /**
          * 處理簽到/簽退的通用邏輯 (更新為三階段)
@@ -1563,9 +1780,7 @@
                     return;
                 }
 
-                // --- 步驟 3: 執行簽到/簽退邏輯與交叉驗證 (已移除關聯性檢查) ---
-                
-                // 注意：這裡移除了所有上午/下午的順序檢查，現在只需檢查是否重複即可。
+                // --- 步驟 3: 執行簽到/簽退邏輯 ---
 
                 updateData[updateField] = signDate;
 
@@ -1584,7 +1799,7 @@
             }
         }
 
-        // --- 後台管理操作 (NEW) ---
+        // --- 後台管理操作 ---
 
         /**
          * 處理點擊「進入系統」按鈕
@@ -1625,8 +1840,6 @@
             backendContent.classList.remove('hidden'); // 顯示後台內容
             backendInfoText.textContent = '您已進入後台管理模式。';
             
-            // 由於清單功能已移除，我們不再需要啟動監聽器或設置 loading 狀態
-
             isBackendAccessed = true;
             setupBackendListener(); // 移除即時監聽清單啟動
             
@@ -1756,7 +1969,7 @@
 
 
         /**
-         * 從 Firestore 抓取所有報名資料並匯出為 CSV。
+         * 從 Firestore 抓取所有報名資料和問卷資料並匯出為 CSV。 (UPDATED)
          */
         async function fetchDataAndExportToCsv() {
             if (!isAuthReady || !db || !isBackendAccessed) {
@@ -1769,30 +1982,37 @@
             displayMessage('正在從資料庫獲取資料...', 'info');
 
             try {
-                // **MODIFIED: 移除 orderBy**
-                const q = query(getRegistrationsCollectionRef()); 
-
-                const snapshot = await getDocs(q);
+                // 1. 獲取所有報名資料 (Registrations)
+                const regSnapshot = await getDocs(query(getRegistrationsCollectionRef()));
                 const registrations = [];
-                snapshot.forEach((doc) => {
+                regSnapshot.forEach((doc) => {
+                    registrations.push(doc.data());
+                });
+
+                // 2. 獲取所有問卷資料 (Surveys)
+                const surveySnapshot = await getDocs(query(getSurveysCollectionRef()));
+                const surveyMap = {}; // 使用身份證字號作為鍵來快速查找
+                surveySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    // 獲取原始資料，包含簽到簽退時間
-                    registrations.push({ 
-                        school: data.school,
-                        name: data.name,
-                        id_number: data.id_number, 
-                        timestamp: data.timestamp,
-                        meal: data.meal || '', // NEW
-                        question: data.question || '', // NEW
-                        morningCheckInTime: data.morningCheckInTime || null, // NEW
-                        afternoonCheckInTime: data.afternoonCheckInTime || null, // NEW
-                        afternoonCheckOutTime: data.afternoonCheckOutTime || null, // NEW
-                        registeredBy: data.registeredBy
-                    });
+                    surveyMap[data.id_number] = data;
                 });
                 
-                // 執行下載
-                performCsvDownload(registrations);
+                // 3. 合併資料
+                const mergedData = registrations.map(reg => {
+                    const survey = surveyMap[reg.id_number] || {}; // 找不到則為空物件
+                    return {
+                        ...reg,
+                        surveyQ1: survey.q1 || '未填寫',
+                        surveyQ2: survey.q2 || '未填寫',
+                        surveyQ3: survey.q3 || '未填寫',
+                        surveyQ4: survey.q4 || '未填寫',
+                        surveyQ5: survey.q5 || '未填寫',
+                        surveyQ6: survey.q6 || '未填寫',
+                    };
+                });
+
+                // 4. 執行下載
+                performCsvDownload(mergedData);
 
             } catch (error) {
                 console.error("獲取資料失敗:", error);
@@ -1805,25 +2025,31 @@
         
         /**
          * 將資料轉換為 CSV 並觸發下載
-         * @param {Array<object>} registrations 報名資料陣列
+         * @param {Array<object>} data 報名與問卷合併資料陣列
          */
-        function performCsvDownload(registrations) {
-            if (registrations.length === 0) {
+        function performCsvDownload(data) {
+            if (data.length === 0) {
                 displayMessage('資料庫中沒有報名紀錄可供匯出。', 'error');
                 return;
             }
 
-            // 更新 CSV 標頭
+            // 更新 CSV 標頭以包含問卷問題
             const headers = [
-                "報名時間", "學校", "姓名", "身份證字號", "餐點", "講師問題", // ADDED NEW FIELDS
+                "報名時間", "學校", "姓名", "身份證字號", "手機", "餐點", "講師問題", 
                 "是否上午簽到", "上午簽到時間", 
                 "是否下午簽到", "下午簽到時間", 
                 "是否下午簽退", "下午簽退時間", 
+                "問卷Q1:課程應用於實際工作滿意度", // NEW
+                "問卷Q2:講師專業能力",             // NEW
+                "問卷Q3:適當範例與實務說明",       // NEW
+                "問卷Q4:課程完整且容易吸收",       // NEW
+                "問卷Q5:課程總評價",                // NEW
+                "問卷Q6:其他建議事項",              // NEW
                 "註冊者ID"
             ];
             
             // 獲取並格式化行數據
-            const rows = registrations.map(reg => {
+            const rows = data.map(reg => {
                 const registrationTime = formatTimestamp(reg.timestamp);
                 
                 const morningCheckInTimeStr = formatTimestamp(reg.morningCheckInTime);
@@ -1844,8 +2070,9 @@
                     cleanAndQuote(reg.school || ''),
                     cleanAndQuote(reg.name || ''),
                     cleanAndQuote(reg.id_number || ''),
-                    cleanAndQuote(reg.meal || ''), // NEW
-                    cleanAndQuote(reg.question || ''), // NEW
+                    cleanAndQuote(reg.phone || ''),
+                    cleanAndQuote(reg.meal || ''),
+                    cleanAndQuote(reg.question || ''),
                     
                     cleanAndQuote(isMorningCheckedIn),      
                     cleanAndQuote(morningCheckInTimeStr),   
@@ -1855,6 +2082,13 @@
 
                     cleanAndQuote(isAfternoonCheckedOut),   
                     cleanAndQuote(afternoonCheckOutTimeStr),
+                    
+                    cleanAndQuote(reg.surveyQ1), // NEW
+                    cleanAndQuote(reg.surveyQ2), // NEW
+                    cleanAndQuote(reg.surveyQ3), // NEW
+                    cleanAndQuote(reg.surveyQ4), // NEW
+                    cleanAndQuote(reg.surveyQ5), // NEW
+                    cleanAndQuote(reg.surveyQ6), // NEW
 
                     cleanAndQuote(reg.registeredBy || '')
                 ];
@@ -1874,7 +2108,7 @@
             link.setAttribute('href', url);
             
             const now = new Date();
-            const fileName = `研習報名清單_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}.csv`;
+            const fileName = `研習報名與問卷清單_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}.csv`;
             
             link.setAttribute('download', fileName);
             link.style.visibility = 'hidden';
@@ -1882,13 +2116,18 @@
             link.click();
             document.body.removeChild(link);
             
-            displayMessage('報名清單已匯出為 CSV 檔案！', 'success');
+            displayMessage('報名與問卷清單已匯出為 CSV 檔案！', 'success');
         }
 
 
         // --- 事件監聽器和啟動 ---
         
         form.addEventListener('submit', handleFormSubmit);
+        
+        // 滿意度調查事件 (NEW)
+        enterSurveyButton.addEventListener('click', handleEnterSurvey);
+        closeSurveyFormButton.addEventListener('click', hideSurveyModal);
+        surveyForm.addEventListener('submit', handleSurveySubmit);
         
         // 後台進入與操作
         accessBackendButton.addEventListener('click', handleAccessBackend); // 點擊進入系統
@@ -1985,5 +2224,5 @@
         initializeFirebase();
 
     </script>
-</body>
-</html>
+
+</body></html>

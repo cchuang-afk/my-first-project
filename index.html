@@ -379,7 +379,8 @@
 
     <!-- 滿意度調查彈窗 (Modal) -->
     <div id="surveyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
-        <div class="modal-content bg-white w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500">
+        <!-- 核心修正：新增 max-h-[90vh] 和 overflow-y-auto 允許內容捲動 -->
+        <div class="modal-content bg-white w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500 max-h-[90vh] overflow-y-auto">
             <h3 class="text-2xl font-bold text-gray-800 mb-4">研習滿意度調查表</h3>
             <p id="surveyUserDisplay" class="text-lg font-semibold text-green-700 mb-6">填寫人: N/A</p>
 

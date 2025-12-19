@@ -3,7 +3,7 @@
 <html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高雄市學校護理人員繼續教育研習課程報名網</title>
+    <title>高雄市115年度學校護理人員寒假繼續教育研習課程報名表</title>
     <!-- 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -63,7 +63,7 @@
         <!-- 固定頂部標題欄 -->
         <header class="main-header w-full">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市學校護理人員繼續教育研習課程報名網</h1>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市115年度學校護理人員寒假繼續教育研習課程報名網</h1>
                 <p class="text-sky-100 mt-1 text-lg">請填寫您的報名資訊</p>
             </div>
         </header>
@@ -377,13 +377,50 @@
 
     </div>
 
+    <!-- 備註說明彈窗 (NEW) -->
+    <div id="infoModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg bg-gray-900/60" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl border-t-8 border-sky-500">
+            <div class="flex items-center justify-center mb-4">
+                <div class="bg-sky-100 p-3 rounded-full">
+                    <svg class="w-8 h-8 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">備註說明</h3>
+            
+            <div class="space-y-4 text-gray-700 text-sm sm:text-base leading-relaxed">
+                <div class="flex items-start">
+                    <span class="font-bold text-sky-600 mr-2 whitespace-nowrap">研習時間：</span>
+                    <span>115年1月27日(週二)</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="font-bold text-sky-600 mr-2 whitespace-nowrap">研習地點：</span>
+                    <span>國立鳳新高中演奏廳</span>
+                </div>
+                <div class="bg-sky-50 p-3 rounded-lg border border-sky-100">
+                    <p class="font-semibold text-sky-800 mb-1">報名期程：</p>
+                    <p>寒假研習報名自 <span class="text-red-600 font-bold">1/5 (一) 08:00</span> 開放報名；<span class="text-red-600 font-bold">1/9 (五) 16:00</span> 截止報名，限額 350 人。</p>
+                </div>
+                <p class="text-gray-600 italic border-l-4 border-amber-400 pl-3">
+                    以「115年有效會員資格」報名錄取，貼心提醒尚未繳交 115 年年費者，請於課程報名結束前至總務組完成繳交年費，始得參加研習報到。
+                </p>
+            </div>
+
+            <button id="closeInfoModalButton" type="button" class="w-full bg-sky-600 text-white py-3 mt-8 rounded-xl font-bold hover:bg-sky-700 transition duration-200 shadow-lg">
+                我已了解
+            </button>
+        </div>
+    </div>
+
     <!-- 滿意度調查彈窗 (Modal) -->
     <div id="surveyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
         <div class="modal-content bg-white w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500">
             <h3 class="text-2xl font-bold text-gray-800 mb-4">研習滿意度調查表</h3>
             <p id="surveyUserDisplay" class="text-lg font-semibold text-green-700 mb-6">填寫人: N/A</p>
 
-            <form id="surveyForm" class="space-y-6 text-left">
+            <!-- 已加入最大高度與捲軸功能 -->
+            <form id="surveyForm" class="space-y-6 text-left max-h-[75vh] overflow-y-auto pr-2">
                 <input type="hidden" id="surveyHiddenIdNumber" name="surveyHiddenIdNumber">
                 
                 <!-- 題目 1-5 (Radio Buttons) -->
@@ -809,11 +846,29 @@
         const confirmModal = document.getElementById('confirmModal'); // 清空資料二次確認
         const cancelConfirmButton = document.getElementById('cancelConfirmButton');
         const executeConfirmButton = document.getElementById('executeConfirmButton');
+        const infoModal = document.getElementById('infoModal'); // 備註說明彈窗 (NEW)
+        const closeInfoModalButton = document.getElementById('closeInfoModalButton');
 
 
         let areSettingsVisible = false; // 追蹤設定區塊是否已成功驗證並顯示
 
         // --- 彈窗相關函數 ---
+
+        /**
+         * 顯示備註說明彈窗 (NEW)
+         */
+        function showInfoModal() {
+            infoModal.classList.remove('hidden');
+            setTimeout(() => { infoModal.classList.add('modal-open'); }, 10);
+        }
+
+        /**
+         * 隱藏備註說明彈窗 (NEW)
+         */
+        function hideInfoModal() {
+            infoModal.classList.remove('modal-open');
+            setTimeout(() => { infoModal.classList.add('hidden'); }, 300);
+        }
 
         function showSuccessModal() {
             successModal.classList.remove('hidden');
@@ -1059,6 +1114,9 @@
                         enterSurveyButton.disabled = false; // 啟用問卷按鈕 (NEW)
                         isAuthReady = true;
                         await fetchSettings(); // 載入系統設定
+                        
+                        // 頁面初次載入並完成 Auth 後自動顯示備註說明 (NEW)
+                        setTimeout(showInfoModal, 800);
                     } else {
                         // 如果沒有用戶，嘗試匿名登入
                         if (initialAuthToken) {
@@ -1632,7 +1690,7 @@
             
             const idNumber = surveyHiddenIdNumber.value;
             
-            // 由於 HTML 表單使用 required，只需檢查隱藏欄位是否存在即可
+            // 由於 HTML 表單與 required 應已處理，只需檢查隱藏欄位是否存在
             if (!idNumber) {
                 showErrorModal('系統錯誤', '問卷資料遺失，請重新進入問卷。');
                 submitSurveyButton.disabled = false;
@@ -1888,7 +1946,6 @@
             memberAddMessage.classList.add('text-green-500');
             memberAddMessage.textContent = `成功新增 ${idNumber} 至報名白名單！`;
             memberAddMessage.classList.remove('hidden');
-            console.log("Updated REGISTRATION_ID_WHITELIST:", REGISTRATION_ID_WHITELIST); // Console log for verification
             
             // 延遲關閉視窗
             setTimeout(hideAddMemberModal, 1500);
@@ -2039,12 +2096,12 @@
                 "是否上午簽到", "上午簽到時間", 
                 "是否下午簽到", "下午簽到時間", 
                 "是否下午簽退", "下午簽退時間", 
-                "問卷Q1:課程應用於實際工作滿意度", // NEW
-                "問卷Q2:講師專業能力",             // NEW
-                "問卷Q3:適當範例與實務說明",       // NEW
-                "問卷Q4:課程完整且容易吸收",       // NEW
-                "問卷Q5:課程總評價",                // NEW
-                "問卷Q6:其他建議事項",              // NEW
+                "問卷Q1:課程應用於實際工作滿意度", 
+                "問卷Q2:講師專業能力",             
+                "問卷Q3:適當範例與實務說明",       
+                "問卷Q4:課程完整且容易吸收",       
+                "問卷Q5:課程總評價",                
+                "問卷Q6:其他建議事項",              
                 "註冊者ID"
             ];
             
@@ -2056,13 +2113,10 @@
                 const afternoonCheckInTimeStr = formatTimestamp(reg.afternoonCheckInTime);
                 const afternoonCheckOutTimeStr = formatTimestamp(reg.afternoonCheckOutTime);
                 
-                // 新增：是否簽到/簽退的註記
                 const isMorningCheckedIn = reg.morningCheckInTime ? '是' : '否';
                 const isAfternoonCheckedIn = reg.afternoonCheckInTime ? '是' : '否';
                 const isAfternoonCheckedOut = reg.afternoonCheckOutTime ? '是' : '否';
 
-
-                // 使用 JSON.stringify 並替換掉引號，以正確處理包含逗號的字串
                 const cleanAndQuote = (str) => `"${String(str).replace(/"/g, '""')}"`;
                 
                 return [
@@ -2083,12 +2137,12 @@
                     cleanAndQuote(isAfternoonCheckedOut),   
                     cleanAndQuote(afternoonCheckOutTimeStr),
                     
-                    cleanAndQuote(reg.surveyQ1), // NEW
-                    cleanAndQuote(reg.surveyQ2), // NEW
-                    cleanAndQuote(reg.surveyQ3), // NEW
-                    cleanAndQuote(reg.surveyQ4), // NEW
-                    cleanAndQuote(reg.surveyQ5), // NEW
-                    cleanAndQuote(reg.surveyQ6), // NEW
+                    cleanAndQuote(reg.surveyQ1), 
+                    cleanAndQuote(reg.surveyQ2), 
+                    cleanAndQuote(reg.surveyQ3), 
+                    cleanAndQuote(reg.surveyQ4), 
+                    cleanAndQuote(reg.surveyQ5), 
+                    cleanAndQuote(reg.surveyQ6), 
 
                     cleanAndQuote(reg.registeredBy || '')
                 ];
@@ -2101,7 +2155,6 @@
             ].join('\n');
 
             // 觸發下載
-            // "\ufeff" 是 BOM，確保中文在 Excel 中正確顯示
             const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -2130,9 +2183,9 @@
         surveyForm.addEventListener('submit', handleSurveySubmit);
         
         // 後台進入與操作
-        accessBackendButton.addEventListener('click', handleAccessBackend); // 點擊進入系統
-        confirmBackendAccessButton.addEventListener('click', handleConfirmBackendAccess); // 確認密碼
-        exportCsvButton.addEventListener('click', fetchDataAndExportToCsv); // 匯出 CSV (已進入後台，無需再次密碼)
+        accessBackendButton.addEventListener('click', handleAccessBackend); 
+        confirmBackendAccessButton.addEventListener('click', handleConfirmBackendAccess); 
+        exportCsvButton.addEventListener('click', fetchDataAndExportToCsv); 
         
         // 清空資料 (需要二次確認，所以只觸發彈窗)
         clearDataButton.addEventListener('click', () => {
@@ -2164,9 +2217,15 @@
         cancelAddMemberButton.addEventListener('click', hideAddMemberModal);
         confirmAddMemberButton.addEventListener('click', handleConfirmAddMember);
 
+        // 備註說明彈窗按鈕 (NEW)
+        closeInfoModalButton.addEventListener('click', hideInfoModal);
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) hideInfoModal();
+        });
+
 
         // 二次確認彈窗按鈕
-        cancelConfirmButton.addEventListener('click', hideConfirmModal); // 取消清空
+        cancelConfirmButton.addEventListener('click', hideConfirmModal); 
         executeConfirmButton.addEventListener('click', () => {
             const action = executeConfirmButton.getAttribute('data-action');
             if (action === 'clearData') {
@@ -2176,7 +2235,7 @@
             } else if (action === 'resetTime') {
                 handleResetTimeSettings();
             }
-        }); // 確定執行操作
+        }); 
 
         // 簽到/簽退功能
         morningCheckInButton.addEventListener('click', handleMorningCheckIn);
@@ -2184,15 +2243,15 @@
         afternoonCheckOutButton.addEventListener('click', handleAfternoonCheckOut);
         
         // 系統設定功能
-        toggleSettingsButton.addEventListener('click', handleToggleSettings); // 點擊顯示/隱藏設定區塊
-        confirmSettingsAccessButton.addEventListener('click', handleConfirmSettingsAccess); // 密碼驗證存取
-        saveSettingsButton.addEventListener('click', handleSaveSettings); // 儲存設定事件
+        toggleSettingsButton.addEventListener('click', handleToggleSettings); 
+        confirmSettingsAccessButton.addEventListener('click', handleConfirmSettingsAccess); 
+        saveSettingsButton.addEventListener('click', handleSaveSettings); 
 
         // 彈窗關閉
         closeModalButton.addEventListener('click', hideSuccessModal);
         successModal.addEventListener('click', (e) => {
             if (e.target === successModal) {
-                hideSuccessModal(); // 點擊背景區域也關閉
+                hideSuccessModal(); 
             }
         });
         
@@ -2218,7 +2277,6 @@
                 hideConfirmModal();
             }
         });
-
 
         // 啟動應用程式
         initializeFirebase();

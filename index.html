@@ -105,12 +105,13 @@
                         <p class="mt-1 text-xs text-gray-500">格式: 10位數字 (例如 09xxxxxxxx)</p>
                     </div>
                     
-                    <!-- 中午餐點 -->
+                    <!-- 中午餐點 (已新增不用餐選項) -->
                     <div>
-                        <label for="meal" class="block text-sm font-medium text-gray-700 mb-1">中午餐點 (Meal)</label>
+                        <label for="meal" class="block text-sm font-medium text-gray-700 mb-1">中午餐點請自備餐具 (Meal)</label>
                         <select id="meal" name="meal" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
                             <option value="葷食">葷食</option>
                             <option value="素食">素食</option>
+                            <option value="不用餐">不用餐</option>
                         </select>
                     </div>
 
@@ -377,37 +378,32 @@
 
     </div>
 
-    <!-- 備註說明彈窗 (NEW) -->
-    <div id="infoModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg bg-gray-900/60" aria-modal="true" role="dialog">
-        <div class="modal-content bg-white w-full max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl border-t-8 border-sky-500">
-            <div class="flex items-center justify-center mb-4">
-                <div class="bg-sky-100 p-3 rounded-full">
-                    <svg class="w-8 h-8 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">備註說明</h3>
+    <!-- 備註說明彈窗 (Announcement Modal) - NEW -->
+    <div id="announcementModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg bg-gray-900/60" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl text-center border-t-8 border-sky-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center justify-center">
+                <span class="mr-2">📢</span> 備註說明
+            </h3>
             
-            <div class="space-y-4 text-gray-700 text-sm sm:text-base leading-relaxed">
-                <div class="flex items-start">
-                    <span class="font-bold text-sky-600 mr-2 whitespace-nowrap">研習時間：</span>
-                    <span>115年1月27日(週二)</span>
+            <div class="text-left space-y-4 text-gray-700 leading-relaxed">
+                <div class="space-y-1">
+                    <p class="font-semibold text-sky-700">📅 研習時間：<span class="text-gray-900">115年1月27日(週二)</span></p>
+                    <p class="font-semibold text-sky-700">📍 研習地點：<span class="text-gray-900">國立鳳新高中演奏廳</span></p>
                 </div>
-                <div class="flex items-start">
-                    <span class="font-bold text-sky-600 mr-2 whitespace-nowrap">研習地點：</span>
-                    <span>國立鳳新高中演奏廳</span>
+
+                <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 shadow-sm">
+                    <p class="font-bold text-sky-800 mb-1">📝 報名時間資訊：</p>
+                    <p class="text-gray-700">寒假研習報名自 <span class="font-bold text-sky-600">1/5 (一) 08:00</span> 開放報名；<span class="font-bold text-sky-600">1/9 (五) 16:00</span> 截止報名，限額 <span class="text-red-600 font-bold">350</span> 人。</p>
                 </div>
-                <div class="bg-sky-50 p-3 rounded-lg border border-sky-100">
-                    <p class="font-semibold text-sky-800 mb-1">報名期程：</p>
-                    <p>寒假研習報名自 <span class="text-red-600 font-bold">1/5 (一) 08:00</span> 開放報名；<span class="text-red-600 font-bold">1/9 (五) 16:00</span> 截止報名，限額 350 人。</p>
+
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 shadow-sm">
+                    <p class="font-bold text-amber-800 mb-1">💡 貼心提醒：</p>
+                    <p class="text-gray-700 text-sm">以「<span class="font-bold italic text-gray-900">115年有效會員資格</span>」報名錄取。尚未繳交 115 年年費者，請於課程報名結束前至總務組完成繳交年費，始得參加研習報到。</p>
                 </div>
-                <p class="text-gray-600 italic border-l-4 border-amber-400 pl-3">
-                    以「115年有效會員資格」報名錄取，貼心提醒尚未繳交 115 年年費者，請於課程報名結束前至總務組完成繳交年費，始得參加研習報到。
-                </p>
             </div>
 
-            <button id="closeInfoModalButton" type="button" class="w-full bg-sky-600 text-white py-3 mt-8 rounded-xl font-bold hover:bg-sky-700 transition duration-200 shadow-lg">
+            <!-- 關閉按鈕 -->
+            <button id="closeAnnouncementButton" type="button" class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-bold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
                 我已了解
             </button>
         </div>
@@ -449,7 +445,7 @@
                     </div>
                     <!-- Q3 -->
                     <div class="border p-4 rounded-lg bg-gray-50">
-                        <p class="font-medium text-gray-800 mb-2">3. 本次課程能提供適當範例與實務說明</p>
+                        <p class="font-medium text-gray-800 mb-2">3. 本次課程能 provide 適當範例與實務說明</p>
                         <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q3">
                             <label class="flex items-center space-x-1"><input type="radio" name="q3" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
                             <label class="flex items-center space-x-1"><input type="radio" name="q3" value="滿意" class="text-green-600"><span>滿意</span></label>
@@ -623,83 +619,16 @@
         const EXPORT_PASSWORD = '661113'; // 管理員密碼
         
         // ** 報名會員白名單 (基於身份證字號) **
-        // 這是最新的身份證字號白名單，用於報名驗證
+        // 這是最新的身份證字號白名單 (總計 402 筆)，用於報名驗證
         const REGISTRATION_ID_WHITELIST = [
-            'A220444341', 'A220710340', 'A221690507', 'A223395916', 'A223752966', 'A224117621',
-            'B220564616', 'B220716558', 'B221770734', 'B221875305', 'B222409118', 'C220033144',
-            'C220273728', 'C221177925', 'D221280353', 'D221353191', 'D221368665', 'D221792812',
-            'D221823723', 'D221848444', 'D222011281', 'D222243694', 'D222371031', 'D222987959',
-            'E122740419', 'E124843842', 'E220079704', 'E220195418', 'E220210483', 'E220297962',
-            'E220308460', 'E220341689', 'E220342293', 'E220388084', 'E220393996', 'E220524099',
-            'E220616789', 'E220666234', 'E220689602', 'E220741983', 'E220779674', 'E220843580',
-            'E220877353', 'E220913836', 'E220961056', 'E221050972', 'E221059948', 'E221070992',
-            'E221136539', 'E221163769', 'E221221784', 'E221263095', 'E221304644', 'E221355543',
-            'E221368586', 'E221385792', 'E221408398', 'E221577969', 'E221613399', 'E221672861',
-            'E221680327', 'E221778500', 'E221803053', 'E221836052', 'E222059559', 'E222066303',
-            'E222072534', 'E222084463', 'E222104791', 'E222112015', 'E222139623', 'E222150962',
-            'E222155949', 'E222177025', 'E222177570', 'E222232843', 'E222235022', 'E222258963',
-            'E222277342', 'E222327570', 'E222407411', 'E222435237', 'E222448681', 'E222452434',
-            'E222536677', 'E222566675', 'E222566782', 'E222570295', 'E222635102', 'E222670432',
-            'E222704219', 'E222796093', 'E222805917', 'E222841084', 'E222873899', 'E222884525',
-            'E222891164', 'E222959581', 'E222988108', 'E223009017', 'E223016254', 'E223091024',
-            'E223130393', 'E223175409', 'E223198671', 'E223236452', 'E223272403', 'E223277588',
-            'E223326871', 'E223327092', 'E223335889', 'E223477300', 'E223478450', 'E223526791',
-            'E223669737', 'E223691435', 'E223830058', 'E223882347', 'E224015135', 'E224300540',
-            'E224422630', 'E224518604', 'E224586111', 'E224700960', 'E224800616', 'E226866087',
-            'F223485974', 'F224168089', 'F224229658', 'F224623012', 'F224680982', 'F225807610',
-            'F226263872', 'F227465496', 'G220794119', 'G221261379', 'G221383236', 'H221334878',
-            'H221939300', 'H222198063', 'I200051735', 'J220066489', 'K220138632', 'L220395735',
-            'L221013063', 'L221450039', 'L222150396', 'L222419863', 'L222905382', 'L223725235',
-            'L225440226', 'M221390351', 'M221598437', 'M221599596', 'M221636843', 'M221660465',
-            'M221800852', 'M222018107', 'M222116706', 'N220244548', 'N222547846', 'N222642051',
-            'N222752856', 'N222923122', 'N222975591', 'N224125759', 'N224134623', 'N224781506',
-            'N225495223', 'P220185590', 'P220716675', 'P220795603', 'P220940304', 'P221674032',
-            'P221697848', 'P222200385', 'P222391103', 'P222924200', 'P223101916', 'Q220793280',
-            'Q221048248', 'Q221349795', 'Q221352970', 'Q221421854', 'Q222027841', 'Q222573080',
-            'Q222623389', 'Q222649374', 'Q222681998', 'Q222955911', 'Q222965355', 'Q223147922',
-            'R220035435', 'R220067231', 'R220277835', 'R220443428', 'R220503858', 'R220841362',
-            'R220924893', 'R221035386', 'R221313581', 'R221516895', 'R221566288', 'R221644143',
-            'R221804907', 'R221887022', 'R222149183', 'R222279828', 'R222456914', 'R222526617',
-            'R222599727', 'R222639495', 'R222723812', 'R222945578', 'R223039382', 'R223244730',
-            'R223366428', 'R223489784', 'R224258676', 'R224394971', 'S120099116', 'S220147726',
-            'S220171722', 'S220186590', 'S220200577', 'S220200817', 'S220209632', 'S220218588',
-            'S220224808', 'S220227238', 'S220228422', 'S220228520', 'S220235285', 'S220247589',
-            'S220261632', 'S220303920', 'S220323075', 'S220375444', 'S220408288', 'S220424808',
-            'S220456542', 'S220489514', 'S220501588', 'S220508452', 'S220516981', 'S220573404',
-            'S220692753', 'S220694766', 'S220773502', 'S220796023', 'S220797502', 'S220901177',
-            'S220940085', 'S220951668', 'S220951677', 'S220983179', 'S221023798', 'S221069098',
-            'S221088137', 'S221134796', 'S221195262', 'S221222424', 'S221279432', 'S221280328',
-            'S221283356', 'S221334429', 'S221337626', 'S221363260', 'S221396929', 'S221428560',
-            'S221436419', 'S221493816', 'S221512389', 'S221528510', 'S221553853', 'S221578485',
-            'S221584812', 'S221613023', 'S221614879', 'S221625514', 'S221676093', 'S221687612',
-            'S221691625', 'S221715988', 'S221794032', 'S221809270', 'S221829334', 'S221847903',
-            'S221914909', 'S221920452', 'S221958296', 'S221981777', 'S221989719', 'S222007770',
-            'S222069850', 'S222097158', 'S222097783', 'S222108325', 'S222132616', 'S222140172',
-            'S222140350', 'S222142498', 'S222167753', 'S222171239', 'S222213312', 'S222222820',
-            'S222248164', 'S222255927', 'S222256291', 'S222285309', 'S222285907', 'S222292206',
-            'S222294139', 'S222300598', 'S222305119', 'S222313773', 'S222324918', 'S222327188',
-            'S222376396', 'S222380407', 'S222380425', 'S222385279', 'S222386221', 'S222389053',
-            'S222426006', 'S222428662', 'S222451509', 'S222451803', 'S222530756', 'S222547457',
-            'S222557873', 'S222561091', 'S222571471', 'S222658357', 'S222670317', 'S222701282',
-            'S222712641', 'S222724016', 'S222760754', 'S222765679', 'S222798776', 'S222830448',
-            'S222841718', 'S222894791', 'S222894933', 'S222899492', 'S222899652', 'S223031047',
-            'S223039927', 'S223044455', 'S223124912', 'S223173004', 'S223313188', 'S223345484',
-            'S223356147', 'S223392581', 'S223404095', 'S223445943', 'S223458262', 'S223472897',
-            'S223473661', 'S223498373', 'S223503039', 'S223513517', 'S223517337', 'S223577664',
-            'S223647661', 'S223738952', 'S223811885', 'S223823876', 'S223904287', 'S223918905',
-            'S223940425', 'S224055096', 'S224081149', 'S224279407', 'S224339355', 'S224644459',
-            'S224714625', 'S224725842', 'S225056088', 'T220124877', 'T220149623', 'T220184079',
-            'T220257424', 'T220577949', 'T220606785', 'T220619308', 'T220643493', 'T220742151',
-            'T220754633', 'T220910579', 'T221102213', 'T221185696', 'T221459708', 'T221520775',
-            'T221718426', 'T221733889', 'T221761365', 'T221761365', 'T222175998', 'T222230449',
-            'T222280912', 'T222322853', 'T222325229', 'T222334335', 'T222334415', 'T222347538',
-            'T222350946', 'T222361010', 'T222542444', 'T222592042', 'T222634198', 'T222641371',
-            'T222661006', 'T222833100', 'T222835364', 'T223014636', 'T223121994', 'T223143874',
-            'T223208227', 'T223230489', 'T223268741', 'T223321789', 'T223340113', 'T223363456',
-            'T223435028', 'T223450329', 'T223476403', 'T223501349', 'T223506960', 'T223562619',
-            'T223601746', 'T223686445', 'T223819748', 'U220722810', 'U220728536', 'U220822253',
-            'V220445720', 'V220877482', 'W200265559', 'X220049013', 'X220083908', 'S225795339', 'S225615872',
-            'S225901935', 'T221761365', 'S225642066', 'S225641989', 'S225568878' // 從圖像中補充的身份證字號
+            'S222829507', 'A220444341', 'A220710340', 'A221690507', 'A223395916', 'A223752966', 'A224117621', 'B220564616', 'B220716558', 'B221770734', 'B221875305', 'B222409118', 'C220033144', 'C220273728', 'C221179925', 'D221280353', 'D221353191', 'D221368665', 'D221792812', 'D221823723', 'D221848444', 'D222011281', 'D222243694', 'D222987959', 'E122740419', 'E124843842', 'E220079704', 'E220210483', 'E220297962', 'E220308460', 'E220341689', 'E220342293', 'E220388084', 'E220393996', 'E220616789', 'E220666234', 'E220689602', 'E220741983', 'E220843580', 'E220877353', 'E220913836', 'E220961056', 'E221050972', 'E221059948', 'E221070992', 'E221136539', 'E221163769', 'E221221784', 'E221263095', 'E221304644',
+            'E221355543', 'E221368586', 'E221385792', 'E221577969', 'E221613399', 'E221672861', 'E221680327', 'E221778500', 'E221803053', 'E221836052', 'E220595559', 'E222066303', 'E222072534', 'E222084463', 'E222104791', 'E222112015', 'E222139623', 'E222150962', 'E222155949', 'E222177025', 'E222177570', 'E222232843', 'E222235022', 'E222258963', 'E222277342', 'E222327570', 'E222407411', 'E222435237', 'E222448681', 'E222452434', 'E222536677', 'E222566675', 'E222566782', 'E222570295', 'E222635102', 'E222670432', 'E222704219', 'E222796093', 'E222841084', 'E222873899', 'E222884525', 'E222891164', 'E222988108', 'E223009017', 'E223016254', 'E223130393', 'E223175409', 'E223198671', 'E223236452', 'E223272403',
+            'E223277588', 'E223327092', 'E223335889', 'E223477300', 'E223478450', 'E223669737', 'E223691435', 'E223830058', 'E224015135', 'E224518604', 'E224586111', 'E224700960', 'E224800616', 'E226866087', 'F223485974', 'F224168089', 'F224623012', 'F224680982', 'F225807610', 'F226263872', 'F227465496', 'G220794119', 'G221261379', 'G221383236', 'H221334878', 'H221939300', 'H222198063', 'I200051735', 'J220066489', 'L220395735', 'L221450039', 'L222150396', 'L222419863', 'L222905382', 'L223725235', 'L225440226', 'M221390351', 'M221599596', 'M221636843', 'M221660465', 'M221800852', 'M222018107', 'M222116706', 'N220244548', 'N222547846', 'N222642051', 'N222752856', 'N222923122', 'N222975591', 'N224125759',
+            'N224134623', 'N224781506', 'N225495223', 'P220185590', 'P220716675', 'P220795603', 'P220940304', 'P221697848', 'P222200385', 'P222391103', 'P223101916', 'Q220793280', 'Q221048248', 'Q221349795', 'Q221352970', 'Q221421854', 'Q222027841', 'Q222573080', 'Q222623389', 'Q222649374', 'Q222681998', 'Q222955911', 'Q222965355', 'Q223147922', 'Q223320127', 'R220035435', 'R220067231', 'R220277835', 'R220443428', 'R220503858', 'R220841362', 'R220924893', 'R221035386', 'R221313581', 'R221516895', 'R221566288', 'R221644143', 'R221804907', 'R221887022', 'R222149183', 'R222456914', 'R222526617', 'R222599727', 'R222639495', 'R222723812', 'R222945578', 'R223039382', 'R223244730', 'R223489784', 'R224258676',
+            'R224394971', 'S120099116', 'S220171722', 'S220186590', 'S220200577', 'S220200817', 'S220209632', 'S220218588', 'S220224808', 'S220227238', 'S220228422', 'S220228520', 'S220235285', 'S220261632', 'S220303920', 'S220323075', 'S220375444', 'S220408288', 'S220424808', 'S220456542', 'S220489514', 'S220501588', 'S220516981', 'S220573404', 'S220692753', 'S220694766', 'S220773502', 'S220796023', 'S220901177', 'S220940085', 'S220951668', 'S220983179', 'S221023798', 'S221069098', 'S221088137', 'S221134796', 'S221222424', 'S221279432', 'S221280328', 'S221283356', 'S221334429', 'S221337626', 'S221363260', 'S221396929', 'S221436419', 'S221493816', 'S221512389', 'S221578485', 'S221584812', 'S221613023',
+            'S221614879', 'S221625514', 'S221676093', 'S221687612', 'S221715988', 'S221794032', 'S221809270', 'S221829334', 'S221847903', 'S221920452', 'S221958296', 'S221981777', 'S221989719', 'S222067936', 'S222069850', 'S222097158', 'S222097783', 'S222108325', 'S222132616', 'S222140172', 'S222140350', 'S222142498', 'S222167753', 'S222171239', 'S222213312', 'S222222820', 'S222248164', 'S222255927', 'S222256291', 'S222285907', 'S222294139', 'S222300598', 'S222305119', 'S222313773', 'S222324918', 'S222327188', 'S222376396', 'S222380407', 'S222380425', 'S222385279', 'S222386221', 'S222389053', 'S222426006', 'S222428662', 'S222451509', 'S222451803', 'S222530756', 'S222547457', 'S222557873', 'S222561091',
+            'S222571471', 'S222658357', 'S222670317', 'S222701282', 'S222712641', 'S222724016', 'S222760754', 'S222765679', 'S222798776', 'S222841718', 'S222894791', 'S222894933', 'S222899492', 'S223031047', 'S223039927', 'S223044455', 'S223124912', 'S223173004', 'S223345484', 'S223356147', 'S223404095', 'S223445943', 'S223458262', 'S223472897', 'S223473661', 'S223498373', 'S223503039', 'S223513517', 'S223517337', 'S223577664', 'S223647661', 'S223702489', 'S223738952', 'S223811885', 'S223823876', 'S223904287', 'S223918905', 'S224055096', 'S224081149', 'S224279407', 'S224339355', 'S224644459', 'S224714625', 'S224725842', 'S225056088', 'T220124877', 'T220149623', 'T220184079', 'T220257424', 'T220577949',
+            'T220606785', 'T220619308', 'T220643493', 'T220742151', 'T220754633', 'T220910579', 'T221102213', 'T221185696', 'T221459708', 'T221520775', 'T221718426', 'T221761365', 'T222175998', 'T222230449', 'T222280912', 'T222322853', 'T222325229', 'T222334335', 'T222334415', 'T222347538', 'T222350946', 'T222361010', 'T222542444', 'T222592042', 'T222634198', 'T222641371', 'T222833100', 'T222835364', 'T223014636', 'T223121994', 'T223143874', 'T223208227', 'T223230489', 'T223268741', 'T223321789', 'T223340113', 'T223363456', 'T223435028', 'T223450329', 'T223476403', 'T223501349', 'T223562619', 'T223686445', 'T223819748', 'U220722810', 'U220728536', 'U220822253', 'V220445720', 'V220877482', 'W200265559', 'X220049013', 'X220083908'
         ];
         
         // ** 學分查詢身份證字號白名單 (使用您提供的圖檔資訊) **
@@ -740,14 +669,14 @@
         
         // 如果您在本地執行，請在下方的 { } 內貼上您的 Firebase 配置物件。
         const YOUR_LOCAL_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBlqR82MrYJB_SCIrlSxdcUdDrW6K96TrE",
-  authDomain: "csvs-8b55d.firebaseapp.com",
-  projectId: "csvs-8b55d",
-  storageBucket: "csvs-8b55d.firebasestorage.app",
-  messagingSenderId: "93064933978",
-  appId: "1:93064933978:web:226fc3a8a271b2a4975e63",
-  measurementId: "G-W2ZJKEMPV4"
-}; 
+          apiKey: "AIzaSyBlqR82MrYJB_SCIrlSxdcUdDrW6K96TrE",
+          authDomain: "csvs-8b55d.firebaseapp.com",
+          projectId: "csvs-8b55d",
+          storageBucket: "csvs-8b55d.firebasestorage.app",
+          messagingSenderId: "93064933978",
+          appId: "1:93064933978:web:226fc3a8a271b2a4975e63",
+          measurementId: "G-W2ZJKEMPV4"
+        }; 
         
         // *******************************************************************
         
@@ -821,7 +750,8 @@
         const backendInfoText = document.getElementById('backendInfoText');
 
         const exportCsvButton = document.getElementById('exportCsvButton');
-        const clearDataButton = document.getElementById('clearDataButton'); 
+        const documentElement = document.getElementById('clearDataButton'); 
+        const clearDataButton = documentElement; 
         const clearSignaturesButton = document.getElementById('clearSignaturesButton'); // NEW
 
         // 新增會員相關元素
@@ -846,8 +776,10 @@
         const confirmModal = document.getElementById('confirmModal'); // 清空資料二次確認
         const cancelConfirmButton = document.getElementById('cancelConfirmButton');
         const executeConfirmButton = document.getElementById('executeConfirmButton');
-        const infoModal = document.getElementById('infoModal'); // 備註說明彈窗 (NEW)
-        const closeInfoModalButton = document.getElementById('closeInfoModalButton');
+
+        // 備註說明彈窗 (Announcement Modal) - NEW
+        const announcementModal = document.getElementById('announcementModal');
+        const closeAnnouncementButton = document.getElementById('closeAnnouncementButton');
 
 
         let areSettingsVisible = false; // 追蹤設定區塊是否已成功驗證並顯示
@@ -857,17 +789,17 @@
         /**
          * 顯示備註說明彈窗 (NEW)
          */
-        function showInfoModal() {
-            infoModal.classList.remove('hidden');
-            setTimeout(() => { infoModal.classList.add('modal-open'); }, 10);
+        function showAnnouncementModal() {
+            announcementModal.classList.remove('hidden');
+            setTimeout(() => { announcementModal.classList.add('modal-open'); }, 10);
         }
 
         /**
          * 隱藏備註說明彈窗 (NEW)
          */
-        function hideInfoModal() {
-            infoModal.classList.remove('modal-open');
-            setTimeout(() => { infoModal.classList.add('hidden'); }, 300);
+        function hideAnnouncementModal() {
+            announcementModal.classList.remove('modal-open');
+            setTimeout(() => { announcementModal.classList.add('hidden'); }, 300);
         }
 
         function showSuccessModal() {
@@ -1114,9 +1046,9 @@
                         enterSurveyButton.disabled = false; // 啟用問卷按鈕 (NEW)
                         isAuthReady = true;
                         await fetchSettings(); // 載入系統設定
-                        
-                        // 頁面初次載入並完成 Auth 後自動顯示備註說明 (NEW)
-                        setTimeout(showInfoModal, 800);
+
+                        // *** NEW: 系統初始化後自動彈出備註說明 ***
+                        showAnnouncementModal();
                     } else {
                         // 如果沒有用戶，嘗試匿名登入
                         if (initialAuthToken) {
@@ -1432,7 +1364,7 @@
                 return;
             }
             
-            // 身份證字號格式驗證 (簡易版: 10碼，首字英文，後9碼數字)
+            // 身份證字號格式驗證 (簡易版: 10碼，首字英文，後 9 碼數字)
             const idRegex = /^[A-Z][0-9]{9}$/;
             if (!idRegex.test(id_number)) {
                 displayMessage('報名身份證字號格式不正確，請檢查。', 'error');
@@ -1690,7 +1622,7 @@
             
             const idNumber = surveyHiddenIdNumber.value;
             
-            // 由於 HTML 表單與 required 應已處理，只需檢查隱藏欄位是否存在
+            // 由於 HTML 表單使用 required，只需檢查隱藏欄位是否存在即可
             if (!idNumber) {
                 showErrorModal('系統錯誤', '問卷資料遺失，請重新進入問卷。');
                 submitSurveyButton.disabled = false;
@@ -1823,7 +1755,7 @@
 
                 if (snapshot.empty) {
                     // 只有成功報名的人才能簽到/退
-                    showErrorModal('簽到失敗', '查無此報名紀錄，請確認身份證字號是否正確。');
+                    showErrorModal('簽到失敗', '查對此報名紀錄，請確認身份證字號是否正確。');
                     return;
                 }
 
@@ -1946,6 +1878,7 @@
             memberAddMessage.classList.add('text-green-500');
             memberAddMessage.textContent = `成功新增 ${idNumber} 至報名白名單！`;
             memberAddMessage.classList.remove('hidden');
+            console.log("Updated REGISTRATION_ID_WHITELIST:", REGISTRATION_ID_WHITELIST); // Console log for verification
             
             // 延遲關閉視窗
             setTimeout(hideAddMemberModal, 1500);
@@ -2047,7 +1980,7 @@
                 });
 
                 // 2. 獲取所有問卷資料 (Surveys)
-                const surveySnapshot = await getDocs(query(getSurveysCollectionRef()));
+                const surveySnapshot = await getDocs(query(surveyCollectionRef()));
                 const surveyMap = {}; // 使用身份證字號作為鍵來快速查找
                 surveySnapshot.forEach((doc) => {
                     const data = doc.data();
@@ -2096,12 +2029,12 @@
                 "是否上午簽到", "上午簽到時間", 
                 "是否下午簽到", "下午簽到時間", 
                 "是否下午簽退", "下午簽退時間", 
-                "問卷Q1:課程應用於實際工作滿意度", 
-                "問卷Q2:講師專業能力",             
-                "問卷Q3:適當範例與實務說明",       
-                "問卷Q4:課程完整且容易吸收",       
-                "問卷Q5:課程總評價",                
-                "問卷Q6:其他建議事項",              
+                "問卷Q1:課程應用於實際工作滿意度", // NEW
+                "問卷Q2:講師專業能力",             // NEW
+                "問卷Q3:適當範例與實務說明",       // NEW
+                "問卷Q4:課程完整且容易吸收",       // NEW
+                "問卷Q5:課程總評價",                // NEW
+                "問卷Q6:其他建議事項",              // NEW
                 "註冊者ID"
             ];
             
@@ -2113,10 +2046,13 @@
                 const afternoonCheckInTimeStr = formatTimestamp(reg.afternoonCheckInTime);
                 const afternoonCheckOutTimeStr = formatTimestamp(reg.afternoonCheckOutTime);
                 
+                // 新增：是否簽到/簽退的註記
                 const isMorningCheckedIn = reg.morningCheckInTime ? '是' : '否';
                 const isAfternoonCheckedIn = reg.afternoonCheckInTime ? '是' : '否';
                 const isAfternoonCheckedOut = reg.afternoonCheckOutTime ? '是' : '否';
 
+
+                // 使用 JSON.stringify 並替換掉引號，以正確處理包含逗號的字串
                 const cleanAndQuote = (str) => `"${String(str).replace(/"/g, '""')}"`;
                 
                 return [
@@ -2137,12 +2073,12 @@
                     cleanAndQuote(isAfternoonCheckedOut),   
                     cleanAndQuote(afternoonCheckOutTimeStr),
                     
-                    cleanAndQuote(reg.surveyQ1), 
-                    cleanAndQuote(reg.surveyQ2), 
-                    cleanAndQuote(reg.surveyQ3), 
-                    cleanAndQuote(reg.surveyQ4), 
-                    cleanAndQuote(reg.surveyQ5), 
-                    cleanAndQuote(reg.surveyQ6), 
+                    cleanAndQuote(reg.surveyQ1), // NEW
+                    cleanAndQuote(reg.surveyQ2), // NEW
+                    cleanAndQuote(reg.surveyQ3), // NEW
+                    cleanAndQuote(reg.surveyQ4), // NEW
+                    cleanAndQuote(reg.surveyQ5), // NEW
+                    cleanAndQuote(reg.surveyQ6), // NEW
 
                     cleanAndQuote(reg.registeredBy || '')
                 ];
@@ -2155,6 +2091,7 @@
             ].join('\n');
 
             // 觸發下載
+            // "\ufeff" 是 BOM，確保中文在 Excel 中正確顯示
             const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -2172,6 +2109,11 @@
             displayMessage('報名與問卷清單已匯出為 CSV 檔案！', 'success');
         }
 
+        // Helper for Survey Ref (used in fetchDataAndExportToCsv)
+        function surveyCollectionRef() {
+             return collection(db, 'artifacts', appId, 'public', 'data', 'surveys');
+        }
+
 
         // --- 事件監聽器和啟動 ---
         
@@ -2183,9 +2125,9 @@
         surveyForm.addEventListener('submit', handleSurveySubmit);
         
         // 後台進入與操作
-        accessBackendButton.addEventListener('click', handleAccessBackend); 
-        confirmBackendAccessButton.addEventListener('click', handleConfirmBackendAccess); 
-        exportCsvButton.addEventListener('click', fetchDataAndExportToCsv); 
+        accessBackendButton.addEventListener('click', handleAccessBackend); // 點擊進入系統
+        confirmBackendAccessButton.addEventListener('click', handleConfirmBackendAccess); // 確認密碼
+        exportCsvButton.addEventListener('click', fetchDataAndExportToCsv); // 匯出 CSV (已進入後台，無需再次密碼)
         
         // 清空資料 (需要二次確認，所以只觸發彈窗)
         clearDataButton.addEventListener('click', () => {
@@ -2217,15 +2159,9 @@
         cancelAddMemberButton.addEventListener('click', hideAddMemberModal);
         confirmAddMemberButton.addEventListener('click', handleConfirmAddMember);
 
-        // 備註說明彈窗按鈕 (NEW)
-        closeInfoModalButton.addEventListener('click', hideInfoModal);
-        infoModal.addEventListener('click', (e) => {
-            if (e.target === infoModal) hideInfoModal();
-        });
-
 
         // 二次確認彈窗按鈕
-        cancelConfirmButton.addEventListener('click', hideConfirmModal); 
+        cancelConfirmButton.addEventListener('click', hideConfirmModal); // 取消清空
         executeConfirmButton.addEventListener('click', () => {
             const action = executeConfirmButton.getAttribute('data-action');
             if (action === 'clearData') {
@@ -2235,7 +2171,7 @@
             } else if (action === 'resetTime') {
                 handleResetTimeSettings();
             }
-        }); 
+        }); // 確定執行操作
 
         // 簽到/簽退功能
         morningCheckInButton.addEventListener('click', handleMorningCheckIn);
@@ -2243,15 +2179,23 @@
         afternoonCheckOutButton.addEventListener('click', handleAfternoonCheckOut);
         
         // 系統設定功能
-        toggleSettingsButton.addEventListener('click', handleToggleSettings); 
-        confirmSettingsAccessButton.addEventListener('click', handleConfirmSettingsAccess); 
-        saveSettingsButton.addEventListener('click', handleSaveSettings); 
+        toggleSettingsButton.addEventListener('click', handleToggleSettings); // 點擊顯示/隱藏設定區塊
+        confirmSettingsAccessButton.addEventListener('click', handleConfirmSettingsAccess); // 密碼驗證存取
+        saveSettingsButton.addEventListener('click', handleSaveSettings); // 儲存設定事件
+
+        // 備註說明彈窗關閉 (NEW)
+        closeAnnouncementButton.addEventListener('click', hideAnnouncementModal);
+        announcementModal.addEventListener('click', (e) => {
+            if (e.target === announcementModal) {
+                hideAnnouncementModal();
+            }
+        });
 
         // 彈窗關閉
         closeModalButton.addEventListener('click', hideSuccessModal);
         successModal.addEventListener('click', (e) => {
             if (e.target === successModal) {
-                hideSuccessModal(); 
+                hideSuccessModal(); // 點擊背景區域也關閉
             }
         });
         
@@ -2277,6 +2221,7 @@
                 hideConfirmModal();
             }
         });
+
 
         // 啟動應用程式
         initializeFirebase();

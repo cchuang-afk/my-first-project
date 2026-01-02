@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄市115年度學校護理人員寒假繼續教育研習課程報名網</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0052cc 0%, #00a3bf 100%);
+        }
+        .alert-card {
+            border-left: 6px solid #f59e0b;
+        }
+        .danger-card {
+            border-left: 6px solid #ef4444;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 導覽列 -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-user-nurse text-blue-600 text-2xl"></i>
+                <span class="text-xl font-bold text-gray-800">研習報名系統</span>
+            </div>
+            <div class="hidden md:flex space-x-6 text-gray-600 font-medium">
+                <a href="#" class="hover:text-blue-600 transition">首頁</a>
+                <a href="#" class="hover:text-blue-600 transition">研習計畫</a>
+                <a href="#" class="hover:text-blue-600 transition">常見問題</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主視覺區 -->
+    <header class="gradient-bg text-white py-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                高雄市115年度學校護理人員<br class="md:hidden">寒假繼續教育研習課程報名網
+            </h1>
+            <p class="text-lg opacity-90 mb-8">提升專業素養，守護校園健康</p>
+            
+            <!-- 倒數計時 -->
+            <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 inline-block">
+                <p class="text-sm mb-2 uppercase tracking-widest">距離報名開始還有</p>
+                <div id="countdown" class="text-3xl font-mono font-bold flex space-x-4">
+                    <div class="flex flex-col"><span id="days">00</span><small class="text-xs">天</small></div>
+                    <span>:</span>
+                    <div class="flex flex-col"><span id="hours">00</span><small class="text-xs">時</small></div>
+                    <span>:</span>
+                    <div class="flex flex-col"><span id="minutes">00</span><small class="text-xs">分</small></div>
+                    <span>:</span>
+                    <div class="flex flex-col"><span id="seconds">00</span><small class="text-xs">秒</small></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-grow max-w-4xl mx-auto w-full px-4 -mt-8 mb-12">
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+            
+            <!-- 重要說明區 -->
+            <section class="space-y-6">
+                <div class="flex items-center space-x-2 text-red-600 mb-2">
+                    <i class="fa-solid fa-circle-exclamation animate-pulse"></i>
+                    <h2 class="text-xl font-bold">重要公告事項</h2>
+                </div>
+
+                <!-- 說明 1 -->
+                <div class="alert-card bg-amber-50 p-5 rounded-r-lg">
+                    <h3 class="font-bold text-amber-800 mb-1 flex items-center">
+                        <i class="fa-solid fa-calendar-days mr-2"></i> 報名時間提醒
+                    </h3>
+                    <p class="text-amber-900 leading-relaxed">
+                        目前尚未開放報名。正式報名期間為：<br>
+                        <span class="font-bold text-lg text-amber-600">2026/01/05 (一) 09:00 至 2026/01/09 (五) 17:00</span>
+                    </p>
+                </div>
+
+                <!-- 說明 2 -->
+                <div class="danger-card bg-red-50 p-5 rounded-r-lg">
+                    <h3 class="font-bold text-red-800 mb-1 flex items-center">
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i> 測試系統資料作廢公告
+                    </h3>
+                    <p class="text-red-900 leading-relaxed">
+                        如有學員已經在先前<span class="font-bold underline">報名測試系統</span>完成報名，該資料將不予採計。
+                        <span class="font-bold">務必於正式報名時間內重新填寫報名表</span>，否則系統將無您的正式報名資料，請特別注意。
+                    </p>
+                </div>
+            </section>
+
+            <hr class="my-10 border-gray-100">
+
+            <!-- 研習資訊 -->
+            <section class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fa-solid fa-info-circle text-blue-500 mr-2"></i> 研習概況
+                    </h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span>主辦單位</span>
+                            <span class="text-gray-900">高雄市政府教育局</span>
+                        </li>
+                        <li class="flex justify-between border-b border-gray-50 pb-2">
+                            <span>研習對象</span>
+                            <span class="text-gray-900">本市各級學校護理人員</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <button id="registerBtn" disabled class="w-full py-4 bg-gray-300 text-gray-500 font-bold rounded-xl cursor-not-allowed transition duration-300 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>尚未開放報名</span>
+                    </button>
+                    <p class="text-center text-xs text-gray-400 mt-3">
+                        請於 2026/01/05 09:00 後重新整理網頁進行報名
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-gray-800 text-gray-400 py-8 text-center text-sm">
+        <div class="max-w-4xl mx-auto px-4">
+            <p>高雄市115年度學校護理人員寒假繼續教育研習課程 報名管理系統</p>
+            <p class="mt-2">系統維護單位：高雄市政府教育局 | 聯絡電話：(07) 123-4567</p>
+        </div>
+    </footer>
+
+    <script>
+        // 設定報名開始日期
+        const startDate = new Date("2026/01/05 09:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = startDate - now;
+
+            if (distance < 0) {
+                document.getElementById("countdown").innerHTML = "正式報名進行中";
+                const btn = document.getElementById("registerBtn");
+                btn.disabled = false;
+                btn.classList.remove("bg-gray-300", "text-gray-500", "cursor-not-allowed");
+                btn.classList.add("bg-blue-600", "text-white", "hover:bg-blue-700", "shadow-lg");
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> 我要報名';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+        }
+
+        // 每秒更新一次
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>

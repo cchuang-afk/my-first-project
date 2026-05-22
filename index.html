@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<!-- Chosen Palette: Sky Blue & Medical Green -->
+<!-- Application Structure Plan: School nurse winter training registration, check-in, survey, and backend management. Chosen for intuitive access under Kaohsiung education bureau. -->
+<!-- Visualization & Content Choices: Info -> Goals -> Vanilla HTML components with custom Tailwind CSS for layout. No SVG, no Mermaid. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 <html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,7 +63,7 @@
     <div class="min-h-screen flex flex-col items-center">
         <header class="main-header w-full">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市115年度學校護理人員暑假繼續教育研習課程報名網</h1>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市115年度學校護理人員暑假繼續教育研習課程報名網(系統測試請勿報名)</h1>
                 <p class="text-sky-100 mt-1 text-lg">請填寫您的報名資訊</p>
             </div>
         </header>
@@ -320,7 +324,7 @@
 
                 <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 shadow-sm">
                     <p class="font-bold text-amber-800 mb-1">💡 貼心提醒：</p>
-                    <p class="text-gray-700 text-sm">以「<span class="font-bold italic text-gray-900">以<115年有效會員資格>優先</span>」報名錄取。尚未繳交 115 年年費者，請於課程報名結束前至總務組完成繳交年費，始得參加研習報到。</p>
+                    <p class="text-gray-700 text-sm">以「<span class="font-bold italic text-gray-900"><115年有效會員資格>優先</span>」報名錄取。</p>
                 </div>
             </div>
 
@@ -376,7 +380,7 @@
                             <label class="flex items-center space-x-1"><input type="radio" name="q4" value="滿意" class="text-green-600"><span>滿意</span></label>
                             <label class="flex items-center space-x-1"><input type="radio" name="q4" value="普通" class="text-green-600"><span>普通</span></label>
                             <label class="flex items-center space-x-1"><input type="radio" name="q4" value="不滿意" class="text-green-600"><span>不滿意</span></label>
-                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="非常不滿意" class="text-green-600"><span>非常不慢意</span></label>
                         </div>
                     </div>
                     <div class="border p-4 rounded-lg bg-gray-50">
@@ -386,7 +390,7 @@
                             <label class="flex items-center space-x-1"><input type="radio" name="q5" value="滿意" class="text-green-600"><span>滿意</span></label>
                             <label class="flex items-center space-x-1"><input type="radio" name="q5" value="普通" class="text-green-600"><span>普通</span></label>
                             <label class="flex items-center space-x-1"><input type="radio" name="q5" value="不滿意" class="text-green-600"><span>不滿意</span></label>
-                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="非常不滿意" class="text-green-600"><span>非常不慢意</span></label>
                         </div>
                     </div>
                 </div>
@@ -555,7 +559,8 @@
           measurementId: "G-W2ZJKEMPV4"
         }; 
         
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // 修正預設路徑，避免本機打開時共用預設 default-app-id 導致人數額滿的問題
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kaohsiung-school-nurses-115-winter';
         
         const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
             ? JSON.parse(__firebase_config) 
@@ -809,7 +814,7 @@
         function getSurveysCollectionRef() {
             return collection(db, 'artifacts', appId, 'public', 'data', 'surveys');
         }
-        
+
         function getSettingsDocRef() {
             return doc(db, 'artifacts', appId, 'public', 'data', 'app_settings', 'config');
         }

@@ -63,7 +63,7 @@
     <div class="min-h-screen flex flex-col items-center">
         <header class="main-header w-full">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市115年度學校護理人員暑假繼續教育研習課程報名網(系統測試請勿報名)</h1>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">高雄市115年度學校護理人員暑假繼續教育研習課程報名網</h1>
                 <p class="text-sky-100 mt-1 text-lg">請填寫您的報名資訊</p>
             </div>
         </header>
@@ -311,15 +311,16 @@
                 <span class="mr-2">📢</span> 備註說明
             </h3>
             
-            <div class="text-left space-y-4 text-gray-700 leading-relaxed">
+            <!-- 加入高度限制 max-h-[50vh] 與垂直滾動 overflow-y-auto、右側内縮 pr-2 防止按鈕被遮擋 -->
+            <div class="text-left space-y-4 text-gray-700 leading-relaxed max-h-[50vh] overflow-y-auto pr-2">
                 <div class="space-y-1">
                     <p class="font-semibold text-sky-700">📅 研習時間：<span class="text-gray-900">115年7月2日(周四)~7月3日(周五)</span></p>
                     <p class="font-semibold text-sky-700">📍 研習地點：<span class="text-gray-900">國光高級中學八德館6樓演講廳</span></p>
                 </div>
 
                 <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 shadow-sm">
-                    <p class="font-bold text-sky-800 mb-1">📝 報名時間資訊：</p>
-                    <p class="text-gray-700">寒假研習報名自 <span class="font-bold text-sky-600">6月8日上午8點</span> 開放報名；<span class="font-bold text-sky-600">6月12日16時前</span> 截止報名，限額 <span class="text-red-600 font-bold">300</span> 人。</p>
+                    <p class="font-bold text-sky-800 mb-1">📝 報名時間資訊：10秒後視窗自動關閉<span id="announcementCountdown" class="text-red-600 font-extrabold ml-1">(10秒)</span></p>
+                    <p class="text-gray-700">暑假研習報名自 <span class="font-bold text-sky-600">6月8日上午8點</span> 開放報名；<span class="font-bold text-sky-600">6月12日16時前</span> 截止報名，限額 <span class="text-red-600 font-bold">300</span> 人。</p>
                 </div>
 
                 <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 shadow-sm">
@@ -649,15 +650,41 @@
         const closeAnnouncementButton = document.getElementById('closeAnnouncementButton');
 
         let areSettingsVisible = false; 
+        let announcementTimer = null; // 用於追蹤備註說明的自動關閉計時器
 
         // --- 彈窗相關函數 ---
 
         function showAnnouncementModal() {
             announcementModal.classList.remove('hidden');
             setTimeout(() => { announcementModal.classList.add('modal-open'); }, 10);
+
+            // 啟動 10 秒倒數計時與自動關閉
+            let timeLeft = 10;
+            const countdownEl = document.getElementById('announcementCountdown');
+            if (countdownEl) {
+                countdownEl.textContent = `(${timeLeft}秒)`;
+            }
+
+            if (announcementTimer) clearInterval(announcementTimer);
+
+            announcementTimer = setInterval(() => {
+                timeLeft--;
+                if (countdownEl) {
+                    countdownEl.textContent = `(${timeLeft}秒)`;
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(announcementTimer);
+                    hideAnnouncementModal();
+                }
+            }, 1000);
         }
 
         function hideAnnouncementModal() {
+            // 關閉視窗時立即清除計時器，防止背景程式繼續運行
+            if (announcementTimer) {
+                clearInterval(announcementTimer);
+                announcementTimer = null;
+            }
             announcementModal.classList.remove('modal-open');
             setTimeout(() => { announcementModal.classList.add('hidden'); }, 300);
         }

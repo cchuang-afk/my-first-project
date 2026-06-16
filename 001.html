@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<!-- Chosen Palette: Sky Blue & Medical Green -->
+<!-- Application Structure Plan: School nurse winter training registration, check-in, survey, and backend management. Chosen for intuitive access under Kaohsiung education bureau. -->
+<!-- Visualization & Content Choices: Info -> Goals -> Vanilla HTML components with custom Tailwind CSS for layout. No SVG, no Mermaid. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄市115年度學校護理人員寒假繼續教育研習課程報名表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* 使用 Inter 字體作為主要字體 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        /* 主標題樣式 */
+        .main-header {
+            background-color: #0ea5e9; /* Sky 500 */
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+        /* 彈窗背景層的動畫效果 */
+        .modal-bg {
+            transition: opacity 0.3s ease-in-out;
+        }
+        /* 彈窗內容的動畫效果 */
+        .modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        .modal-open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        /* 後台清單表格樣式 (雖然已移除清單功能，但保留樣式定義) */
+        .backend-table th, .backend-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+            text-align: left;
+        }
+        .backend-table th {
+            background-color: #e5e7eb; /* Gray 200 */
+            font-weight: 600;
+            color: #374151; /* Gray 700 */
+            text-transform: none;
+            font-size: 0.8rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="min-h-screen flex flex-col items-center">
+        <header class="main-header w-full">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">護理人員暑假繼續教育研習簽到退</h1>
+               
+            </div>
+        </header>
+
+        <main class="w-full max-w-4xl p-4 sm:p-8">
+            
+            <div id="statusMessage" class="w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300">系統準備就緒。</div>
+
+            <!-- 報名表單區塊 -->
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">報名表單</h2>
+
+                <form id="registrationForm" class="space-y-4">
+                    
+                    <!-- 摺疊控制按鈕 -->
+                    <button type="button" id="toggleFormFieldsBtn" class="w-full bg-sky-50 text-sky-700 py-3 rounded-xl font-bold hover:bg-sky-100 transition duration-150 flex justify-center items-center cursor-pointer mb-2">
+                        📝 點此展開填寫報名表單 ⬇️
+                    </button>
+
+                    <!-- 表單內容容器 (預設摺疊/隱藏) -->
+                    <div id="formFieldsContainer" class="hidden space-y-4">
+                        <div>
+                            <label for="school" class="block text-sm font-medium text-gray-700 mb-1">學校 (School)</label>
+                            <input type="text" id="school" name="school" placeholder="請輸入學校名稱" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        </div>
+
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 (Name)</label>
+                            <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                        </div>
+
+                        <div>
+                            <label for="id_number" class="block text-sm font-medium text-gray-700 mb-1">身份證字號 (ID Number)</label>
+                            <input type="text" id="id_number" name="id_number" placeholder="請輸入身份證字號 (例如: A123456789)" required="" maxlength="10" pattern="[a-zA-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                            <p class="mt-1 text-xs text-gray-500">格式: 1位英文字母 + 9位數字</p>
+                        </div>
+
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">手機 (Phone Number)</label>
+                            <input type="tel" id="phone" name="phone" placeholder="請輸入手機號碼 (例如: 0912345678)" required="" maxlength="10" pattern="[0-9]{10}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                            <p class="mt-1 text-xs text-gray-500">格式: 10位數字 (例如 09xxxxxxxx)</p>
+                        </div>
+                        
+                        <div>
+                            <label for="meal" class="block text-sm font-medium text-gray-700 mb-1">中午餐點請自備餐具 (Meal)</label>
+                            <select id="meal" name="meal" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150">
+                                <option value="葷食">葷食</option>
+                                <option value="素食">素食</option>
+                                <option value="不用餐">不用餐</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="question" class="block text-sm font-medium text-gray-700 mb-1">想請教講師問題 (Question) (選填)</label>
+                            <textarea id="question" name="question" placeholder="請詳細具體說明您想請教講師的問題" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 transition duration-150 h-24"></textarea>
+                        </div>
+                        
+                        <button type="submit" id="submitButton" class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-semibold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50">
+                            立即報名
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">研習活動簽到</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="sign_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                            簽到/簽退身份證字號 (ID Number)
+                        </label>
+                        <input type="text" id="sign_id_number" placeholder="請輸入身份證字號進行簽到或簽退" required="" maxlength="10" pattern="[a-zA-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                    </div>
+                    
+                    <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2 pt-2">
+                        <button id="morningCheckInButton" type="button" class="w-full sm:w-1/3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-md disabled:opacity-50">
+                            上午簽到
+                        </button>
+                        <button id="afternoonCheckInButton" type="button" class="w-full sm:w-1/3 bg-yellow-600 text-white py-3 rounded-xl font-semibold hover:bg-yellow-700 transition duration-200 shadow-md disabled:opacity-50">
+                            下午簽到
+                        </button>
+                        <button id="afternoonCheckOutButton" type="button" class="w-full sm:w-1/3 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition duration-200 shadow-md disabled:opacity-50">
+                            下午簽退
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">滿意度調查</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="survey_id_number" class="block text-sm font-medium text-gray-700 mb-1">
+                            身份證字號 (ID Number)
+                        </label>
+                        <input type="text" id="survey_id_number" placeholder="請輸入身份證字號以填寫問卷" required="" maxlength="10" pattern="[a-zA-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                    </div>
+
+                    <button id="enterSurveyButton" type="button" class="w-full bg-green-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-green-600 transition duration-200 shadow-lg disabled:opacity-50">
+                        進入填寫滿意度調查表
+                    </button>
+                </div>
+            </div>
+            
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card mb-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-700">時間簽到設定(只限會員組設定)</h2>
+
+                    <button id="toggleSettingsButton" type="button" class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                        設定時間
+                    </button>
+                </div>
+                
+                <p class="mt-4 text-gray-500 text-sm">
+                    點擊按鈕後輸入密碼，即可設定簽到/簽退的開放時間區間。
+                </p>
+
+                <div id="settingsAccessSection" class="hidden p-4 mt-4 bg-yellow-50 border border-yellow-300 rounded-xl shadow-inner">
+                    <label for="settingsAccessPassword" class="block text-sm font-medium text-yellow-700 mb-2">
+                        <span class="font-bold">🔒 密碼驗證：</span> 輸入密碼以存取設定。
+                    </label>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <input type="password" id="settingsAccessPassword" placeholder="輸入密碼..." class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 transition duration-150">
+                        <button id="confirmSettingsAccessButton" type="button" class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md">
+                            確認存取
+                        </button>
+                    </div>
+                    <p id="accessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
+                </div>
+                
+                <div class="space-y-4 hidden mt-4" id="settingsInputsContainer">
+                    
+                    <div class="space-y-2 border-b pb-4 border-amber-100">
+                        <label class="block text-sm font-bold text-gray-700">上午簽到開放區間 (Morning Check-in Time Range)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="setting_morning_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                                <input type="datetime-local" id="setting_morning_ci_start" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="setting_morning_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                                <input type="datetime-local" id="setting_morning_ci_end" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-150">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 border-b pb-4 border-amber-100">
+                        <label class="block text-sm font-bold text-gray-700">下午簽到開放區間 (Afternoon Check-in Time Range)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="setting_afternoon_ci_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                                <input type="datetime-local" id="setting_afternoon_ci_start" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="setting_afternoon_ci_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                                <input type="datetime-local" id="setting_afternoon_ci_end" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-gray-700">下午簽退開放區間 (Afternoon Check-out Time Range)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="setting_afternoon_co_start" class="block text-xs font-medium text-gray-500 mb-1">開始時間</label>
+                                <input type="datetime-local" id="setting_afternoon_co_start" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="setting_afternoon_co_end" class="block text-xs font-medium text-gray-500 mb-1">結束時間</label>
+                                <input type="datetime-local" id="setting_afternoon_co_end" required="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:focus:border-amber-500 transition duration-150">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="settingsSaveSection" class="p-4 bg-yellow-50 border border-yellow-300 rounded-lg shadow-inner space-y-2">
+                        <label class="block text-sm font-medium text-yellow-700 mb-2">
+                            <span class="font-bold">💾 設定操作：</span> 儲存或還原時間區間。
+                        </label>
+                        <button id="saveSettingsButton" type="button" class="w-full px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition duration-150 shadow-md disabled:opacity-50">
+                            儲存設定
+                        </button>
+                        <button id="resetTimeSettingsButton" type="button" class="w-full px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition duration-150 shadow-md disabled:opacity-50">
+                            還原時間設定 (至預設值)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full bg-white p-6 sm:p-8 rounded-xl card">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-700 whitespace-nowrap">後台資料操作(只限會員組設定)</h2>
+                    
+                    <button id="accessBackendButton" type="button" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md disabled:opacity-50">
+                        進入系統
+                    </button>
+                </div>
+                
+                <div id="passwordSection" class="hidden p-4 mt-4 bg-gray-50 border border-red-300 rounded-lg shadow-inner">
+                    <label for="backendPassword" class="block text-sm font-medium text-red-700 mb-2">
+                        <span class="font-bold">🔒 密碼驗證：</span> 請輸入密碼以進入後台。
+                    </label>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <input type="password" id="backendPassword" placeholder="輸入密碼..." class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+                        <button id="confirmBackendAccessButton" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                            確認進入
+                        </button>
+                    </div>
+                    <p id="backendAccessError" class="text-red-600 text-xs mt-2 hidden">密碼錯誤，請重新輸入。</p>
+                </div>
+
+                <div id="backendContent" class="hidden space-y-6 mt-6 pt-4 border-t border-gray-200">
+                    
+                    <h3 class="text-xl font-semibold text-gray-700">操作按鈕</h3>
+                    <div class="flex flex-wrap space-x-2 w-full justify-start mb-6">
+                        <button id="exportCsvButton" type="button" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                            匯出 CSV
+                        </button>
+                        <button id="clearDataButton" type="button" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                            清空報名資料
+                        </button>
+                         <button id="clearSignaturesButton" type="button" class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                            清除簽到/簽退
+                        </button>
+                        <button id="addMemberButton" type="button" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md mb-2 sm:mb-0">
+                            新增會員
+                        </button>
+                        <button id="backendCancelRegButton" type="button" class="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition duration-150 shadow-md mb-2 sm:mb-0">
+                            取消報名
+                        </button>
+                    </div>
+
+                    <div id="registrationsListContainer" class="overflow-x-auto shadow-inner rounded-lg border">
+                        <p class="p-4 text-center text-gray-500">清單功能已移除。請使用上方按鈕匯出資料。</p>
+                    </div>
+                </div>
+
+                <p id="backendInfoText" class="mt-4 text-gray-500 text-sm">
+                    點擊「進入系統」並輸入密碼以查看報名者清單及管理資料。
+                </p>
+            </div>
+        </main>
+
+        <p class="mt-4 text-xs text-gray-400">
+            <span class="font-semibold">當前使用者 ID:</span> <span id="currentUserId">xBTc5FIiWfWsbpCRNKEe0cphQbS2</span>
+        </p>
+
+    </div>
+
+    <div id="announcementModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg bg-gray-900/60" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl text-center border-t-8 border-sky-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center justify-center">
+                <span class="mr-2">📢</span> 備註說明
+            </h3>
+            
+            <!-- 加入高度限制 max-h-[50vh] 與垂直滾動 overflow-y-auto、右側内縮 pr-2 防止按鈕被遮擋 -->
+            <div class="text-left space-y-4 text-gray-700 leading-relaxed max-h-[50vh] overflow-y-auto pr-2">
+                <div class="space-y-1">
+                    <p class="font-semibold text-sky-700">📅 研習時間：<span class="text-gray-900">115年7月2日(周四)~7月3日(周五)</span></p>
+                    <p class="font-semibold text-sky-700">📍 研習地點：<span class="text-gray-900">國光高級中學八德館6樓演講廳</span></p>
+                </div>
+
+                <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 shadow-sm">
+                    <p class="font-bold text-sky-800 mb-1">📝 報名時間資訊：10秒後視窗自動關閉<span id="announcementCountdown" class="text-red-600 font-extrabold ml-1">(10秒)</span></p>
+                    <p class="text-gray-700">暑假研習報名自 <span class="font-bold text-sky-600">6月8日上午8點</span> 開放報名；<span class="font-bold text-sky-600">6月12日16時前</span> 截止報名，限額 <span class="text-red-600 font-bold">300</span> 人。</p>
+                </div>
+
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 shadow-sm">
+                    <p class="font-bold text-amber-800 mb-1">💡 貼心提醒：</p>
+                    <p class="text-gray-700 text-sm">以「<span class="font-bold italic text-gray-900"><115年有效會員資格>優先</span>」報名錄取。</p>
+                </div>
+            </div>
+
+            <button id="closeAnnouncementButton" type="button" class="w-full bg-sky-600 text-white py-3 mt-6 rounded-xl font-bold hover:bg-sky-700 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                我已了解
+            </button>
+        </div>
+    </div>
+
+    <div id="surveyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-2xl p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">研習滿意度調查表</h3>
+            <p id="surveyUserDisplay" class="text-lg font-semibold text-green-700 mb-6">填寫人: N/A</p>
+
+            <form id="surveyForm" class="space-y-6 text-left max-h-[75vh] overflow-y-auto pr-2">
+                <input type="hidden" id="surveyHiddenIdNumber" name="surveyHiddenIdNumber">
+                
+                <div id="surveyQuestionsContainer" class="space-y-4">
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">1. 對於本課程內容應用於實際工作感到滿意度</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q1">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="不滿意" class="text-green-600"><span>不滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q1" value="非常不滿意" class="text-green-600"><span>非常不滿意</span></label>
+                        </div>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">2. 本次課程講師對課程主題之專業能力</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q2">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="不慢意" class="text-green-600"><span>不慢意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q2" value="非常不慢意" class="text-green-600"><span>非常不慢意</span></label>
+                        </div>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">3. 本次課程能 provide 適當範例與實務說明</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q3">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="不慢意" class="text-green-600"><span>不慢意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q3" value="非常不慢意" class="text-green-600"><span>非常不慢意</span></label>
+                        </div>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">4. 本次課程完整且容易吸收</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q4">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="不慢意" class="text-green-600"><span>不慢意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q4" value="非常不慢意" class="text-green-600"><span>非常不慢意</span></label>
+                        </div>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <p class="font-medium text-gray-800 mb-2">5. 本次課程總評價</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600" data-question="q5">
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="非常滿意" required="" class="text-green-600"><span>非常滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="滿意" class="text-green-600"><span>滿意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="普通" class="text-green-600"><span>普通</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="不慢意" class="text-green-600"><span>不慢意</span></label>
+                            <label class="flex items-center space-x-1"><input type="radio" name="q5" value="非常不慢意" class="text-green-600"><span>非常不慢意</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="q6" class="block text-sm font-medium text-gray-700 mb-1">6. 其他建議事項 (選填)</label>
+                    <textarea id="q6" name="q6" placeholder="請輸入任何建議或意見" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 h-28"></textarea>
+                </div>
+                
+                <button type="submit" id="submitSurveyButton" class="w-full bg-green-500 text-white py-3 mt-4 rounded-xl font-semibold hover:bg-green-600 transition duration-200 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
+                    送出問卷
+                </button>
+                <button type="button" id="closeSurveyFormButton" class="w-full bg-gray-300 text-gray-700 py-3 mt-2 rounded-xl font-semibold hover:bg-gray-400 transition duration-200">
+                    取消填寫
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="errorModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-red-500">
+            <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.302 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <h3 class="text-3xl font-bold text-gray-800 mb-2" id="errorTitle">報名失敗</h3>
+            <p class="text-gray-600 mb-6" id="errorMessage">您非會員無法報名，請洽會員組</p>
+            <button id="closeErrorModalButton" type="button" class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition duration-200 shadow-md">
+                確定
+            </button>
+        </div>
+    </div>
+
+    <div id="signSuccessModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center">
+            <svg class="w-16 h-16 text-sky-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <h3 class="text-3xl font-bold text-gray-800 mb-2" id="signSuccessTitle">操作成功！</h3>
+            <p class="text-gray-600 mb-6" id="signSuccessMessage">您已成功完成簽到/簽退。</p>
+            <button id="closeSignModalButton" type="button" class="w-full bg-sky-500 text-white py-2 rounded-lg font-semibold hover:bg-sky-600 transition duration-200 shadow-md">
+                確定
+            </button>
+        </div>
+    </div>
+    
+    <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center">
+            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-3xl font-bold text-gray-800 mb-2">報名成功！</h3>
+            <p class="text-gray-600 mb-6">您已成功完成研習報名，謝謝您的參與。</p>
+            <button id="closeModalButton" type="button" class="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-200 shadow-md">
+                確定
+            </button>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-lg p-6 sm:p-8 rounded-2xl shadow-2xl text-center border-t-4 border-red-600">
+            <svg class="w-16 h-16 text-red-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2" id="confirmTitle">確認操作</h3>
+            <p class="text-gray-600 mb-6" id="confirmMessage">您確定要清空所有報名紀錄嗎？此操作無法復原！</p>
+            <div class="flex justify-center space-x-4">
+                <button id="cancelConfirmButton" type="button" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                    取消
+                </button>
+                <button id="executeConfirmButton" type="button" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
+                    確定清空
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addMemberModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-green-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">新增報名會員</h3>
+            <p class="text-gray-600 mb-4">請輸入新的會員身份證字號，將其加入報名白名單。</p>
+            <div class="space-y-3 text-left">
+                <label for="newMemberIdInput" class="block text-sm font-medium text-gray-700">身份證字號 (ID Number)</label>
+                <input type="text" id="newMemberIdInput" placeholder="例如: A123456789" required="" maxlength="10" pattern="[a-zA-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150">
+                <p id="memberAddMessage" class="text-xs text-red-500 hidden mt-1"></p>
+            </div>
+            <div class="flex justify-center space-x-4 mt-6">
+                <button id="cancelAddMemberButton" type="button" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                    取消
+                </button>
+                <button id="confirmAddMemberButton" type="button" class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-200 shadow-md">
+                    確認新增
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cancelRegModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg bg-gray-900/50" aria-modal="true" role="dialog">
+        <div class="modal-content bg-white w-full max-w-md p-6 sm:p-8 rounded-xl shadow-2xl text-center border-t-4 border-red-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">後台取消報名</h3>
+            <p class="text-gray-600 mb-4">請輸入欲取消報名者的身份證字號以執行報名刪除。</p>
+            <div class="space-y-3 text-left">
+                <label for="cancelRegIdInput" class="block text-sm font-medium text-gray-700">身份證字號 (ID Number)</label>
+                <input type="text" id="cancelRegIdInput" placeholder="例如: A123456789" required="" maxlength="10" pattern="[a-zA-Z][0-9]{9}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150">
+            </div>
+            <div class="flex justify-center space-x-4 mt-6">
+                <button id="cancelCancelRegButton" type="button" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition duration-200 shadow-md">
+                    取消
+                </button>
+                <button id="confirmCancelRegButton" type="button" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 shadow-md">
+                    確認取消報名
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, addDoc, query, orderBy, setDoc, getDoc, getDocs, where, updateDoc, doc, deleteDoc, onSnapshot, FieldValue, deleteField
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        setLogLevel('debug');
+
+        const EXPORT_PASSWORD = '661113'; // 管理員密碼
+        
+        // ** 報名會員白名單 **
+        const REGISTRATION_ID_WHITELIST = [
+            'S222829507', 'A220444341', 'A220710340', 'A221690507', 'A223395916', 'A223752966', 'A224117621', 'B220564616', 'B220716558', 'B221770734', 'B221875305', 'B222409118', 'C220033144', 'C220273728', 'C221179925', 'D221280353', 'D221353191', 'D221368665', 'D221792812', 'D221823723', 'D221848444', 'D222011281', 'D222243694', 'D222987959', 'E122740419', 'E124843842', 'E220079704', 'E220210483', 'E220297962', 'E220308460', 'E220341689', 'E220342293', 'E220388084', 'E220393996', 'E220616789', 'E220666234', 'E220689602', 'E220741983', 'E220843580', 'E220877353', 'E220913836', 'E220961056', 'E221050972', 'E221059948', 'E221070992', 'E221136539', 'E221163769', 'E221221784', 'E221263095', 'E221304644',
+            'E221355543', 'E221368586', 'E221385792', 'E221577969', 'E221613399', 'E221672861', 'E221680327', 'E221778500', 'E2203053', 'E221836052', 'E220395559', 'E222066303', 'E222072534', 'E222084463', 'E222104791', 'E222112015', 'E222139623', 'E222150962', 'E222155949', 'E222177025', 'E222177570', 'E222232843', 'E222235022', 'E222258963', 'E222277342', 'E222327570', 'E222407411', 'E222435237', 'E222448681', 'E222452434', 'E222536677', 'E222566675', 'E222566782', 'E222570295', 'E222635102', 'E222670432', 'E222704219', 'E222796093', 'E222841084', 'E222873899', 'E222884525', 'E222891164', 'E222988108', 'E223009017', 'E223016254', 'E223130393', 'E223175409', 'E223198671', 'E223236452', 'E223272403',
+            'E223277588', 'E223327092', 'E223335889', 'E223477300', 'E223478450', 'E223669737', 'E223691435', 'E223830058', 'E224015135', 'E224518604', 'E224586111', 'E224700960', 'E224800616', 'E226866087', 'F223485974', 'F224168089', 'F224623012', 'F224680982', 'F225807610', 'F226263872', 'F227465496', 'G220794119', 'G221261379', 'G221383236', 'H221334878', 'H221939300', 'H222198063', 'I200051735', 'J220066489', 'L220395735', 'L221450039', 'L222150396', 'L222419863', 'L222905382', 'L223725235', 'L225440226', 'M221390351', 'M221599596', 'M221636843', 'M221660465', 'M221800852', 'M222018107', 'M222116706', 'N220244548', 'N222547846', 'N222642051', 'N222752856', 'N222923122', 'N222975591', 'N224125759',
+            'N224134623', 'N224781506', 'N225495223', 'P220185590', 'P220716675', 'P220795603', 'P220940304', 'P221697848', 'P222200385', 'P222391103', 'P223101916', 'Q220793280', 'Q221048248', 'Q221349795', 'Q221352970', 'Q221421854', 'Q222027841', 'Q222573080', 'Q222623389', 'Q222649374', 'Q222681998', 'Q222955911', 'Q222965355', 'Q223147922', 'Q223320127', 'R220035435', 'R220067231', 'R220277835', 'R220443428', 'R220503858', 'R220841362', 'R220924893', 'R221035386', 'R221313581', 'R221516895', 'R221566288', 'R221644143', 'R221804907', 'R221887022', 'R222149183', 'R222456914', 'R222526617', 'R222599727', 'R222639495', 'R222723812', 'R222945578', 'R223039382', 'R223244730', 'R223489784', 'R224258676',
+            'R224394971', 'S120099116', 'S220171722', 'S220186590', 'S220200577', 'S220200817', 'S220209632', 'S220218588', 'S220224808', 'S220227238', 'S220228422', 'S220228520', 'S220235285', 'S220261632', 'S220303920', 'S220323075', 'S220375444', 'S220408288', 'S220424808', 'S220456542', 'S220489514', 'S220501588', 'S220516981', 'S220573404', 'S220692753', 'S220694766', 'S220773502', 'S220796023', 'S220901177', 'S220940085', 'S220951668', 'S220983179', 'S221023798', 'S221069098', 'S221088137', 'S221134796', 'S221222424', 'S221279432', 'S221280328', 'S221283356', 'S221334429', 'S221337626', 'S221363260', 'S221396929', 'S221436419', 'S221493816', 'S221512389', 'S221578485', 'S221584812', 'S221613023',
+            'S221614879', 'S221625514', 'S221676093', 'S221687612', 'S221715988', 'S221794032', 'S221809270', 'S221829334', 'S221847903', 'S221920452', 'S221958296', 'S221981777', 'S221989719', 'S222067936', 'S222069850', 'S222097158', 'S222097783', 'S222108325', 'S222132616', 'S222140172', 'S222140350', 'S222142498', 'S222167753', 'S222171239', 'S222213312', 'S222222820', 'S222248164', 'S222255927', 'S222256291', 'S222285907', 'S222294139', 'S222300598', 'S222305119', 'S222313773', 'S222324918', 'S222327188', 'S222376396', 'S222380407', 'S222380425', 'S222385279', 'S222386221', 'S222389053', 'S222426006', 'S222428662', 'S222451509', 'S222451803', 'S222530756', 'S222547457', 'S222557873', 'S222561091',
+            'S222571471', 'S222658357', 'S222670317', 'S222701282', 'S222712641', 'S222724016', 'S222760754', 'S222765679', 'S222798776', 'S222841718', 'S222894791', 'S222894933', 'S222899492', 'S223031047', 'S223039927', 'S223044455', 'S223124912', 'S223173004', 'S223345484', 'S223356147', 'S223404095', 'S223445943', 'S223458262', 'S223472897', 'S223473661', 'S223498373', 'S223503039', 'S223513517', 'S223517337', 'S223577664', 'S223647661', 'S223702489', 'S223738952', 'S223811885', 'S223823876', 'S223904287', 'S223918905', 'S224055096', 'S224081149', 'S224279407', 'S224339355', 'S224644459', 'S224714625', 'S224725842', 'S225056088', 'T220124877', 'T220149623', 'T220184079', 'T220257424', 'T220577949',
+            'T220606785', 'T220619308', 'T220643493', 'T220742151', 'T220754633', 'T220910579', 'T221102213', 'T221185696', 'T221459708', 'T221520775', 'T221718426', 'T221761365', 'T222175998', 'T222230449', 'T222280912', 'T222322853', 'T222325229', 'T222334335', 'T222334415', 'T222347538', 'T222350946', 'T222361010', 'T222542444', 'T222592042', 'T222634198', 'T222641371', 'T222833100', 'T222835364', 'T223014636', 'T223121994', 'T223143874', 'T223208227', 'T223230489', 'T223268741', 'T223321789', 'T223340113', 'T223363456', 'T223435028', 'T223450329', 'T223476403', 'T223501349', 'T223562619', 'T223686445', 'T223819748', 'U220722810', 'U220728536', 'U220822253', 'V220445720', 'V220877482', 'W200265559', 'X220049013', 'X220083908',
+            'E221385792', 'E222104791', 'E222841084', 'S222701282', 'U220822253', 'C221179925', 'A220710340', 'R220277835', 'N222752856', 'E222235022', 'T223363456', 'R224394971', 'S223513517', 'S224081149', 'T223340113', 'T222705843', 'T221718426', 'K220030417', 'E222796093', 'E220741983', 'S224714625', 'E222155949', 'S223039927', 'E222596137', 'S224279407', 'E222448681', 'E226866087', 'F224680982', 'E222072534', 'T224035068', 'E124843842', 'E223198671', 'G220794119', 'E222435237', 'Q221421854', 'S222171239', 'T222542444', 'S222760754', 'E220341689', 'E223009017', 'S223918905', 'M221599596', 'C220273728', 'E220195418', 'E223669737', 'L220395735', 'E220689602', 'S224362372', 'T224388149', 'T220124877', 'L221450039', 'E220388084', 'S222385279', 'X220049013', 'E221050972', 'E224300540', 'E223830058', 'E222873899', 'P222786086', 'T222322853', 'A220444341', 'D222755359', 'E222177570', 'T222634198', 'R222599727', 'S221794032', 'E222570295', 'J220066489', 'E222407411', 'S222097158', 'F224168089', 'P220940304', 'E222059559', 'L225440226', 'P220185590', 'E224015135', 'T220619308', 'T222334415', 'E220877353', 'E224586111', 'E220079704', 'N222975591', 'D221353191', 'S220228520', 'S222108325', 'P222200385', 'E221355543', 'Q222649374', 'T220754633', 'E221577969', 'E221613399', 'R220924893', 'R221516895', 'E224518604', 'H221939300', 'R222526617', 'E222150962', 'S222530756', 'W200265559', 'S224479407', 'D221848444', 'T222361010', 'S220186590', 'X220083908', 'E221836052', 'E222670432', 'S225056088', 'S222327188', 'R222723812', 'S220323075', 'E222884525', 'T223501349', 'N224125759', 'S223503039', 'B221770734', 'G221383236', 'S223458262', 'F224623012', 'E222327570', 'E222891164', 'B220716558', 'M222116706', 'E223272403', 'E223175409', 'T220184079', 's221279432', 'I200051735', 'S223576256', 'E222988108', 'S223517337', 'S223940425', 'Q223320127', 'E223691435', 'R220035435', 'R224258676', 'E220297962', 'E222566782', 'E221803053', 'S222380425', 'P222391103', 'L222419863', 'E224800616', 'T223268741', 'S221584812', 'T222833100', 'R221804907', 'L224820604', 'S223811885', 'S222256291', 'E221263095', 'C220033144', 'R223039382', 'F223485974', 'E223277588', 'M222018107', 'E220616789', 'T220643493', 'E122740419', 'T221761365', 'E223526791', 'G221261379', 'P223101916', 'R223244730', 'S220228422', 'T223686445', 'P222924200', 'R222456914', 'E220308460', 'T223014636', 'S220424808', 'S220940085', 'E221778500', 'N222547846', 'S224284499', 'S220200577', 'S222222820', 'E220913836', 'E224700960', 'E221136539', 'E221672861', 'R221313581', 'S222451509', 'S224736617', 'S222285907', 'S220235285', 'D221368665', 'E223478450', 'E222139623', 'T223143874', 'T220742151', 'E220342293', 'E224684041', 'S224725842', 'T222835364', 'E223236452', 'Q221349795', 'E222704219', 'Q221048248', 'S223498373', 'E222232843', 'S221676093', 'S221680327', 'E223477300', 'Q221352970', 'S222451803', 'L222905382', 'S221512389', 'P221697848', 'T223601746', 'S221088137', 'E223130393', 'S223031047', 'V220445720', 'T221520775', 'S222899492', 'T222592042', 'S220261632', 'S222557873', 'B222409118', 'R220841362', 'R221566288', 'Q223147922', 'E221368586', 'E221304644', 'E223091024', 'N224134623', 'T220606785', 'B221875305', 'D221823723', 'S221023798', 'T221185696', 'S220489514', 'N220244548', 'M221660465', 'E221059948', 'T222325229', 'A223752966', 'S222313773', 'R223489784', 'E220843580', 'E222566675', 'S224040086', 'S222561091', 'S220218588', 'Q222573080', 'S221829334', 'R220067231', 'S222724016', 'P220795603', 'S222894791', 'S222571471', 'T221102213', 'T223292836', 'A223395916', 'S221613023', 'S222841718', 'E222066303', 'T223562619', 'N222642051', 'T222334335', 'A224117621', 'E224799930', 'T222175998', 'S223345484', 'S224331813', 'T220149623', 'E222536677', 'S222132616', 'E223016254', 'E223335889', 'S220224808', 'M221636843', 'H221334878', 'E221163769', 'E223327092', 'S220171722', 'S222894933', 'E220210483', 'S221614879', 'T223435028', 'M221800852', 'Q220793280', 'S223124912', 'S221436419', 'S221493816', 'S222670317', 'R221644143', 'R220503858', 'S222547457', 'S221396929', 'E222452434', 'E222177025', 'E221221784', 'T221459708', 'S223472897', 'N225495223', 'S222248164', 'S224055096', 'S222376396', 'R222639495', 'S221069098', 'S220983179', 'S221989719', 'S222389053', 'E222258963', 'S220901177', 'R221887022', 'D222011281', 'D221792812', 'S221283356', 'S223356147', 'D222243694', 'E220393996', 'S223173004', 'S221334429', 'D221280353', 'S221280328', 'S221363260', 'T224559554', 'E221070992', 'B220564616', 'E223326871', 'S222386221', 'S221625514', 'S220951668', 'E222635102', 'S222658357', 'F225807610', 'D222987959', 'S222255927', 'E222259246', 'Q222965355', 'S221222424', 'S221847903', 'V220877482', 'T222839120', 'Q222661006', 'S220692753', 'S221337626', 'S221134796', 'T222641371', 'S222380407', 'S220209632', 'H222198063', 'S224746305', 'M221390351', 'S220773502', 'S220408288', 'S220796023', 'M221598437', 'T223450329', 'S223044455', 'S220694766', 'L222150396', 'T223121994', 'T220257424', 'T222350946', 'E222112015', 'S222712641', 'E220961056', 'R222149183', 'S222829507', 'S120099116', 'S220501588', 'R222945578', 'S222213312', 'Q222955911', 'U220722810', 'S220516981', 'S220200817', 'T220577949', 'T222347538', 'S224339355', 'S223702489', 'S220227238', 'S222324918', 'T223230489', 'S220303920', 'S220456542', 'S220375444', 'T223321789', 'T223476403', 'S220573404', 'T222280912', 'S223413209', 'R220443428', 'S223647661', 'S222142498', 'U220728536', 'S221578485', 'E222277342', 'S223404095', 'F227465496', 'N224781506', 'S221715988', 'E220666234', 'S222300598', 'S223445943', 'S222426006', 'Q22027841', 'S222798776', 'S222069850', 'S221809270', 'S223698104', 'S221687612', 'S221920452', 'P220716675', 'S223823876', 'A221690507', 'T220910579', 'S222140172', 'S222140350', 'S221981777', 'T223819748', 'F226263872', 'S222294139', 'S221958296', 'E222084463', 'S222097783', 'Q222623389', 'N222923122', 'S222305119', 'S222167753', 'T222230449', 'E224687748', 'L223725235', 'T223208227', 'R221035386', 'S223904287', 'S223738952', 'S222067936', 'S222428662', 'S223577664', 'S224644459', 'S222765679', 'R222279828', 'S222285309', 'E222959581', 'F224229658', 'E222805917', 'T222661006', 'S222292206', 'S222830448', 'P221674032', 'E224422630', 'T223506960', 'S223313188', 'E223882347', 'S223392581', 'S222899652'
+         ];
+        
+        // --- 全域變數與初始化 ---
+        let db;
+        let auth;
+        let userId = 'anonymous';
+        let isAuthReady = false;
+        let isBackendAccessed = false; 
+        let currentSurveyName = ''; 
+        
+        let morningCheckInStartTime = null; 
+        let morningCheckInEndTime = null; 
+        let afternoonCheckInStartTime = null; 
+        let afternoonCheckInEndTime = null; 
+        let afternoonCheckOutStartTime = null; 
+        let afternoonCheckOutEndTime = null; 
+        
+        const YOUR_LOCAL_FIREBASE_CONFIG = {
+          apiKey: "AIzaSyBlqR82MrYJB_SCIrlSxdcUdDrW6K96TrE",
+          authDomain: "csvs-8b55d.firebaseapp.com",
+          projectId: "csvs-8b55d",
+          storageBucket: "csvs-8b55d.firebasestorage.app",
+          messagingSenderId: "93064933978",
+          appId: "1:93064933978:web:226fc3a8a271b2a4975e63",
+          measurementId: "G-W2ZJKEMPV4"
+        }; 
+        
+        // 修正預設路徑，避免本機打開時共用預設 default-app-id 導致人數額滿的問題
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kaohsiung-school-nurses-115-winter';
+        
+        const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
+            ? JSON.parse(__firebase_config) 
+            : YOUR_LOCAL_FIREBASE_CONFIG;
+            
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+
+        const form = document.getElementById('registrationForm');
+        const submitButton = document.getElementById('submitButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const currentUserIdDisplay = document.getElementById('currentUserId');
+        const phoneInput = document.getElementById('phone'); 
+        
+        const signIdNumberInput = document.getElementById('sign_id_number');
+        const morningCheckInButton = document.getElementById('morningCheckInButton');
+        const afternoonCheckInButton = document.getElementById('afternoonCheckInButton');
+        const afternoonCheckOutButton = document.getElementById('afternoonCheckOutButton');
+        
+        const enterSurveyButton = document.getElementById('enterSurveyButton');
+        const surveyIdNumberInput = document.getElementById('survey_id_number');
+        const surveyModal = document.getElementById('surveyModal');
+        const closeSurveyFormButton = document.getElementById('closeSurveyFormButton');
+        const surveyForm = document.getElementById('surveyForm');
+        const surveyUserDisplay = document.getElementById('surveyUserDisplay');
+        const surveyHiddenIdNumber = document.getElementById('surveyHiddenIdNumber');
+        const submitSurveyButton = document.getElementById('submitSurveyButton');
+
+        const morningCheckInStartTimeInput = document.getElementById('setting_morning_ci_start');
+        const morningCheckInEndTimeInput = document.getElementById('setting_morning_ci_end');
+        const afternoonCheckInStartTimeInput = document.getElementById('setting_afternoon_ci_start');
+        const afternoonCheckInEndTimeInput = document.getElementById('setting_afternoon_ci_end');
+        const afternoonCheckOutStartTimeInput = document.getElementById('setting_afternoon_co_start');
+        const afternoonCheckOutEndTimeInput = document.getElementById('setting_afternoon_co_end');
+        const saveSettingsButton = document.getElementById('saveSettingsButton');
+        const resetTimeSettingsButton = document.getElementById('resetTimeSettingsButton'); 
+
+        const backendCancelRegButton = document.getElementById('backendCancelRegButton');
+        const cancelRegModal = document.getElementById('cancelRegModal');
+        const cancelRegIdInput = document.getElementById('cancelRegIdInput');
+        const cancelCancelRegButton = document.getElementById('cancelCancelRegButton');
+        const confirmCancelRegButton = document.getElementById('confirmCancelRegButton');
+        
+        const toggleSettingsButton = document.getElementById('toggleSettingsButton');
+        const settingsAccessSection = document.getElementById('settingsAccessSection');
+        const settingsAccessPasswordInput = document.getElementById('settingsAccessPassword');
+        const confirmSettingsAccessButton = document.getElementById('confirmSettingsAccessButton');
+        const settingsInputsContainer = document.getElementById('settingsInputsContainer');
+        const accessError = document.getElementById('accessError');
+
+        const accessBackendButton = document.getElementById('accessBackendButton');
+        const backendContent = document.getElementById('backendContent');
+        const backendPasswordInput = document.getElementById('backendPassword'); 
+        const confirmBackendAccessButton = document.getElementById('confirmBackendAccessButton'); 
+        const backendAccessError = document.getElementById('backendAccessError'); 
+        const registrationsListContainer = document.getElementById('registrationsListContainer');
+        const backendInfoText = document.getElementById('backendInfoText');
+
+        const exportCsvButton = document.getElementById('exportCsvButton');
+        const documentElement = document.getElementById('clearDataButton'); 
+        const clearDataButton = documentElement; 
+        const clearSignaturesButton = document.getElementById('clearSignaturesButton'); 
+
+        const addMemberButton = document.getElementById('addMemberButton');
+        const addMemberModal = document.getElementById('addMemberModal');
+        const cancelAddMemberButton = document.getElementById('cancelAddMemberButton');
+        const confirmAddMemberButton = document.getElementById('confirmAddMemberButton');
+        const newMemberIdInput = document.getElementById('newMemberIdInput');
+        const memberAddMessage = document.getElementById('memberAddMessage');
+
+        const successModal = document.getElementById('successModal'); 
+        const closeModalButton = document.getElementById('closeModalButton');
+        const signSuccessModal = document.getElementById('signSuccessModal'); 
+        const closeSignModalButton = document.getElementById('closeSignModalButton');
+        const signSuccessTitle = document.getElementById('signSuccessTitle');
+        const signSuccessMessage = document.getElementById('signSuccessMessage');
+        const errorModal = document.getElementById('errorModal'); 
+        const closeErrorModalButton = document.getElementById('closeErrorModalButton');
+        const errorTitle = document.getElementById('errorTitle');
+        const errorMessage = document.getElementById('errorMessage');
+        const confirmModal = document.getElementById('confirmModal'); 
+        const cancelConfirmButton = document.getElementById('cancelConfirmButton');
+        const executeConfirmButton = document.getElementById('executeConfirmButton');
+
+        const announcementModal = document.getElementById('announcementModal');
+        const closeAnnouncementButton = document.getElementById('closeAnnouncementButton');
+
+        // 摺疊控制按鈕與容器 DOM 物件
+        const toggleFormFieldsBtn = document.getElementById('toggleFormFieldsBtn');
+        const formFieldsContainer = document.getElementById('formFieldsContainer');
+
+        let areSettingsVisible = false; 
+        let announcementTimer = null; // 用於追蹤備註說明的自動關閉計時器
+
+        // --- 彈窗相關函數 ---
+
+        function showAnnouncementModal() {
+            announcementModal.classList.remove('hidden');
+            setTimeout(() => { announcementModal.classList.add('modal-open'); }, 10);
+
+            // 啟動 10 秒倒數計時與自動關閉
+            let timeLeft = 10;
+            const countdownEl = document.getElementById('announcementCountdown');
+            if (countdownEl) {
+                countdownEl.textContent = `(${timeLeft}秒)`;
+            }
+
+            if (announcementTimer) clearInterval(announcementTimer);
+
+            announcementTimer = setInterval(() => {
+                timeLeft--;
+                if (countdownEl) {
+                    countdownEl.textContent = `(${timeLeft}秒)`;
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(announcementTimer);
+                    hideAnnouncementModal();
+                }
+            }, 1000);
+        }
+
+        function hideAnnouncementModal() {
+            // 關閉視窗時立即清除計時器，防止背景程式繼續運行
+            if (announcementTimer) {
+                clearInterval(announcementTimer);
+                announcementTimer = null;
+            }
+            announcementModal.classList.remove('modal-open');
+            setTimeout(() => { announcementModal.classList.add('hidden'); }, 300);
+        }
+
+        function showSuccessModal() {
+            successModal.classList.remove('hidden');
+            setTimeout(() => { successModal.classList.add('modal-open'); }, 10);
+        }
+
+        function hideSuccessModal() {
+            successModal.classList.remove('modal-open');
+            setTimeout(() => { successModal.classList.add('hidden'); }, 300);
+        }
+        
+        // 修改人數鎖定顯示文字（適應摺疊狀態）
+        async function checkRegistrationLimitOnLoad() {
+            if (!db) return;
+            try {
+                const snapshot = await getDocs(query(getRegistrationsCollectionRef()));
+                if (snapshot.size >= 300) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = '報名人數已額滿';
+                    toggleFormFieldsBtn.disabled = true;
+                    toggleFormFieldsBtn.textContent = '📝 報名人數已達 300 人額滿 🚫';
+                    formFieldsContainer.classList.add('hidden');
+                } else {
+                    submitButton.disabled = false;
+                    submitButton.textContent = '立即報名';
+                    toggleFormFieldsBtn.disabled = false;
+                    if (formFieldsContainer.classList.contains('hidden')) {
+                        toggleFormFieldsBtn.textContent = '📝 點此展開填寫報名表單 ⬇️';
+                    } else {
+                        toggleFormFieldsBtn.textContent = '收合報名表單 ⬆️';
+                    }
+                }
+            } catch (error) {
+                console.error("檢查報名人數上限失敗:", error);
+            }
+        }
+
+        function showSignSuccessModal(title, message) {
+            signSuccessTitle.textContent = title;
+            signSuccessMessage.textContent = message;
+            signSuccessModal.classList.remove('hidden');
+            setTimeout(() => { signSuccessModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideSignSuccessModal() {
+            signSuccessModal.classList.remove('modal-open');
+            setTimeout(() => { signSuccessModal.classList.add('hidden'); }, 300);
+        }
+
+        function showErrorModal(title, message) {
+            errorTitle.textContent = title;
+            errorMessage.textContent = message;
+            errorModal.classList.remove('hidden');
+            setTimeout(() => { errorModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideErrorModal() {
+            errorModal.classList.remove('modal-open');
+            setTimeout(() => { errorModal.classList.add('hidden'); }, 300);
+        }
+
+        function showSurveyModal(name) {
+            surveyUserDisplay.textContent = `填寫人: ${name}`;
+            surveyModal.classList.remove('hidden');
+            setTimeout(() => { surveyModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideSurveyModal() {
+            surveyModal.classList.remove('modal-open');
+            surveyForm.reset(); 
+            setTimeout(() => { surveyModal.classList.add('hidden'); }, 300);
+        }
+        
+        function showConfirmModal(title, message, actionType) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            executeConfirmButton.setAttribute('data-action', actionType);
+            if (actionType === 'clearData') {
+                executeConfirmButton.textContent = '確定清空';
+            } else if (actionType === 'clearSignatures') {
+                executeConfirmButton.textContent = '確定還原';
+            } else if (actionType === 'resetTime') {
+                 executeConfirmButton.textContent = '確定重設';
+            }
+
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => { confirmModal.classList.add('modal-open'); }, 10);
+        }
+
+        function hideConfirmModal() {
+            confirmModal.classList.remove('modal-open');
+            executeConfirmButton.removeAttribute('data-action');
+            setTimeout(() => { confirmModal.classList.add('hidden'); }, 300);
+        }
+        
+        function showAddMemberModal() {
+            addMemberModal.classList.remove('hidden');
+            memberAddMessage.classList.add('hidden');
+            newMemberIdInput.value = '';
+            setTimeout(() => { addMemberModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideAddMemberModal() {
+            addMemberModal.classList.remove('modal-open');
+            setTimeout(() => { addMemberModal.classList.add('hidden'); }, 300);
+        }
+
+        function showCancelRegModal() {
+            cancelRegModal.classList.remove('hidden');
+            cancelRegIdInput.value = '';
+            setTimeout(() => { cancelRegModal.classList.add('modal-open'); }, 10);
+        }
+        
+        function hideCancelRegModal() {
+            cancelRegModal.classList.remove('modal-open');
+            setTimeout(() => { cancelRegModal.classList.add('hidden'); }, 300);
+        }
+
+        function displayMessage(message, type = 'info', duration = 5000) {
+            let bgColor = '';
+            let textColor = '';
+
+            switch (type) {
+                case 'success':
+                    bgColor = 'bg-green-100';
+                    textColor = 'text-green-800';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-100';
+                    textColor = 'text-red-800';
+                    break;
+                case 'info':
+                default:
+                    bgColor = 'bg-sky-100';
+                    textColor = 'text-sky-800';
+                    break;
+            }
+            
+            statusMessage.className = `w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300 ${bgColor} ${textColor}`;
+            statusMessage.textContent = message;
+
+            clearTimeout(window.statusMessageTimeout);
+            if (duration > 0) {
+                window.statusMessageTimeout = setTimeout(() => {
+                    statusMessage.className = `w-full max-w-2xl p-3 mb-4 rounded-lg text-center text-sm font-medium transition duration-300`;
+                    statusMessage.textContent = '系統準備就緒。';
+                }, duration);
+            }
+        }
+        
+        function formatToLocalDatetime(dateObj) {
+            if (!(dateObj instanceof Date) || isNaN(dateObj)) return '';
+            const tempDate = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000));
+            return tempDate.toISOString().slice(0, 16);
+        }
+
+        const formatTimestamp = (ts) => {
+            if (ts instanceof Date) {
+                 return ts.toLocaleString('zh-TW', {
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            } else if (ts && ts.toDate) {
+                return ts.toDate().toLocaleString('zh-TW', {
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            }
+            return 'N/A';
+        }
+
+        function getRegistrationsCollectionRef() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'registrations');
+        }
+
+        function getSurveysCollectionRef() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'surveys');
+        }
+
+        function getSettingsDocRef() {
+            return doc(db, 'artifacts', appId, 'public', 'data', 'app_settings', 'config');
+        }
+
+        async function initializeFirebase() {
+            if (Object.keys(firebaseConfig).length === 0) {
+                displayMessage('錯誤：Firebase 配置遺失。請參考程式碼中的註釋。', 'error', 0);
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                displayMessage('正在進行身份驗證...', 'info', 0);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        currentUserIdDisplay.textContent = userId;
+                        displayMessage('系統初始化成功，歡迎使用！', 'success');
+                        submitButton.disabled = false;
+                        morningCheckInButton.disabled = false;
+                        afternoonCheckInButton.disabled = false;
+                        afternoonCheckOutButton.disabled = false;
+                        toggleSettingsButton.disabled = false; 
+                        accessBackendButton.disabled = false; 
+                        backendCancelRegButton.disabled = false; 
+                        enterSurveyButton.disabled = false; 
+                        isAuthReady = true;
+                        await fetchSettings(); 
+
+                        // 網頁載入時自動檢查人數上限
+                        await checkRegistrationLimitOnLoad();
+
+                        showAnnouncementModal();
+                    } else {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken); 
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase 初始化失敗:", error);
+                displayMessage(`Firebase 初始化失敗: ${error.message}`, 'error', 0);
+            }
+        }
+        
+        function setupBackendListener() {
+            console.log("Backend: Listing feature removed. Ready for export/clear operations.");
+        }
+
+
+        // --- 系統設定操作 ---
+
+        async function fetchSettings() {
+            if (!db) return;
+
+            try {
+                const settingsRef = getSettingsDocRef();
+                const docSnap = await getDoc(settingsRef);
+
+                const nowDatetime = formatToLocalDatetime(new Date());
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    morningCheckInStartTime = data.morningCheckInStartTime && data.morningCheckInStartTime.toDate ? data.morningCheckInStartTime.toDate() : null;
+                    morningCheckInEndTime = data.morningCheckInEndTime && data.morningCheckInEndTime.toDate ? data.morningCheckInEndTime.toDate() : null;
+                    afternoonCheckInStartTime = data.afternoonCheckInStartTime && data.afternoonCheckInStartTime.toDate ? data.afternoonCheckInStartTime.toDate() : null;
+                    afternoonCheckInEndTime = data.afternoonCheckInEndTime && data.afternoonCheckInEndTime.toDate ? data.afternoonCheckInEndTime.toDate() : null;
+                    afternoonCheckOutStartTime = data.afternoonCheckOutStartTime && data.afternoonCheckOutStartTime.toDate ? data.afternoonCheckOutStartTime.toDate() : null;
+                    afternoonCheckOutEndTime = data.afternoonCheckOutEndTime && data.afternoonCheckOutEndTime.toDate ? data.afternoonCheckOutEndTime.toDate() : null;
+
+                    morningCheckInStartTimeInput.value = morningCheckInStartTime ? formatToLocalDatetime(morningCheckInStartTime) : nowDatetime;
+                    morningCheckInEndTimeInput.value = morningCheckInEndTime ? formatToLocalDatetime(morningCheckInEndTime) : nowDatetime;
+                    afternoonCheckInStartTimeInput.value = afternoonCheckInStartTime ? formatToLocalDatetime(afternoonCheckInStartTime) : nowDatetime;
+                    afternoonCheckInEndTimeInput.value = afternoonCheckInEndTime ? formatToLocalDatetime(afternoonCheckInEndTime) : nowDatetime;
+                    afternoonCheckOutStartTimeInput.value = afternoonCheckOutStartTime ? formatToLocalDatetime(afternoonCheckOutStartTime) : nowDatetime;
+                    afternoonCheckOutEndTimeInput.value = afternoonCheckOutEndTime ? formatToLocalDatetime(afternoonCheckOutEndTime) : nowDatetime;
+
+                    displayMessage('系統設定已載入。', 'info', 3000);
+                } else {
+                    morningCheckInStartTimeInput.value = nowDatetime;
+                    morningCheckInEndTimeInput.value = nowDatetime;
+                    afternoonCheckInStartTimeInput.value = nowDatetime;
+                    afternoonCheckInEndTimeInput.value = nowDatetime;
+                    afternoonCheckOutStartTimeInput.value = nowDatetime;
+                    afternoonCheckOutEndTimeInput.value = nowDatetime;
+                    displayMessage('系統設定文件不存在，請進行初始化設定。', 'info', 5000);
+                }
+                
+                saveSettingsButton.disabled = false; 
+                resetTimeSettingsButton.disabled = false; 
+
+            } catch (error) {
+                console.error("獲取系統設定失敗:", error);
+                displayMessage('獲取系統設定失敗。', 'error', 5000);
+            }
+        }
+
+        function handleToggleSettings() {
+            if (!isAuthReady) return;
+            
+            settingsAccessSection.classList.add('hidden');
+            settingsInputsContainer.classList.add('hidden');
+            settingsAccessPasswordInput.value = '';
+            accessError.classList.add('hidden');
+
+            if (areSettingsVisible) {
+                areSettingsVisible = false;
+                displayMessage('系統設定已隱藏。', 'info', 2000);
+            } else {
+                settingsAccessSection.classList.remove('hidden');
+                settingsAccessPasswordInput.focus();
+                displayMessage('請輸入密碼以存取設定。', 'info', 5000);
+            }
+        }
+
+        function handleConfirmSettingsAccess() {
+            const enteredPassword = settingsAccessPasswordInput.value;
+            
+            if (enteredPassword === EXPORT_PASSWORD) {
+                settingsAccessSection.classList.add('hidden');
+                settingsInputsContainer.classList.remove('hidden');
+                areSettingsVisible = true;
+                settingsAccessPasswordInput.value = ''; 
+                accessError.classList.add('hidden');
+                displayMessage('密碼正確，設定區塊已開啟。', 'success', 3000);
+            } else {
+                settingsAccessPasswordInput.value = '';
+                accessError.classList.remove('hidden');
+                settingsAccessPasswordInput.focus();
+                displayMessage('密碼錯誤，無法存取設定。', 'error', 5000);
+            }
+        }
+
+        async function handleSaveSettings() {
+            if (!isAuthReady || !areSettingsVisible) {
+                displayMessage('請先存取設定區塊並確保系統已準備好。', 'error');
+                return;
+            }
+
+            saveSettingsButton.disabled = true;
+            saveSettingsButton.textContent = '儲存中...';
+            
+            const miStartStr = morningCheckInStartTimeInput.value;
+            const miEndStr = morningCheckInEndTimeInput.value;
+            const aiStartStr = afternoonCheckInStartTimeInput.value;
+            const aiEndStr = afternoonCheckInEndTimeInput.value;
+            const aoStartStr = afternoonCheckOutStartTimeInput.value;
+            const aoEndStr = afternoonCheckOutEndTimeInput.value;
+
+            if (!miStartStr || !miEndStr || !aiStartStr || !aiEndStr || !aoStartStr || !aoEndStr) {
+                displayMessage('所有簽到/簽退時間區間都必須設定。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+
+            const miStartDate = new Date(miStartStr);
+            const miEndDate = new Date(miEndStr);
+            const aiStartDate = new Date(aiStartStr);
+            const aiEndDate = new Date(aiEndStr);
+            const aoStartDate = new Date(aoStartStr);
+            const aoEndDate = new Date(aoEndStr);
+            
+            if (isNaN(miStartDate.getTime()) || isNaN(miEndDate.getTime()) || 
+                isNaN(aiStartDate.getTime()) || isNaN(aiEndDate.getTime()) || 
+                isNaN(aoStartDate.getTime()) || isNaN(aoEndDate.getTime())) {
+                displayMessage('無效的時間格式，請檢查輸入。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+
+            if (miStartDate.getTime() >= miEndDate.getTime()) {
+                 displayMessage('上午簽到開始時間必須早於結束時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (aiStartDate.getTime() >= aiEndDate.getTime()) {
+                 displayMessage('下午簽到開始時間必須早於結束時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (aoStartDate.getTime() >= aoEndDate.getTime()) {
+                 displayMessage('下午簽退開始時間必須早於結束時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (miEndDate.getTime() >= aiStartDate.getTime()) {
+                displayMessage('上午簽到結束時間必須早於下午簽到開始時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+            if (aiEndDate.getTime() >= aoStartDate.getTime()) {
+                displayMessage('下午簽到結束時間必須早於下午簽退開始時間。', 'error');
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+                return;
+            }
+
+            const newSettings = {
+                morningCheckInStartTime: miStartDate,
+                morningCheckInEndTime: miEndDate,
+                afternoonCheckInStartTime: aiStartDate,
+                afternoonCheckInEndTime: aiEndDate,
+                afternoonCheckOutStartTime: aoStartDate,
+                afternoonCheckOutEndTime: aoEndDate
+            };
+
+            try {
+                await setDoc(getSettingsDocRef(), newSettings, { merge: true });
+                
+                morningCheckInStartTime = miStartDate;
+                morningCheckInEndTime = miEndDate;
+                afternoonCheckInStartTime = aiStartDate;
+                afternoonCheckInEndTime = aiEndDate;
+                afternoonCheckOutStartTime = aoStartDate;
+                afternoonCheckOutEndTime = aoEndDate;
+                
+                displayMessage('系統設定儲存成功！', 'success');
+                settingsInputsContainer.classList.add('hidden');
+                areSettingsVisible = false;
+
+            } catch (error) {
+                console.error("儲存系統設定失敗:", error);
+                displayMessage(`儲存設定失敗: ${error.message}`, 'error');
+            } finally {
+                saveSettingsButton.disabled = false;
+                saveSettingsButton.textContent = '儲存設定';
+            }
+        }
+
+        async function handleResetTimeSettings() {
+             if (!isAuthReady || !areSettingsVisible) {
+                displayMessage('請先存取設定區塊。', 'error');
+                return;
+            }
+            
+            hideConfirmModal(); 
+            displayMessage('正在還原時間設定...', 'info', 0);
+            
+            try {
+                const settingsRef = getSettingsDocRef();
+                const resetData = {
+                    morningCheckInStartTime: deleteField(),
+                    morningCheckInEndTime: deleteField(),
+                    afternoonCheckInStartTime: deleteField(),
+                    afternoonCheckInEndTime: deleteField(),
+                    afternoonCheckOutStartTime: deleteField(),
+                    afternoonCheckOutEndTime: deleteField(),
+                };
+                
+                await updateDoc(settingsRef, resetData);
+                await fetchSettings();
+                
+                settingsInputsContainer.classList.add('hidden');
+                areSettingsVisible = false;
+                displayMessage('時間設定已還原為預設值。', 'success');
+            } catch (error) {
+                console.error("還原時間設定失敗:", error);
+                displayMessage(`還原設定失敗: ${error.message}`, 'error');
+            }
+        }
+
+        // --- 報名表單操作 ---
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = '報名中...';
+
+            const school = document.getElementById('school').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const id_number = document.getElementById('id_number').value.trim().toUpperCase(); 
+            const phone = document.getElementById('phone').value.trim(); 
+            const meal = document.getElementById('meal').value; 
+            const question = document.getElementById('question').value.trim(); 
+
+            if (!school || !name || !id_number || !meal || !phone) { 
+                displayMessage('學校、姓名、身份證字號、手機號碼及餐點欄位都必須填寫！', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            
+            // 提交報名時的人數防呆機制
+            try {
+                const limitSnapshot = await getDocs(query(getRegistrationsCollectionRef()));
+                if (limitSnapshot.size >= 300) {
+                    showErrorModal('報名額滿', '本研習報名人數已達 300 人上限，已停止接受報名。');
+                    submitButton.disabled = true;
+                    submitButton.textContent = '報名人數已額滿';
+                    return;
+                }
+            } catch (error) {
+                console.error("檢查報名人數防呆失敗:", error);
+            }
+
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(id_number)) {
+                displayMessage('報名身份證字號格式不正確，請檢查。', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phone)) {
+                displayMessage('手機號碼格式不正確，請輸入10位數字。', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+            
+            if (!REGISTRATION_ID_WHITELIST.includes(id_number)) {
+                showErrorModal('報名失敗', '您非會員無法報名，請洽會員組');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+
+            const qCheck = query(getRegistrationsCollectionRef(), where('id_number', '==', id_number));
+            const existingDocs = await getDocs(qCheck);
+            if (!existingDocs.empty) {
+                displayMessage('您已使用此身份證字號報名過，請勿重複報名。', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = '立即報名';
+                return;
+            }
+
+            const newRegistration = {
+                school,
+                name,
+                id_number,
+                phone,      
+                meal,       
+                question,   
+                timestamp: new Date(), 
+                registeredBy: userId,
+                morningCheckInTime: null, 
+                afternoonCheckInTime: null, 
+                afternoonCheckOutTime: null 
+            };
+
+            try {
+                await addDoc(getRegistrationsCollectionRef(), newRegistration);
+                showSuccessModal(); 
+                form.reset(); 
+                // 成功報名後，更新按鈕鎖定狀態
+                await checkRegistrationLimitOnLoad();
+            } catch (error) {
+                console.error("新增報名資料失敗:", error);
+                displayMessage(`報名失敗: ${error.message}`, 'error');
+            } finally {
+                const checkSnap = await getDocs(query(getRegistrationsCollectionRef()));
+                if (checkSnap.size < 300) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = '立即報名';
+                }
+            }
+        }
+
+        async function handleCancelRegistration() {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+            if (!isBackendAccessed) {
+                displayMessage('請先進入後台系統。', 'error');
+                return;
+            }
+
+            const idNumber = cancelRegIdInput.value.trim().toUpperCase();
+
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以取消報名。', 'error');
+                return;
+            }
+            
+            confirmCancelRegButton.disabled = true;
+            confirmCancelRegButton.textContent = '處理中...';
+
+            try {
+                const q = query(getRegistrationsCollectionRef(), where('id_number', '==', idNumber));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    showErrorModal('取消失敗', '查無此身份證字號的報名紀錄，請確認輸入是否正確。');
+                    return;
+                }
+
+                const docId = snapshot.docs[0].id;
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'registrations', docId));
+
+                hideCancelRegModal();
+                showSignSuccessModal('取消成功', '已成功取消該身份證字號學員之報名紀錄。');
+
+                // 取消報名後，即時重新計算並更新前台報名按鈕狀態
+                await checkRegistrationLimitOnLoad();
+            } catch (error) {
+                console.error("取消報名失敗:", error);
+                displayMessage(`取消報名失敗: ${error.message}`, 'error');
+            } finally {
+                confirmCancelRegButton.disabled = false;
+                confirmCancelRegButton.textContent = '確認取消報名';
+            }
+        }
+
+        // --- 簽到與問卷操作 ---
+
+        async function handleMorningCheckIn() { await processSignAction('morningCheckIn'); }
+        async function handleAfternoonCheckIn() { await processSignAction('afternoonCheckIn'); }
+        async function handleAfternoonCheckOut() { await processSignAction('afternoonCheckOut'); }
+
+        async function handleEnterSurvey() {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            const idNumber = surveyIdNumberInput.value.trim().toUpperCase();
+            
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以進入問卷。', 'error');
+                return;
+            }
+
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(idNumber)) {
+                showErrorModal('問卷錯誤', '身份證字號格式不正確，請檢查。');
+                return;
+            }
+            
+            enterSurveyButton.disabled = true;
+            enterSurveyButton.textContent = '驗證中...';
+
+            try {
+                const qReg = query(getRegistrationsCollectionRef(), where('id_number', '==', idNumber));
+                const regSnap = await getDocs(qReg);
+
+                if (regSnap.empty) {
+                    showErrorModal('問卷錯誤', '查無此報名紀錄，無法填寫問卷。');
+                    return;
+                }
+                
+                const userData = regSnap.docs[0].data();
+                currentSurveyName = userData.name; 
+
+                const qSurvey = query(getSurveysCollectionRef(), where('id_number', '==', idNumber));
+                const surveySnap = await getDocs(qSurvey);
+
+                if (!surveySnap.empty) {
+                    showErrorModal('問卷錯誤', `您已於 ${formatTimestamp(surveySnap.docs[0].data().timestamp)} 填寫過此問卷。`);
+                    return;
+                }
+                
+                surveyHiddenIdNumber.value = idNumber;
+                showSurveyModal(userData.name);
+                surveyIdNumberInput.value = ''; 
+
+            } catch (error) {
+                console.error("進入問卷失敗:", error);
+                showErrorModal('系統錯誤', `進入問卷失敗: ${error.message}`);
+            } finally {
+                enterSurveyButton.disabled = false;
+                enterSurveyButton.textContent = '進入填寫滿意度調查表';
+            }
+        }
+        
+        async function handleSurveySubmit(e) {
+            e.preventDefault();
+            
+            submitSurveyButton.disabled = true;
+            submitSurveyButton.textContent = '送出中...';
+            
+            const idNumber = surveyHiddenIdNumber.value;
+            
+            if (!idNumber) {
+                showErrorModal('系統錯誤', '問卷資料遺失，請重新進入問卷。');
+                submitSurveyButton.disabled = false;
+                submitSurveyButton.textContent = '送出問卷';
+                return;
+            }
+            
+            const formData = new FormData(surveyForm);
+            const surveyData = {
+                id_number: idNumber,
+                q1: formData.get('q1'),
+                q2: formData.get('q2'),
+                q3: formData.get('q3'),
+                q4: formData.get('q4'),
+                q5: formData.get('q5'),
+                q6: formData.get('q6') || '無建議事項', 
+                timestamp: new Date(),
+                filledBy: currentSurveyName || 'N/A'
+            };
+
+            try {
+                await addDoc(getSurveysCollectionRef(), surveyData);
+                hideSurveyModal();
+                showSignSuccessModal('問卷送出成功', `感謝 ${currentSurveyName}！您的滿意度調查表已成功送出。`);
+            } catch (error) {
+                console.error("提交問卷失敗:", error);
+                showErrorModal('系統錯誤', `提交問卷失敗: ${error.message}`);
+            } finally {
+                submitSurveyButton.disabled = false;
+                submitSurveyButton.textContent = '送出問卷';
+            }
+        }
+
+        async function processSignAction(actionType) {
+            if (!isAuthReady) {
+                displayMessage('系統尚未準備好，請稍候再試。', 'error');
+                return;
+            }
+
+            const idNumber = signIdNumberInput.value.trim().toUpperCase();
+            
+            if (!idNumber) {
+                displayMessage('請輸入身份證字號以進行操作。', 'error');
+                return;
+            }
+
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(idNumber)) {
+                displayMessage('身份證字號格式不正確，請檢查。', 'error');
+                return;
+            }
+            
+            const signDate = new Date();
+            const button = document.getElementById(actionType + 'Button'); 
+            const originalText = button.textContent;
+            
+            button.disabled = true;
+            button.textContent = '處理中...';
+            
+            try {
+                let startTime = null, endTime = null, actionName = '', updateField = '';
+
+                switch (actionType) {
+                    case 'morningCheckIn':
+                        startTime = morningCheckInStartTime; endTime = morningCheckInEndTime;
+                        actionName = '上午簽到'; updateField = 'morningCheckInTime';
+                        break;
+                    case 'afternoonCheckIn':
+                        startTime = afternoonCheckInStartTime; endTime = afternoonCheckInEndTime;
+                        actionName = '下午簽到'; updateField = 'afternoonCheckInTime';
+                        break;
+                    case 'afternoonCheckOut':
+                        startTime = afternoonCheckOutStartTime; endTime = afternoonCheckOutEndTime;
+                        actionName = '下午簽退'; updateField = 'afternoonCheckOutTime';
+                        break;
+                }
+                
+                if (!startTime || !endTime) {
+                    showErrorModal('操作失敗', `錯誤：尚未設定 ${actionName} 的開放時間，請洽管理員。`);
+                    return;
+                }
+
+                if (signDate.getTime() < startTime.getTime() || signDate.getTime() > endTime.getTime()) {
+                    const rangeStr = `${startTime.toLocaleString('zh-TW')} 到 ${endTime.toLocaleString('zh-TW')}`;
+                    showErrorModal('操作失敗', `${actionName}未在開放時間！開放時間為 ${rangeStr}。`);
+                    return;
+                }
+
+                const q = query(getRegistrationsCollectionRef(), where('id_number', '==', idNumber));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    showErrorModal('簽到失敗', '查無此報名紀錄，請確認身份證字號是否正確。');
+                    return;
+                }
+
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'registrations', snapshot.docs[0].id);
+                const data = snapshot.docs[0].data();
+                
+                if (data[updateField]) {
+                    showErrorModal('重複操作', `您已於 ${formatTimestamp(data[updateField])} 完成${actionName}。`);
+                    return;
+                }
+
+                const updateData = {};
+                updateData[updateField] = signDate;
+
+                await updateDoc(docRef, updateData);
+                signIdNumberInput.value = ''; 
+                showSignSuccessModal('操作成功', `${actionName}成功！`);
+            } catch (error) {
+                console.error(`處理 ${actionType} 失敗:`, error);
+                displayMessage(`處理失敗: ${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        // --- 後台管理操作 ---
+
+        function handleAccessBackend() {
+            if (!isAuthReady) return;
+            backendContent.classList.add('hidden');
+            backendPasswordInput.value = '';
+            backendAccessError.classList.add('hidden');
+            
+            passwordSection.classList.remove('hidden');
+            accessBackendButton.disabled = true;
+            backendInfoText.textContent = '請輸入密碼以進入後台管理介面。';
+            backendPasswordInput.focus();
+        }
+
+        function handleConfirmBackendAccess() {
+            const enteredPassword = backendPasswordInput.value;
+
+            if (enteredPassword !== EXPORT_PASSWORD) {
+                backendPasswordInput.value = '';
+                backendAccessError.classList.remove('hidden');
+                backendPasswordInput.focus();
+                displayMessage('後台密碼錯誤，請重新輸入。', 'error');
+                return;
+            }
+
+            passwordSection.classList.add('hidden'); 
+            accessBackendButton.classList.add('hidden'); 
+            backendContent.classList.remove('hidden'); 
+            backendInfoText.textContent = '您已進入後台管理模式。';
+            
+            isBackendAccessed = true;
+            setupBackendListener(); 
+            displayMessage('後台存取成功！', 'success');
+        }
+        
+        function handleAddMember() {
+            if (!isBackendAccessed) { displayMessage('請先進入後台系統。', 'error'); return; }
+            showAddMemberModal();
+        }
+
+        function handleConfirmAddMember() {
+            const idNumber = newMemberIdInput.value.trim().toUpperCase();
+
+            const idRegex = /^[A-Z][0-9]{9}$/;
+            if (!idRegex.test(idNumber)) {
+                memberAddMessage.className = 'text-xs text-red-500 mt-1';
+                memberAddMessage.textContent = '身份證字號格式不正確。';
+                memberAddMessage.classList.remove('hidden');
+                return;
+            }
+
+            if (REGISTRATION_ID_WHITELIST.includes(idNumber)) {
+                memberAddMessage.className = 'text-xs text-red-500 mt-1';
+                memberAddMessage.textContent = '該身份證字號已存在。';
+                memberAddMessage.classList.remove('hidden');
+                return;
+            }
+            
+            REGISTRATION_ID_WHITELIST.push(idNumber);
+            memberAddMessage.className = 'text-xs text-green-500 mt-1';
+            memberAddMessage.textContent = `成功新增 ${idNumber} 至白名單！`;
+            memberAddMessage.classList.remove('hidden');
+            
+            setTimeout(hideAddMemberModal, 1500);
+        }
+
+        async function clearAllSignatures() {
+            if (!isAuthReady || !db || !isBackendAccessed) { displayMessage('請先進入後台系統。', 'error'); return; }
+            hideConfirmModal(); 
+            displayMessage('正在清空簽到/簽退紀錄...', 'info', 0);
+            
+            try {
+                const q = query(getRegistrationsCollectionRef());
+                const snapshot = await getDocs(q);
+                let updateCount = 0;
+                const updatePromises = [];
+                snapshot.forEach((docSnap) => {
+                    updatePromises.push(updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'registrations', docSnap.id), {
+                        morningCheckInTime: null, afternoonCheckInTime: null, afternoonCheckOutTime: null
+                    }));
+                    updateCount++;
+                });
+                await Promise.all(updatePromises);
+                displayMessage(`已成功清除 ${updateCount} 筆資料的簽到/簽退紀錄！`, 'success');
+            } catch (error) {
+                displayMessage(`清除失敗: ${error.message}`, 'error');
+            }
+        }
+
+        async function deleteAllRegistrations() {
+            if (!isAuthReady || !db) { displayMessage('系統尚未準備好。', 'error'); return; }
+            hideConfirmModal(); 
+            displayMessage('正在清空所有報名資料...', 'error', 0);
+
+            try {
+                const q = query(getRegistrationsCollectionRef());
+                const snapshot = await getDocs(q);
+                let deleteCount = 0;
+                const deletePromises = [];
+                snapshot.forEach((doc) => { deletePromises.push(deleteDoc(doc.ref)); deleteCount++; });
+                await Promise.all(deletePromises);
+                displayMessage(`已成功清空 ${deleteCount} 筆報名紀錄！`, 'success');
+
+                // 資料清空後，即時重新檢查解鎖前台按鈕
+                await checkRegistrationLimitOnLoad();
+            } catch (error) {
+                displayMessage(`清空資料失敗: ${error.message}`, 'error');
+            }
+        }
+
+        async function fetchDataAndExportToCsv() {
+            if (!isAuthReady || !db || !isBackendAccessed) { displayMessage('請先進入後台系統。', 'error'); return; }
+            exportCsvButton.disabled = true; exportCsvButton.textContent = '獲取資料中...';
+            displayMessage('正在獲取資料...', 'info');
+
+            try {
+                const regSnapshot = await getDocs(query(getRegistrationsCollectionRef()));
+                const registrations = [];
+                regSnapshot.forEach((doc) => { registrations.push(doc.data()); });
+
+                const surveySnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'surveys'));
+                const surveyMap = {};
+                surveySnapshot.forEach((doc) => { const d = doc.data(); surveyMap[d.id_number] = d; });
+                
+                const mergedData = registrations.map(reg => {
+                    const s = surveyMap[reg.id_number] || {};
+                    return {
+                        ...reg,
+                        surveyQ1: s.q1 || '未填寫', surveyQ2: s.q2 || '未填寫', surveyQ3: s.q3 || '未填寫',
+                        surveyQ4: s.q4 || '未填寫', surveyQ5: s.q5 || '未填寫', surveyQ6: s.q6 || '未填寫',
+                    };
+                });
+                performCsvDownload(mergedData);
+            } catch (error) {
+                displayMessage(`匯出失敗: ${error.message}`, 'error');
+            } finally {
+                 exportCsvButton.disabled = false; exportCsvButton.textContent = '匯出 CSV';
+            }
+        }
+        
+        function performCsvDownload(data) {
+            if (data.length === 0) { displayMessage('資料庫中沒有報名紀錄。', 'error'); return; }
+
+            const headers = [
+                "報名時間", "學校", "姓名", "身份證字號", "手機", "餐點", "講師問題", 
+                "是否上午簽到", "上午簽到時間", "是否下午簽到", "下午簽到時間", "是否下午簽退", "下午簽退時間", 
+                "問卷Q1", "問卷Q2", "問卷Q3", "問卷Q4", "問卷Q5", "問卷Q6", "註冊者ID"
+            ];
+            
+            const rows = data.map(reg => {
+                const cleanAndQuote = (str) => `"${String(str).replace(/"/g, '""')}"`;
+                return [
+                    cleanAndQuote(formatTimestamp(reg.timestamp)), cleanAndQuote(reg.school || ''), cleanAndQuote(reg.name || ''),
+                    cleanAndQuote(reg.id_number || ''), cleanAndQuote(reg.phone || ''), cleanAndQuote(reg.meal || ''), cleanAndQuote(reg.question || ''),
+                    cleanAndQuote(reg.morningCheckInTime ? '是' : '否'), cleanAndQuote(formatTimestamp(reg.morningCheckInTime)),
+                    cleanAndQuote(reg.afternoonCheckInTime ? '是' : '否'), cleanAndQuote(formatTimestamp(reg.afternoonCheckInTime)),
+                    cleanAndQuote(reg.afternoonCheckOutTime ? '是' : '否'), cleanAndQuote(formatTimestamp(reg.afternoonCheckOutTime)),
+                    cleanAndQuote(reg.surveyQ1), cleanAndQuote(reg.surveyQ2), cleanAndQuote(reg.surveyQ3),
+                    cleanAndQuote(reg.surveyQ4), cleanAndQuote(reg.surveyQ5), cleanAndQuote(reg.surveyQ6),
+                    cleanAndQuote(reg.registeredBy || '')
+                ];
+            });
+
+            const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            const now = new Date();
+            link.setAttribute('download', `研習報名與問卷清單_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            displayMessage('報名與問卷清單已匯出！', 'success');
+        }
+
+        // --- 事件監聽器和啟動 ---
+        form.addEventListener('submit', handleFormSubmit);
+        enterSurveyButton.addEventListener('click', handleEnterSurvey);
+        closeSurveyFormButton.addEventListener('click', hideSurveyModal);
+        surveyForm.addEventListener('submit', handleSurveySubmit);
+        
+        accessBackendButton.addEventListener('click', handleAccessBackend); 
+        confirmBackendAccessButton.addEventListener('click', handleConfirmBackendAccess); 
+        exportCsvButton.addEventListener('click', fetchDataAndExportToCsv); 
+        
+        clearDataButton.addEventListener('click', () => {
+             showConfirmModal('清空確認', '您確定要清空所有報名紀錄嗎？此操作無法復原！', 'clearData');
+        }); 
+        clearSignaturesButton.addEventListener('click', () => {
+             showConfirmModal('清空簽到/簽退確認', '您確定要清除所有報名紀錄中的簽到和簽退時間嗎？', 'clearSignatures');
+        }); 
+        resetTimeSettingsButton.addEventListener('click', () => {
+            if (!areSettingsVisible) { displayMessage('請先透過密碼存取設定區塊。', 'error'); return; }
+            showConfirmModal('重設時間確認', '您確定要清除所有開放時間設定嗎？', 'resetTime');
+        });
+
+        backendCancelRegButton.addEventListener('click', () => {
+            if (!isBackendAccessed) { displayMessage('請先進入後台系統。', 'error'); return; }
+            showCancelRegModal();
+        });
+        cancelCancelRegButton.addEventListener('click', hideCancelRegModal);
+        confirmCancelRegButton.addEventListener('click', handleCancelRegistration);
+        
+        addMemberButton.addEventListener('click', handleAddMember);
+        cancelAddMemberButton.addEventListener('click', hideAddMemberModal);
+        confirmAddMemberButton.addEventListener('click', handleConfirmAddMember);
+
+        cancelConfirmButton.addEventListener('click', hideConfirmModal); 
+        executeConfirmButton.addEventListener('click', () => {
+            const action = executeConfirmButton.getAttribute('data-action');
+            if (action === 'clearData') { deleteAllRegistrations(); } 
+            else if (action === 'clearSignatures') { clearAllSignatures(); } 
+            else if (action === 'resetTime') { handleResetTimeSettings(); }
+        }); 
+
+        morningCheckInButton.addEventListener('click', handleMorningCheckIn);
+        afternoonCheckInButton.addEventListener('click', handleAfternoonCheckIn);
+        afternoonCheckOutButton.addEventListener('click', handleAfternoonCheckOut);
+        
+        toggleSettingsButton.addEventListener('click', handleToggleSettings); 
+        confirmSettingsAccessButton.addEventListener('click', handleConfirmSettingsAccess); 
+        saveSettingsButton.addEventListener('click', handleSaveSettings); 
+
+        // 綁定摺疊按鈕點擊事件 (NEW)
+        toggleFormFieldsBtn.addEventListener('click', () => {
+            const isHidden = formFieldsContainer.classList.toggle('hidden');
+            if (isHidden) {
+                toggleFormFieldsBtn.textContent = '📝 點此展開填寫報名表單 ⬇️';
+            } else {
+                toggleFormFieldsBtn.textContent = '收合報名表單 ⬆️';
+            }
+        });
+
+        closeAnnouncementButton.addEventListener('click', hideAnnouncementModal);
+        announcementModal.addEventListener('click', (e) => { if (e.target === announcementModal) hideAnnouncementModal(); });
+        closeModalButton.addEventListener('click', hideSuccessModal);
+        successModal.addEventListener('click', (e) => { if (e.target === successModal) hideSuccessModal(); });
+        closeSignModalButton.addEventListener('click', hideSignSuccessModal);
+        signSuccessModal.addEventListener('click', (e) => { if (e.target === signSuccessModal) hideSignSuccessModal(); });
+        closeErrorModalButton.addEventListener('click', () => { hideErrorModal(); });
+        errorModal.addEventListener('click', (e) => { if (e.target === errorModal) hideErrorModal(); });
+        confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) hideConfirmModal(); });
+        cancelRegModal.addEventListener('click', (e) => { if (e.target === cancelRegModal) hideCancelRegModal(); });
+
+        initializeFirebase();
+    </script>
+</body></html>

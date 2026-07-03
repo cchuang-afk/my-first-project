@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>優雅書籍立體輪播展示系統</title>
+    <!-- 引入 Tailwind CSS 進行現代化排版 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Font Awesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts 繁體中文美化 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            transition: background 0.8s ease;
+        }
+
+        /* 3D 書籍透視容器 */
+        .book-container {
+            perspective: 1200px;
+        }
+
+        /* 書本立體主體 */
+        .book {
+            position: relative;
+            width: 240px;
+            height: 330px;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 5px 5px 20px rgba(0,0,0,0.3);
+        }
+
+        /* 側邊書背與厚度效果 */
+        .book::before {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 100%;
+            left: 0;
+            background: #2d3748;
+            transform-origin: left;
+            transform: rotateY(-90deg) translateX(-15px);
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* 下方書頁厚度效果 */
+        .book::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 30px;
+            bottom: 0;
+            background: #eae6df;
+            transform-origin: bottom;
+            transform: rotateX(90deg) translateY(15px);
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        /* 書籍懸停 3D 旋轉開書效果 */
+        .book-container:hover .book {
+            transform: rotateY(-25deg) rotateX(5deg) translateZ(20px);
+            box-shadow: 20px 20px 30px rgba(0,0,0,0.4);
+        }
+
+        /* 自訂滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between" id="app-body">
+
+    <!-- 背景動態遮罩，提供柔和感 -->
+    <div class="fixed inset-0 bg-radial-gradient from-transparent to-slate-950/80 pointer-events-none z-0"></div>
+
+    <!-- 頂部導覽列 -->
+    <header class="relative z-10 w-full px-6 py-4 flex flex-wrap justify-between items-center border-b border-white/10 backdrop-blur-md bg-slate-900/40">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-book-open text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-white">
+                    讀書印記・主題書架
+                </h1>
+                <p class="text-xs text-slate-400">立體互動圖片輪播系統</p>
+            </div>
+        </div>
+
+        <!-- 模式切換器與狀態提示 -->
+        <div class="flex items-center space-x-4 mt-2 sm:mt-0">
+            <!-- 顯示模式切換按鈕 -->
+            <div class="bg-slate-800/80 p-1 rounded-lg border border-slate-700/50 flex space-x-1 text-xs">
+                <button id="btn-mode-demo" onclick="switchImageMode('demo')" class="px-3 py-1.5 rounded-md font-medium transition-all duration-300 bg-indigo-600 text-white shadow">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Demo 藝術封面
+                </button>
+                <button id="btn-mode-local" onclick="switchImageMode('local')" class="px-3 py-1.5 rounded-md font-medium transition-all duration-300 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-file-image mr-1"></i> 本機圖片檔
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="relative z-10 flex-grow flex flex-col lg:flex-row items-center justify-center px-4 sm:px-8 py-8 gap-8 lg:gap-12 max-w-7xl mx-auto w-full">
+        
+        <!-- 左側：3D 書籍輪播展台 -->
+        <div class="w-full lg:w-1/2 flex flex-col items-center justify-center">
+            
+            <!-- 書籍展示主座 -->
+            <div class="relative w-full flex items-center justify-center py-10">
+                
+                <!-- 裝飾底座 -->
+                <div class="absolute bottom-6 w-72 h-8 bg-slate-900/80 rounded-full blur-md transform scale-y-50"></div>
+                <div class="absolute bottom-8 w-64 h-2 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full"></div>
+
+                <!-- 3D 容器 -->
+                <div class="book-container relative z-10 cursor-pointer" onclick="openBookDetail()">
+                    <div class="book rounded-r-lg overflow-hidden" id="book-element">
+                        <!-- 書本封面主體 (透過 JS 動態填入 SVG 或 <img>) -->
+                        <div id="book-cover" class="w-full h-full relative"></div>
+                    </div>
+                </div>
+
+                <!-- 左右操控懸浮按鈕 -->
+                <button onclick="prevSlide()" class="absolute left-4 sm:left-10 z-20 w-12 h-12 rounded-full bg-slate-900/60 hover:bg-indigo-600 border border-white/10 hover:border-indigo-500 flex items-center justify-center text-white transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 active:scale-90">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </button>
+                <button onclick="nextSlide()" class="absolute right-4 sm:right-10 z-20 w-12 h-12 rounded-full bg-slate-900/60 hover:bg-indigo-600 border border-white/10 hover:border-indigo-500 flex items-center justify-center text-white transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 active:scale-90">
+                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                </button>
+            </div>
+
+            <!-- 自動輪播控制 & 指示點 -->
+            <div class="flex items-center space-x-6 mt-4">
+                <button id="btn-play-pause" onclick="togglePlay()" class="text-slate-400 hover:text-white transition-colors duration-200">
+                    <i id="play-icon" class="fa-solid fa-pause text-base"></i>
+                </button>
+                
+                <!-- 點狀進度導航 -->
+                <div class="flex space-x-2" id="dots-container">
+                    <!-- 由 JS 動態生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：書籍詳情與內容大綱 -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-center space-y-6 bg-slate-900/40 p-6 sm:p-8 rounded-2xl border border-white/5 backdrop-blur-lg">
+            
+            <!-- 書籍分類與編號 -->
+            <div class="flex items-center justify-between">
+                <span id="book-category" class="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    書籍導讀
+                </span>
+                <span id="book-number" class="text-sm font-mono text-slate-500">
+                    01 / 05
+                </span>
+            </div>
+
+            <!-- 書名與作者 -->
+            <div class="space-y-2">
+                <h2 id="book-title" class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white">
+                    加載中...
+                </h2>
+                <p id="book-author" class="text-indigo-400 text-sm sm:text-base font-medium">
+                    作者：--
+                </p>
+            </div>
+
+            <!-- 分割線 -->
+            <div class="h-px bg-gradient-to-r from-slate-700/50 via-slate-700/20 to-transparent"></div>
+
+            <!-- 精選導讀/大綱 -->
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">精選概要</h3>
+                <p id="book-description" class="text-slate-300 text-sm sm:text-base leading-relaxed h-28 overflow-y-auto pr-2">
+                    正在為您編排內容大綱，請稍候...
+                </p>
+            </div>
+
+            <!-- 金句推薦 -->
+            <div class="bg-white/5 border-l-4 border-indigo-500 p-4 rounded-r-xl italic text-slate-300 text-xs sm:text-sm">
+                <i class="fa-solid fa-quote-left mr-2 text-indigo-400"></i>
+                <span id="book-quote">閱讀，是探索世界最美的姿態。</span>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div class="flex flex-wrap gap-4 pt-2">
+                <button onclick="openBookDetail()" class="flex-1 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 active:scale-[0.98] flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>查看完整書評與大綱</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 下方快速切換縮圖列 -->
+    <footer class="relative z-10 w-full py-4 px-6 border-t border-white/5 bg-slate-950/60 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto flex flex-col items-center space-y-3">
+            <span class="text-xs text-slate-500 font-medium uppercase tracking-widest">快速索引書庫</span>
+            <div class="flex items-center justify-center gap-3 sm:gap-4 overflow-x-auto w-full py-1" id="thumbnails-container">
+                <!-- 由 JS 動態生成 -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- 自訂訊息與詳情 Modal 彈出視窗 -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl transform scale-95 transition-transform duration-300" id="modal-box">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center space-x-3 text-indigo-400">
+                    <i class="fa-solid fa-feather-pointed text-xl"></i>
+                    <h4 class="text-lg font-bold">深度解析</h4>
+                </div>
+                <button onclick="closeBookDetail()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <h3 id="modal-book-title" class="text-2xl font-black text-white">書名</h3>
+                <div class="h-px bg-slate-800"></div>
+                <p id="modal-book-intro" class="text-slate-300 text-sm sm:text-base leading-relaxed max-h-60 overflow-y-auto pr-2">
+                    詳細導讀內文...
+                </p>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeBookDetail()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-6 py-2.5 rounded-xl font-medium text-sm transition-all">
+                    關閉視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 本機圖片切換提示 Toast 訊息 -->
+    <div id="toast-message" class="fixed bottom-24 right-6 z-50 bg-indigo-600 text-white px-5 py-3 rounded-xl shadow-xl flex items-center space-x-3 border border-indigo-400/20 translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toast-text" class="text-sm font-medium">切換成功！</span>
+    </div>
+
+    <script>
+        // 書籍核心資料
+        const booksData = [
+            {
+                id: 1,
+                title: "城市的顏值",
+                author: "林崇傑",
+                category: "建築與都市美學",
+                localImage: "getImage (1).webp",
+                bgColor: "linear-gradient(135deg, #1e1b18 0%, #4a3b32 100%)",
+                themeColor: "rgb(74, 59, 50)",
+                accentColor: "#d4af37",
+                quote: "城市文化實力，源於人與空間的結合；唯有找出城市中隱藏的秩序，尊重傳統習性，才能實現和諧的美感……",
+                description: "一個鼓吹優雅動內、雙城親密競爭的劃時代思考。本書帶領讀者重新審視我們所居住的城市，探討空間、文化與人本之間的動態平衡。林崇傑以其宏觀視野，引導讀者發現那些隱藏在鋼筋水泥背後的空間美學與生活美德。",
+                detailedIntro: "林崇傑先生在《城市的顏值》中，深刻探討了都市更新與空間景觀的重塑。他指出，城市的容貌不單是建築物外觀的翻新，更是市民生活習慣、歷史記憶與未來願景的立體投影。書中精選了國內外多個都市改造案例，分析如何透過精細的設計與居民參與，喚醒冰冷的都市空間，打造出有溫度、有文化尊嚴的親民城區。這是一本適合都市計畫者、設計愛好者以及每位關心生活環境的公民的必讀之作。",
+                // 自訂的高擬真 Demo 封面 SVG
+                demoSvg: `
+                <svg width="100%" height="100%" viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" style="background:#f9f6f0; font-family:'Noto Sans TC', sans-serif;">
+                    <rect x="10" y="10" width="220" height="310" fill="none" stroke="#d4b285" stroke-width="2"/>
+                    <!-- 藝術線條塔 -->
+                    <path d="M 120,60 L 120,240 M 110,120 L 130,120 M 115,100 L 125,100 M 100,160 L 140,160 M 120,60 L 115,80 L 125,80 Z" stroke="#3a3025" stroke-width="2" fill="none"/>
+                    <path d="M 90,220 C 105,190 135,190 150,220" stroke="#3a3025" stroke-width="1.5" fill="none"/>
+                    <!-- 標題 -->
+                    <text x="35" y="110" font-size="42" font-weight="900" fill="#3a3025" letter-spacing="4" writing-mode="tb">顏值</text>
+                    <text x="175" y="55" font-size="42" font-weight="900" fill="#3a3025" letter-spacing="4" writing-mode="tb">城市的</text>
+                    <!-- 副標與作者 -->
+                    <text x="120" y="45" font-size="7" font-weight="500" fill="#7d6750" text-anchor="middle">一個鼓吹優雅動內 雙城親密競爭</text>
+                    <text x="50" y="270" font-size="12" font-weight="700" fill="#5a4a3a">林崇傑 著</text>
+                    <rect x="25" y="290" width="190" height="30" fill="#a4845e"/>
+                    <text x="120" y="308" font-size="8" font-weight="500" fill="#ffffff" text-anchor="middle">城市文化實力源於人與空間的結合</text>
+                </svg>
+                `
+            },
+            {
+                id: 2,
+                title: "我看到的世界跟你不一樣",
+                author: "Jessica",
+                category: "靈魂溝通與心靈成長",
+                localImage: "getImage (2).webp",
+                bgColor: "linear-gradient(135deg, #140526 0%, #350c5a 100%)",
+                themeColor: "rgb(43, 10, 74)",
+                accentColor: "#e91e63",
+                quote: "致力於協助迷失的人們、看見另一個世界的面貌。死亡並非此生的終點，而是下一段奇妙旅程的起點。",
+                description: "靈魂溝通師 Jessica 的真情筆記。不藏私分享她所見的靈魂生活實貌，用最溫柔、最寫實的文字，撫慰失去親人的痛，帶讀者看見充滿愛與光芒的彼岸世界。",
+                detailedIntro: "在《我看到的世界跟你不一樣》中，資深靈魂溝通師 Jessica 將她二十年來與彼岸對話、引導迷途亡靈與安慰遺族的心路歷程集結成書。這不是一本宣揚怪力亂神的書，而是一部深刻探討生命、死亡與「愛如何延續」的心靈紀實。她以溫柔卻不失客觀的筆調，描繪了靈界的生活光景，解答了人們對於逝去親人身處何方的萬般牽掛。全書流露著理解與疼惜，幫助讀者在面對摯愛離世時，能撥開悲傷的迷霧，找到再次安頓內心的力量。",
+                demoSvg: `
+                <svg width="100%" height="100%" viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" style="background:#24113a; font-family:'Noto Sans TC', sans-serif;">
+                    <!-- 花邊背景 -->
+                    <rect x="8" y="8" width="224" height="314" fill="none" stroke="#dcb55c" stroke-width="2" stroke-dasharray="4 2"/>
+                    <circle cx="120" cy="90" r="45" fill="#3b1d5d"/>
+                    <!-- 亡靈節糖果顱骨 SVG -->
+                    <g transform="translate(100, 68) scale(0.8)">
+                        <path d="M 25,5 C 40,5 50,15 50,30 C 50,42 42,50 35,50 L 35,58 L 15,58 L 15,50 C 8,50 0,42 0,30 C 0,15 10,5 25,5 Z" fill="#f6e49c"/>
+                        <!-- 眼睛花朵 -->
+                        <circle cx="15" cy="25" r="7" fill="#dc2626"/>
+                        <circle cx="35" cy="25" r="7" fill="#2563eb"/>
+                        <!-- 鼻子心形 -->
+                        <path d="M 25,38 C 23,35 20,35 20,38 C 20,41 25,44 25,44 C 25,44 30,41 30,38 C 30,35 27,35 25,38 Z" fill="#111827"/>
+                    </g>
+                    <!-- 裝飾小花 -->
+                    <circle cx="50" cy="60" r="5" fill="#ec4899"/><circle cx="190" cy="60" r="5" fill="#06b6d4"/>
+                    <!-- 標題 -->
+                    <text x="120" y="180" font-size="18" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">我看到的世界</text>
+                    <text x="120" y="210" font-size="22" font-weight="900" fill="#f6e49c" text-anchor="middle" letter-spacing="2">跟你不一樣</text>
+                    <!-- 副標 -->
+                    <rect x="30" y="232" width="180" height="22" rx="4" fill="#6d28d9"/>
+                    <text x="120" y="247" font-size="10" font-weight="700" fill="#ffffff" text-anchor="middle">靈魂溝通師的真情筆記</text>
+                    <!-- 作者 -->
+                    <text x="120" y="145" font-size="13" font-weight="500" fill="#ec4899" text-anchor="middle" letter-spacing="1">Jessica 著</text>
+                    <rect x="15" y="275" width="210" height="40" fill="#ffffff"/>
+                    <text x="120" y="292" font-size="9" font-weight="700" fill="#1e1b4b" text-anchor="middle">不藏私分享她所看見的靈魂生活實貌</text>
+                    <text x="120" y="306" font-size="8" font-weight="500" fill="#475569" text-anchor="middle">死亡並非終結，而是下一段奇妙旅程</text>
+                </svg>
+                `
+            },
+            {
+                id: 3,
+                title: "一個人的人生未爆彈",
+                author: "朱德庸",
+                category: "現代幽默與生活哲學",
+                localImage: "getImage (3).webp",
+                bgColor: "linear-gradient(135deg, #30161d 0%, #632b38 100%)",
+                themeColor: "rgb(82, 33, 44)",
+                accentColor: "#f472b6",
+                quote: "其實生活很簡單，我們卻過得太複雜。朱德庸以180個雙人生活幽默視角，拆解現代人心中的重重未爆彈！",
+                description: "朱德庸幽默力作！面對高壓焦慮的現代社會，他用畫筆繪出大眾的集體心理投射。透過一個個看似荒誕卻無比真實的四格幽默，幫你拆解人際、愛情與自我定位的未爆彈。",
+                detailedIntro: "著名漫畫家朱德庸最新力作《一個人的人生未爆彈》。朱大師以其一貫辛辣、犀利卻充滿深情與慈悲的冷面幽默，描繪了在科技發達、步調飛快的現代社會中，每個人心底那顆隨時可能被引爆的孤獨與焦慮炸彈。無論是婚姻家庭的拉扯、職場名利的追逐，還是個人靈魂的空虛，都在他細膩的黑白線條與金句式對白中，得到了無情的揭露與溫暖的救贖。閱讀本書，就像在午後的鏡子前與自己對視，一邊發笑，一邊釋懷。",
+                demoSvg: `
+                <svg width="100%" height="100%" viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; font-family:'Noto Sans TC', sans-serif;">
+                    <!-- 經典粉紅格子側邊書脊 -->
+                    <rect x="0" y="0" width="25" height="330" fill="#fae8ff"/>
+                    <path d="M 0,0 L 25,30 M 0,30 L 25,60 M 0,60 L 25,90 M 0,90 L 25,120 M 0,120 L 25,150" stroke="#d8b4fe" stroke-width="1.5"/>
+                    <!-- 手繪風格大頭 -->
+                    <g transform="translate(120, 150)">
+                        <!-- 頭髮 -->
+                        <path d="M -35,10 C -35,-40 35,-40 35,10 C 25,15 15,0 0,0 C -15,0 -25,15 -35,10 Z" fill="#fef08a" stroke="#1e293b" stroke-width="2"/>
+                        <!-- 臉蛋 -->
+                        <path d="M -25,5 C -25,30 25,30 25,5 Z" fill="#fff1f2" stroke="#1e293b" stroke-width="2"/>
+                        <!-- 眼睛 -->
+                        <circle cx="-10" cy="5" r="2.5" fill="#0891b2"/>
+                        <circle cx="10" cy="5" r="2.5" fill="#15803d"/>
+                        <!-- 嘴巴 -->
+                        <path d="M -4,15 Q 0,20 4,15" stroke="#1e293b" stroke-width="2" fill="none"/>
+                    </g>
+                    <!-- 雲朵裝飾 -->
+                    <path d="M 70,50 Q 80,40 100,45 Q 115,35 130,48 Q 150,45 155,60 L 65,60 Z" fill="#fce7f3" opacity="0.7"/>
+                    <!-- 標題 -->
+                    <text x="130" y="80" font-size="20" font-weight="900" fill="#b45309" text-anchor="middle" letter-spacing="1">一個人的</text>
+                    <text x="130" y="110" font-size="23" font-weight="900" fill="#b45309" text-anchor="middle" letter-spacing="2">人生未爆彈</text>
+                    <!-- 作者 -->
+                    <text x="130" y="240" font-size="14" font-weight="900" fill="#1e293b" text-anchor="middle">朱德庸 著</text>
+                    <rect x="35" y="260" width="190" height="55" rx="5" fill="#f472b6"/>
+                    <text x="130" y="278" font-size="8" font-weight="700" fill="#ffffff" text-anchor="middle">朱德庸用180個雙人生活幽默視角</text>
+                    <text x="130" y="292" font-size="8" font-weight="700" fill="#ffffff" text-anchor="middle">為過於沉重的現代人調配試劑與同代炸彈！</text>
+                    <text x="130" y="305" font-size="7" font-weight="500" fill="#fce7f3" text-anchor="middle">精彩收錄都市男女的內心群像</text>
+                </svg>
+                `
+            },
+            {
+                id: 4,
+                title: "我的家，你的家",
+                author: "兒童繪本中心編譯",
+                category: "親子共讀與多元繪本",
+                localImage: "getImage (4).webp",
+                bgColor: "linear-gradient(135deg, #42380a 0%, #7d6b11 100%)",
+                themeColor: "rgb(125, 107, 17)",
+                accentColor: "#facc15",
+                quote: "每個家都有不同的樣子，但有一件事是完全一樣的——那就是，家裡充滿了滿滿的愛！",
+                description: "一本溫馨無比、充滿色彩的親子共讀繪本。透過可愛的插圖與溫柔的文字，向孩子介紹世界上各種不同的家庭樣貌，學習尊重多元與包容差異。",
+                detailedIntro: "這本深受家長好評的繪本《我的家，你的家》，以極具親和力與亮麗童趣的色彩，向孩子們展示了「家庭」的多樣面貌。家不一定是由爸爸、媽媽和孩子組成；有的家是三代同堂，有的家只有爸爸或媽媽，有的家有兩隻寵物，還有的家是由好朋友共同建立。書中生動地告訴孩子，無論家庭的結構如何不同，只要有互相扶持、彼此關懷的心，那裡就是溫暖的避風港。非常適合幼兒園及低年級孩童進行多元文化與性別平等啟蒙教育。",
+                demoSvg: `
+                <svg width="100%" height="100%" viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" style="background:#fde047; font-family:'Noto Sans TC', sans-serif;">
+                    <!-- 童趣小人插畫簡略版 -->
+                    <g transform="translate(120, 180)">
+                        <!-- 屋頂 -->
+                        <polygon points="0,-100 -40,-60 40,-60" fill="#ef4444"/>
+                        <rect x="-25" y="-60" width="50" height="50" fill="#3b82f6"/>
+                        <rect x="-8" y="-30" width="16" height="20" fill="#f97316"/>
+                        <!-- 牽手小人 -->
+                        <circle cx="-60" cy="10" r="12" fill="#fda4af"/>
+                        <line x1="-60" y1="22" x2="-60" y2="50" stroke="#1e293b" stroke-width="3"/>
+                        <line x1="-60" y1="30" x2="-40" y2="30" stroke="#1e293b" stroke-width="2"/>
+                        <circle cx="-30" cy="20" r="8" fill="#93c5fd"/>
+                        <line x1="-30" y1="28" x2="-30" y2="50" stroke="#1e293b" stroke-width="3"/>
+                        <line x1="-40" y1="30" x2="-30" y2="35" stroke="#1e293b" stroke-width="2"/>
+                        <line x1="-30" y1="35" x2="-10" y2="30" stroke="#1e293b" stroke-width="2"/>
+                        <circle cx="-5" cy="15" r="10" fill="#fca5a5"/>
+                        <line x1="-5" y1="25" x2="-5" y2="50" stroke="#1e293b" stroke-width="3"/>
+                        <line x1="-10" y1="30" x2="10" y2="30" stroke="#1e293b" stroke-width="2"/>
+                    </g>
+                    <!-- 飛鳥 -->
+                    <path d="M 170,50 Q 180,45 190,50 Q 185,40 170,50 Z" fill="#ef4444"/>
+                    <!-- 標題 -->
+                    <text x="120" y="80" font-size="28" font-weight="900" fill="#047857" text-anchor="middle" letter-spacing="2">我的家，</text>
+                    <text x="120" y="115" font-size="28" font-weight="900" fill="#047857" text-anchor="middle" letter-spacing="2">你的家</text>
+                    <!-- 副標 -->
+                    <text x="120" y="140" font-size="8" font-weight="700" fill="#b45309" text-anchor="middle">關於我們、長輩與寵物的小百科</text>
+                    <text x="120" y="300" font-size="8" font-weight="700" fill="#047857" text-anchor="middle">學會包容與尊重多元家庭樣貌</text>
+                </svg>
+                `
+            },
+            {
+                id: 5,
+                title: "麻醉醫師日記",
+                author: "陳泱多 著",
+                category: "醫療紀實與職人故事",
+                localImage: "getImage.webp",
+                bgColor: "linear-gradient(135deg, #131c1e 0%, #243b40 100%)",
+                themeColor: "rgb(36, 59, 64)",
+                accentColor: "#ef4444",
+                quote: "手術室的無影燈下，是生與死的拔河。我的職責不是讓你睡著，而是確保你安全無虞地醒來！",
+                description: "35年麻醉生活救死扶傷紀實。陳泱多醫師用充滿人性關懷的筆觸，紀錄手術室內外發生的震撼故事。那些在無意識邊境徘徊的靈魂，以及最真實的醫療現場掙扎。",
+                detailedIntro: "在《麻醉醫師日記》中，擁有三十五年臨床經驗的資深麻醉專科陳泱多醫師，首次為讀者揭開「手術室幕後守護神」的神祕面紗。大眾往往認為麻醉只是「打一針讓病人睡著」，但陳醫師用豐富的真實案例告訴大眾，麻醉是一門在生死邊緣精準拿捏的藝術與科學。書中收錄了多宗驚心動魄的手術突發狀況、急診室的生死救援，以及對醫療體制、醫病關係的深沉反思。文字張力極強，既有醫學專業的嚴謹，又充滿了對人類生命無限的悲憫與敬畏。",
+                demoSvg: `
+                <svg width="100%" height="100%" viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" style="background:#f1f5f9; font-family:'Noto Sans TC', sans-serif;">
+                    <rect x="10" y="10" width="220" height="310" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+                    <!-- 手術心電圖與醫生意象 -->
+                    <path d="M 30,160 L 70,160 L 80,130 L 90,190 L 100,150 L 110,160 L 150,160" stroke="#ef4444" stroke-width="2.5" fill="none"/>
+                    <g transform="translate(140, 165) scale(0.65)">
+                        <!-- 醫生剪影 -->
+                        <path d="M 10,80 C 10,40 70,40 70,80" fill="#0d9488"/>
+                        <circle cx="40" cy="30" r="20" fill="#fdba74"/>
+                        <!-- 手術帽 -->
+                        <path d="M 15,20 C 15,-5 65,-5 65,20 Z" fill="#0f766e"/>
+                        <!-- 口罩 -->
+                        <rect x="25" y="28" width="30" height="15" rx="3" fill="#ffffff" stroke="#94a3b8"/>
+                    </g>
+                    <!-- 標題 -->
+                    <text x="50" y="75" font-size="44" font-weight="900" fill="#0f172a" letter-spacing="2" writing-mode="tb">麻醉</text>
+                    <text x="100" y="75" font-size="44" font-weight="900" fill="#0f172a" letter-spacing="2" writing-mode="tb">醫師</text>
+                    <text x="190" y="35" font-size="52" font-weight="900" fill="#ef4444" letter-spacing="4" writing-mode="tb">日記</text>
+                    <!-- 點綴章樣 -->
+                    <circle cx="195" cy="215" r="20" fill="#ef4444"/>
+                    <text x="195" y="213" font-size="8" font-weight="900" fill="#ffffff" text-anchor="middle">35年</text>
+                    <text x="195" y="223" font-size="7" font-weight="500" fill="#ffffff" text-anchor="middle">麻醉生活</text>
+                    <!-- 推薦與作者 -->
+                    <text x="40" y="275" font-size="10" font-weight="700" fill="#334155">陳泱多 著</text>
+                    <text x="40" y="295" font-size="8" font-weight="500" fill="#64748b">100個刻骨銘心、生死交關的現場震撼</text>
+                </svg>
+                `
+            }
+        ];
+
+        // 狀態管理
+        let currentIndex = 0;
+        let isPlaying = true;
+        let carouselTimer = null;
+        let imageMode = 'demo'; // 'demo' 或 'local'
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // 初始化網頁
+        window.onload = function() {
+            renderDots();
+            renderThumbnails();
+            updateDisplay();
+            startAutoplay();
+            
+            // 監聽鍵盤箭頭
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                    resetAutoplay();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                    resetAutoplay();
+                }
+            });
+
+            // 監聽手機滑動手勢
+            const bookShowcase = document.getElementById('book-element');
+            bookShowcase.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            bookShowcase.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+        }
+
+        // 處理手勢滑動
+        function handleSwipe() {
+            if (touchStartX - touchEndX > 50) {
+                // 向左滑，下一張
+                nextSlide();
+                resetAutoplay();
+            }
+            if (touchEndX - touchStartX > 50) {
+                // 向右滑，上一張
+                prevSlide();
+                resetAutoplay();
+            }
+        }
+
+        // 動態生成指示點 (Dots)
+        function renderDots() {
+            const container = document.getElementById('dots-container');
+            container.innerHTML = '';
+            booksData.forEach((book, index) => {
+                const dot = document.createElement('button');
+                dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-indigo-500 scale-125' : 'bg-slate-600 hover:bg-slate-400'}`;
+                dot.setAttribute('aria-label', `跳至第 ${index + 1} 本書`);
+                dot.onclick = () => {
+                    jumpToSlide(index);
+                    resetAutoplay();
+                };
+                container.appendChild(dot);
+            });
+        }
+
+        // 動態生成下方快速縮圖列
+        function renderThumbnails() {
+            const container = document.getElementById('thumbnails-container');
+            container.innerHTML = '';
+            booksData.forEach((book, index) => {
+                const thumb = document.createElement('button');
+                thumb.id = `thumb-${index}`;
+                // 設定縮圖樣式與特效
+                thumb.className = `flex-shrink-0 w-12 h-16 sm:w-16 sm:h-22 rounded-md overflow-hidden border-2 transition-all duration-300 shadow transform hover:-translate-y-1 ${index === currentIndex ? 'border-indigo-500 scale-110 ring-2 ring-indigo-500/30' : 'border-transparent opacity-60 hover:opacity-100'}`;
+                
+                // 縮圖內容
+                if (imageMode === 'demo') {
+                    // 使用縮小的 SVG
+                    thumb.innerHTML = `<div class="w-full h-full pointer-events-none transform scale-100 origin-top-left">${book.demoSvg}</div>`;
+                } else {
+                    // 使用真實本機圖片
+                    thumb.innerHTML = `<img src="${book.localImage}" alt="${book.title}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=100&q=80';">`;
+                }
+                
+                thumb.onclick = () => {
+                    jumpToSlide(index);
+                    resetAutoplay();
+                };
+                container.appendChild(thumb);
+            });
+        }
+
+        // 更新核心介面展示
+        function updateDisplay() {
+            const book = booksData[currentIndex];
+            
+            // 1. 動態調色盤：過渡背景與光暈
+            document.getElementById('app-body').style.background = book.bgColor;
+
+            // 2. 更新封面主體
+            const coverContainer = document.getElementById('book-cover');
+            if (imageMode === 'demo') {
+                coverContainer.innerHTML = book.demoSvg;
+            } else {
+                coverContainer.innerHTML = `
+                    <img src="${book.localImage}" alt="${book.title}" class="w-full h-full object-cover" onerror="handleImageError(this, ${book.id})">
+                `;
+            }
+
+            // 3. 更新文字資訊
+            document.getElementById('book-title').innerText = book.title;
+            document.getElementById('book-author').innerText = `作者：${book.author}`;
+            document.getElementById('book-category').innerText = book.category;
+            document.getElementById('book-description').innerText = book.description;
+            document.getElementById('book-quote').innerText = book.quote;
+            document.getElementById('book-number').innerText = `0${currentIndex + 1} / 05`;
+
+            // 4. 更新指示點 Active 狀態
+            const dots = document.getElementById('dots-container').children;
+            for (let i = 0; i < dots.length; i++) {
+                if (i === currentIndex) {
+                    dots[i].className = "w-8 h-3 rounded-full bg-indigo-500 transition-all duration-300";
+                } else {
+                    dots[i].className = "w-3 h-3 rounded-full bg-slate-600 hover:bg-slate-400 transition-all duration-300";
+                }
+            }
+
+            // 5. 更新縮圖 Active 狀態
+            booksData.forEach((_, index) => {
+                const thumb = document.getElementById(`thumb-${index}`);
+                if (thumb) {
+                    if (index === currentIndex) {
+                        thumb.className = "flex-shrink-0 w-12 h-16 sm:w-16 sm:h-22 rounded-md overflow-hidden border-2 transition-all duration-300 shadow transform hover:-translate-y-1 border-indigo-500 scale-110 ring-2 ring-indigo-500/30 opacity-100";
+                    } else {
+                        thumb.className = "flex-shrink-0 w-12 h-16 sm:w-16 sm:h-22 rounded-md overflow-hidden border-2 transition-all duration-300 shadow transform hover:-translate-y-1 border-transparent opacity-60 hover:opacity-100";
+                    }
+                }
+            });
+        }
+
+        // 圖片載入失敗退路處理
+        function handleImageError(imgElement, id) {
+            const book = booksData.find(b => b.id === id);
+            // 本機讀取失敗時，自動使用 Demo 藝術封面填充，保證使用者介面永遠完美
+            imgElement.parentElement.innerHTML = book.demoSvg;
+            showToast(`找不到本機圖片 ${book.localImage}，已自動切換成藝術 Demo 封面！`);
+        }
+
+        // 切換顯示模式 (Demo SVG / Local WebP)
+        function switchImageMode(mode) {
+            if (imageMode === mode) return;
+            imageMode = mode;
+            
+            const btnDemo = document.getElementById('btn-mode-demo');
+            const btnLocal = document.getElementById('btn-mode-local');
+            
+            if (mode === 'demo') {
+                btnDemo.className = "px-3 py-1.5 rounded-md font-medium transition-all duration-300 bg-indigo-600 text-white shadow";
+                btnLocal.className = "px-3 py-1.5 rounded-md font-medium transition-all duration-300 text-slate-400 hover:text-white";
+                showToast("已切換為：內建優雅 Demo 藝術封面！");
+            } else {
+                btnLocal.className = "px-3 py-1.5 rounded-md font-medium transition-all duration-300 bg-indigo-600 text-white shadow";
+                btnDemo.className = "px-3 py-1.5 rounded-md font-medium transition-all duration-300 text-slate-400 hover:text-white";
+                showToast("已切換為：讀取本機圖片。請確保圖片檔案與網頁在同個目錄下！");
+            }
+            
+            renderThumbnails();
+            updateDisplay();
+        }
+
+        // 顯示提示彈出框 (Toast)
+        function showToast(text) {
+            const toast = document.getElementById('toast-message');
+            const toastText = document.getElementById('toast-text');
+            toastText.innerText = text;
+            
+            toast.className = "fixed bottom-24 right-6 z-50 bg-indigo-600 text-white px-5 py-3 rounded-xl shadow-xl flex items-center space-x-3 border border-indigo-400/20 translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto";
+            
+            setTimeout(() => {
+                toast.className = "fixed bottom-24 right-6 z-50 bg-indigo-600 text-white px-5 py-3 rounded-xl shadow-xl flex items-center space-x-3 border border-indigo-400/20 translate-y-20 opacity-0 transition-all duration-300 pointer-events-none";
+            }, 3500);
+        }
+
+        // 下一張
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % booksData.length;
+            updateDisplay();
+        }
+
+        // 上一張
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + booksData.length) % booksData.length;
+            updateDisplay();
+        }
+
+        // 直接跳至指定幻燈片
+        function jumpToSlide(index) {
+            currentIndex = index;
+            updateDisplay();
+        }
+
+        // 自動輪播核心
+        function startAutoplay() {
+            carouselTimer = setInterval(nextSlide, 5000); // 5秒自動切換下一張
+            isPlaying = true;
+            document.getElementById('play-icon').className = "fa-solid fa-pause text-base";
+        }
+
+        function stopAutoplay() {
+            clearInterval(carouselTimer);
+            isPlaying = false;
+            document.getElementById('play-icon').className = "fa-solid fa-play text-base";
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                stopAutoplay();
+                showToast("自動播放已暫停");
+            } else {
+                startAutoplay();
+                showToast("自動播放已重新啟動");
+            }
+        }
+
+        function resetAutoplay() {
+            if (isPlaying) {
+                clearInterval(carouselTimer);
+                startAutoplay();
+            }
+        }
+
+        // 開啟詳情 Modal
+        function openBookDetail() {
+            stopAutoplay(); // 查看詳情時暫停播放
+            const book = booksData[currentIndex];
+            document.getElementById('modal-book-title').innerText = book.title;
+            document.getElementById('modal-book-intro').innerText = book.detailedIntro;
+            
+            const modal = document.getElementById('detail-modal');
+            const box = document.getElementById('modal-box');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }
+
+        // 關閉詳情 Modal
+        function closeBookDetail() {
+            const modal = document.getElementById('detail-modal');
+            const box = document.getElementById('modal-box');
+            
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            
+            startAutoplay(); // 關閉後重新恢復自動播放
+        }
+    </script>
+</body>
+</html>
